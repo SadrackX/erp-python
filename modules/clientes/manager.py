@@ -1,7 +1,11 @@
 import csv
 import uuid
 from pathlib import Path
+from core import logger
+from core.auth import AuthManager
 from core.database import CSVManager
+from modules.auditoria.manager import AuditoriaManager
+from modules.auditoria.models import TipoEvento
 from .models import Cliente
 from typing import List, Optional
 
@@ -15,6 +19,7 @@ def __init__(self):
 class ClienteManager(CSVManager):
     def __init__(self):
         super().__init__('clientes.csv')
+        self.auditoria = AuditoriaManager()
     
     def get_headers(self) -> List[str]:
         return [
@@ -36,12 +41,13 @@ class ClienteManager(CSVManager):
                 cliente.id = str(uuid.uuid4())
             
             # Converte para dict e remove valores None
-            dados = {k: v for k, v in cliente.to_dict().items() if v is not None}
+            #dados = {k: v for k, v in cliente.to_dict().items() if v is not None}
             
-            self.save(dados)
+            self.save(cliente.to_dict())
+            logger.log(f"Cliente cadastrado - ID: {cliente.id[:8]} | Nome: {cliente.nome}")
             return cliente.id
         except Exception as e:
-            print(f"Erro ao cadastrar cliente: {str(e)}")
+            logger.log(f"Erro ao cadastrar cliente: {str(e)}", "error")
             return None
     
     def buscar_todos(self) -> List[Cliente]:
@@ -67,17 +73,34 @@ class ClienteManager(CSVManager):
         return Cliente.from_dict(cliente) if cliente else None
     
     def atualizar_cliente(self, cliente_id: str, novos_dados: dict) -> bool:
-        """Atualiza cliente existente"""
-        cliente = self.buscar_por_id(cliente_id)
-        if not cliente:
+        cliente_antigo = self.buscar_por_id(cliente_id)
+        if not cliente_antigo:
             return False
-        
-        for campo, valor in novos_dados.items():
-            if hasattr(cliente, campo):
-                setattr(cliente, campo, valor)
-        
-        return self.update(cliente_id, cliente.to_dict())
+
+        # Atualiza os dados
+        cliente_atualizado = Cliente.from_dict({**cliente_antigo.__dict__, **novos_dados})
+        success = self.update(cliente_id, cliente_atualizado.to_dict())
+
+        if success:
+            usuario_atual = AuthManager.get_usuario_atual()
+            if usuario_atual:  # Só registra se houver usuário logado
+                self.auditoria.registrar(
+                    usuario_id=usuario_atual.id,
+                    evento=TipoEvento.UPDATE,
+                    tabela="clientes",
+                    registro_id=cliente_id,
+                    dados_anteriores=cliente_antigo.to_dict(),
+                    dados_novos=cliente_atualizado.to_dict()
+                )
+        return success
     
     def remover_cliente(self, cliente_id: str) -> bool:
         """Marca cliente como inativo"""
         return self.atualizar_cliente(cliente_id, {'ativo': False})
+    
+    def total_ativos(self) -> int:
+        """Retorna o número total de clientes ativos"""
+        return len([
+            cliente for cliente in self.buscar_todos() 
+            if cliente.ativo
+        ])

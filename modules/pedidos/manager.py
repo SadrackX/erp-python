@@ -4,6 +4,7 @@ from core.database import CSVManager
 from .models import Pedido, ItemPedido
 from .itens_manager import ItensPedidoManager
 from typing import List, Optional
+from modules.financeiro.manager import FinanceiroManager
 
 class PedidoManager(CSVManager):
     def __init__(self):
@@ -65,3 +66,11 @@ class PedidoManager(CSVManager):
     def cancelar_pedido(self, pedido_id: str) -> bool:
         """Marca um pedido como cancelado"""
         return self.update(pedido_id, {'status': 'cancelado'})
+    
+    def total_este_mes(self) -> float:
+        """Retorna o valor total de pedidos deste mês"""
+        hoje = datetime.now()
+        return sum(
+            pedido.total for pedido in self.buscar_todos()
+            if pedido.data.month == hoje.month and pedido.data.year == hoje.year
+        )

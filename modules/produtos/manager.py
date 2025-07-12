@@ -66,3 +66,25 @@ class ProdutoManager(CSVManager):
     def remover_produto(self, produto_id: str) -> bool:
         """Marca um produto como inativo (soft delete)"""
         return self.atualizar_produto(produto_id, {'ativo': False})
+    
+    def total_ativos(self) -> int:
+        """Retorna a quantidade total de produtos ativos em estoque"""
+        return sum(
+            1 for produto in self.buscar_todos()
+            if produto.ativo and produto.quantidade > 0
+        )
+    def total_estoque(self) -> int:
+        """Retorna a quantidade total de itens em estoque"""
+        return sum(
+            produto.quantidade
+            for produto in self.buscar_todos()
+            if produto.ativo
+        )
+
+def valor_total_estoque(self) -> float:
+    """Retorna o valor total do estoque (preço de custo)"""
+    return sum(
+        produto.quantidade * produto.preco_custo
+        for produto in self.buscar_todos()
+        if produto.ativo
+    )
