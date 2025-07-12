@@ -1,0 +1,67 @@
+12/07/2025 00:58:37 | INFO | Sistema iniciado
+12/07/2025 01:00:36 | INFO | Sistema encerrado
+12/07/2025 01:01:27 | INFO     | Sistema iniciado
+12/07/2025 01:02:27 | INFO     | Cliente cadastrado - ID: 6655601b | Nome: teste empresa
+12/07/2025 01:04:19 | INFO     | Sistema encerrado
+12/07/2025 01:37:00 | INFO     | Usuário admin criado automaticamente
+12/07/2025 01:37:51 | INFO     | Usuário admin criado automaticamente
+12/07/2025 01:43:49 | CRITICAL | Erro fatal: 'str' object has no attribute 'value'
+12/07/2025 01:43:49 | INFO     | Sistema encerrado
+12/07/2025 01:47:46 | INFO     | Usuário admin criado automaticamente
+12/07/2025 01:47:54 | CRITICAL | Erro fatal: 'str' object has no attribute 'value'
+12/07/2025 01:47:54 | INFO     | Sistema encerrado
+12/07/2025 01:49:01 | CRITICAL | Erro fatal: 'str' object has no attribute 'value'
+12/07/2025 01:49:01 | INFO     | Sistema encerrado
+12/07/2025 01:50:22 | CRITICAL | Erro fatal: 'str' object has no attribute 'value'
+12/07/2025 01:50:22 | INFO     | Sistema encerrado
+12/07/2025 01:51:43 | CRITICAL | Erro fatal: 'str' object has no attribute 'value'
+12/07/2025 01:51:43 | INFO     | Sistema encerrado
+12/07/2025 01:52:01 | CRITICAL | Erro fatal: 'str' object has no attribute 'value'
+12/07/2025 01:52:01 | INFO     | Sistema encerrado
+12/07/2025 01:54:49 | CRITICAL | Erro fatal: 'str' object has no attribute 'value'
+12/07/2025 01:54:49 | INFO     | Sistema encerrado
+12/07/2025 01:57:53 | CRITICAL | Erro fatal: 'str' object has no attribute 'value'
+12/07/2025 01:57:53 | INFO     | Sistema encerrado
+12/07/2025 02:01:51 | INFO     | Usuário admin criado automaticamente
+12/07/2025 02:02:42 | INFO     | Usuário admin criado automaticamente
+12/07/2025 02:07:46 | INFO     | Usuário admin criado automaticamente
+12/07/2025 02:10:46 | INFO     | Usuário admin criado automaticamente
+12/07/2025 02:11:07 | CRITICAL | Erro fatal: 'str' object has no attribute 'value'
+12/07/2025 02:11:07 | INFO     | Sistema encerrado
+12/07/2025 02:11:10 | INFO     | Usuário admin criado automaticamente
+12/07/2025 02:12:27 | INFO     | Usuário admin criado automaticamente
+12/07/2025 02:14:39 | INFO     | Usuário admin criado automaticamente
+12/07/2025 02:14:43 | INFO     | Usuário admin criado automaticamente
+12/07/2025 02:14:56 | INFO     | Usuário admin criado automaticamente
+12/07/2025 02:15:21 | CRITICAL | Erro fatal: 'str' object has no attribute 'value'
+12/07/2025 02:15:21 | INFO     | Sistema encerrado
+12/07/2025 10:48:47 | INFO     | Usuário admin criado automaticamente
+12/07/2025 10:49:08 | CRITICAL | Erro fatal: 'str' object has no attribute 'value'
+12/07/2025 10:49:08 | INFO     | Sistema encerrado
+12/07/2025 10:53:06 | INFO     | Usuário admin criado automaticamente
+12/07/2025 11:15:42 | INFO     | Usuário admin criado automaticamente
+12/07/2025 11:17:44 | INFO     | Usuário admin criado automaticamente
+12/07/2025 11:17:46 | INFO     | Usuário autenticado: Admin (admin)
+12/07/2025 11:19:46 | INFO     | Sistema encerrado
+12/07/2025 11:40:32 | INFO     | Usuário admin criado automaticamente
+12/07/2025 11:40:42 | INFO     | Usuário autenticado: Admin (admin)
+12/07/2025 11:44:00 | INFO     | Sistema encerrado
+12/07/2025 11:44:02 | INFO     | Usuário admin criado automaticamente
+12/07/2025 11:44:08 | INFO     | Usuário autenticado: Admin (admin)
+12/07/2025 11:46:55 | CRITICAL | Erro fatal: ClienteManager.atualizar_cliente() missing 1 required positional argument: 'usuario_atual'
+12/07/2025 11:46:55 | INFO     | Sistema encerrado
+12/07/2025 11:57:46 | INFO     | Usuário admin criado automaticamente
+12/07/2025 11:57:58 | INFO     | Usuário autenticado: Admin (admin)
+12/07/2025 12:12:27 | INFO     | Sistema encerrado
+12/07/2025 12:15:29 | INFO     | Usuário admin criado automaticamente
+12/07/2025 12:15:52 | INFO     | Usuário autenticado: Admin (admin)
+12/07/2025 12:21:04 | INFO     | Usuário admin criado automaticamente
+12/07/2025 12:21:35 | INFO     | Usuário autenticado: Admin (admin)
+12/07/2025 12:31:37 | INFO     | Usuário admin criado automaticamente
+12/07/2025 12:32:01 | INFO     | Usuário autenticado: Admin (admin)
+12/07/2025 12:33:32 | CRITICAL | Erro fatal: UsuarioManager.verificar_login() missing 3 required positional arguments: 'self', 'email', and 'senha'
+12/07/2025 12:33:32 | INFO     | Sistema encerrado
+12/07/2025 12:36:57 | INFO     | Usuário autenticado: Admin (admin)
+12/07/2025 12:38:38 | INFO     | Sistema encerrado
+12/07/2025 12:49:14 | INFO     | Usuário autenticado: Admin (admin)
+12/07/2025 12:49:36 | INFO     | Sistema encerrado
