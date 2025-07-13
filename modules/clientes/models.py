@@ -11,6 +11,11 @@ class Cliente:
     cpf_cnpj: str
     email: Optional[str] = None
     celular: Optional[str] = None
+    endereco: Optional[str] = None
+    bairro: Optional[str] = None
+    cidade: Optional[str] = None
+    cep: Optional[str] = None
+    uf: Optional[str] = None
     observacoes: Optional[str] = None
     ativo: bool = True
 
@@ -22,6 +27,11 @@ class Cliente:
             'cpf_cnpj': self.cpf_cnpj,
             'email': self.email or '',
             'celular': self.celular or '',
+            'endereco': self.endereco or '',
+            'bairro': self.bairro or '',
+            'cidade': self.cidade or '',
+            'cep': self.cep or '',
+            'uf': self.uf or '',
             'observacoes': self.observacoes or '',
             'ativo': str(self.ativo)
         }
@@ -37,6 +47,11 @@ class Cliente:
                 cpf_cnpj=data.get('cpf_cnpj', ''),
                 email=data.get('email'),
                 celular=data.get('celular'),
+                endereco=data.get('endereco'),
+                bairro=data.get('bairro'),
+                cidade=data.get('cidade'),
+                cep=data.get('cep'),
+                uf=data.get('uf'),
                 observacoes=data.get('observacoes'),
                 ativo=str(data.get('ativo', 'True')).lower() == 'true'
             )

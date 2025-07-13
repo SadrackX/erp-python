@@ -29,6 +29,11 @@ class ClienteManager(CSVManager):
             'cpf_cnpj',
             'email',
             'celular',
+            'endereco',
+            'bairro',
+            'cidade',
+            'cep',
+            'uf',
             'observacoes',
             'ativo'
         ]

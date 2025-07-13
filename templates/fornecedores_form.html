@@ -1,0 +1,20 @@
+﻿{% extends 'base.html' %}
+{% block conteudo %}
+    <h3>Cadastrar Fornecedor</h3>
+    <form method="post" action="{{ url_for('fornecedores_novo') }}">
+        <label>Nome:</label><br>
+        <input type="text" name="nome" required><br>
+        <label>CNPJ:</label><br>
+        <input type="text" name="cnpj" required><br>
+        <label>Telefone:</label><br>
+        <input type="text" name="telefone" required><br>
+        <label>Email:</label><br>
+        <input type="email" name="email"><br>
+        <label>Produtos Fornecidos (IDs separados por vírgula):</label><br>
+        <input type="text" name="produtos_fornecidos"><br>
+        <label>Observações:</label><br>
+        <input type="text" name="observacoes"><br>
+        <input type="submit" value="Salvar">
+    </form>
+    <a href="{{ url_for('fornecedores') }}">Voltar para lista de fornecedores</a>
+{% endblock %}

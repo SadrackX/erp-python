@@ -1,4 +1,4 @@
-import sys
+﻿import sys
 from pathlib import Path
 sys.path.append(str(Path(__file__).parent.parent))
 from core.database import CSVManager
@@ -6,6 +6,7 @@ from modules.produtos.manager import ProdutoManager
 from modules.clientes.manager import ClienteManager
 from modules.fornecedores.manager import FornecedorManager
 from modules.pedidos.manager import PedidoManager
+from modules.pedidos.itens_manager import ItensPedidoManager
 
 def inicializar_todos_arquivos():
     # Garante que a pasta dados existe
@@ -16,10 +17,13 @@ def inicializar_todos_arquivos():
         ProdutoManager(),
         ClienteManager(),
         FornecedorManager(),
-        PedidoManager()
+        PedidoManager(),
+        ItensPedidoManager()
     ]
-    
     print("Arquivos CSV inicializados com sucesso!")
+    # Exibe os cabeçalhos de cada arquivo criado
+    for m in managers:
+        print(f"{m.filepath.name}: {m.get_headers()}")
 
 if __name__ == "__main__":
     inicializar_todos_arquivos()

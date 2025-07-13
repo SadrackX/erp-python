@@ -1,0 +1,35 @@
+﻿{% extends 'base.html' %}
+{% block conteudo %}
+    <h3>Clientes</h3>
+    <a href="{{ url_for('clientes_novo') }}">Cadastrar novo cliente</a>
+    <hr>
+    <h4>Lista de Clientes</h4>
+    <table border="1" cellpadding="5" cellspacing="0">
+        <tr>
+            <th>Nome</th>
+            <th>Tipo</th>
+            <th>CPF/CNPJ</th>
+            <th>Email</th>
+            <th>Telefone</th>
+            <th>Endereco</th>
+            <th>CEP</th>        
+            <th>Ações</th>   
+        </tr>
+        {% for cliente in clientes %}
+        <tr>
+            <td>{{ cliente.nome }}</td>
+            <td>{{ cliente.tipo }}</td>
+            <td>{{ cliente.cpf_cnpj }}</td>
+            <td>{{ cliente.email }}</td>
+            <td>{{ cliente.celular }}</td>
+            <td>{{ cliente.endereco }}, {{ cliente.bairro }}, {{ cliente.cidade }}-{{ cliente.uf }}</td>
+            <td>{{ cliente.cep }}</td>
+            <td>
+                <a href="#">Editar</a>
+                <a href="#">Excluir</a>
+                <a href="#">Detalhes</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+{% endblock %}

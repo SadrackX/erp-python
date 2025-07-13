@@ -1,0 +1,9 @@
+﻿{% extends 'base.html' %}
+{% block conteudo %}
+    <h3>Dashboard</h3>
+    {% if resumo %}
+        <pre>{{ resumo }}</pre>
+    {% else %}
+        <p>Resumo do dashboard aqui.</p>
+    {% endif %}
+{% endblock %}

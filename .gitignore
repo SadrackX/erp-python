@@ -1,16 +1,19 @@
-# Python
+﻿# Python
 __pycache__/
 *.py[cod]
 *.egg-info/
 *.swp
 
 # Dados (opcional - você pode versionar os CSV se quiser)
-dados/*.csv
+#dados/*.csv
 
 # Ambiente virtual
 venv/
 .env
 
 # IDE
+.vs/
 .vscode/
 .idea/
+.backups/
+.logs/

@@ -11,15 +11,16 @@ def mostrar_tela_login():
     senha = input("Senha: ")
     return email, senha
 
-def menu_autenticacao():
+def menu_autenticacao(gui_user=None, gui_pass=None):
     manager = UsuarioManager()
-    
+    if gui_user is not None and gui_pass is not None:
+        usuario = manager.verificar_login(gui_user, gui_pass)
+        return usuario
     while True:
         email, senha = mostrar_tela_login()
         usuario = manager.verificar_login(email, senha)
-        
         if usuario:
             console.print(f"\n[green]Bem-vindo, {usuario.nome}![/]")
             return usuario
         else:
-            console.print("\n[red]Credenciais inválidas! Tente novamente.[/]")
+            console.print("\n[red]Credenciais invalidas! Tente novamente.[/]")

@@ -1,0 +1,33 @@
+﻿{% extends 'base.html' %}
+{% block conteudo %}
+    <h3>Pedidos</h3>
+    <a href="{{ url_for('pedidos_novo') }}">Cadastrar novo pedido</a>
+    <hr>
+    <h4>Lista de Pedidos</h4>
+    <table border="1" cellpadding="5" cellspacing="0">
+        <tr>
+            <th>ID</th>
+            <th>ID Cliente</th>
+            <th>ID Forma Pagamento</th>
+            <th>Data</th>
+            <th>Status</th>
+            <th>Observações</th>
+            <th>Desconto Total</th>
+            <th>Valor Frete</th>
+            <th>Total</th>
+        </tr>
+        {% for pedido in pedidos %}
+        <tr>
+            <td>{{ pedido.id }}</td>
+            <td>{{ pedido.id_cliente }}</td>
+            <td>{{ pedido.id_forma_pagamento }}</td>
+            <td>{{ pedido.data }}</td>
+            <td>{{ pedido.status }}</td>
+            <td>{{ pedido.observacoes }}</td>
+            <td>{{ pedido.desconto_total }}</td>
+            <td>{{ pedido.valor_frete }}</td>
+            <td>{{ pedido.total }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+{% endblock %}

@@ -79,6 +79,11 @@ def coletar_dados_cliente() -> dict:
         'cpf_cnpj': cpf_cnpj,
         'email': input("E-mail (opcional): ") or None,
         'celular': input("Celular (opcional): ") or None,
+        'endereco': input("Endereco: ") or None,
+        'bairro': input("Bairro: ") or None,
+        'cidade': input("Cidade: ") or None,
+        'cep': input("CEP: ") or None,
+        'uf': input("UF: ") or None,
         'observacoes': input("Observações (opcional): ") or None,
         'ativo': True
     }
