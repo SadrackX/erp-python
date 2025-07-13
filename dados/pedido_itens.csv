@@ -1,1 +1,3 @@
-id_pedido,id_produto,quantidade,preco_unitario,desconto
+﻿id_item,id_pedido,id_produto,quantidade,preco_unitario,desconto
+0001,0001,0003,1,80.00,0.00
+0002,0001,0002,4,70.00,0.00

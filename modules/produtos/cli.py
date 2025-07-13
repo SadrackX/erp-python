@@ -1,4 +1,4 @@
-from rich.console import Console
+﻿from rich.console import Console
 from rich.table import Table
 from .manager import ProdutoManager
 from .models import Produto
@@ -11,7 +11,6 @@ def exibir_produtos(produtos: list[Produto]):
     table = Table(title="Lista de Produtos", show_lines=True)
     table.add_column("ID", style="cyan")
     table.add_column("Nome", style="magenta")
-    table.add_column("Estoque", justify="right")
     table.add_column("Preço Venda", justify="right")
     table.add_column("Ativo", justify="center")
     
@@ -19,7 +18,6 @@ def exibir_produtos(produtos: list[Produto]):
         table.add_row(
             p.id[:8] + "...",
             p.nome,
-            str(p.quantidade),
             f"R$ {p.preco_venda:.2f}",
             "✅" if p.ativo else "❌"
         )
@@ -30,7 +28,6 @@ def coletar_dados_produto(produto_existente: Produto = None) -> dict:
     """Coleta dados do produto via input do usuário"""
     dados = {
         'nome': input("Nome do produto: ").strip(),
-        'quantidade': int(input("Quantidade em estoque: ")),
         'preco_custo': float(input("Preço de custo: R$ ")),
         'preco_venda': float(input("Preço de venda: R$ ")),
         'observacao': input("Observações (opcional): ").strip() or None,

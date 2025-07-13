@@ -23,7 +23,11 @@ def inicializar_todos_arquivos():
     print("Arquivos CSV inicializados com sucesso!")
     # Exibe os cabeçalhos de cada arquivo criado
     for m in managers:
-        print(f"{m.filepath.name}: {m.get_headers()}")
+        if isinstance(m, ProdutoManager):
+            headers = [header for header in m.get_headers() if header != 'quantidade']
+            print(f"{m.filepath.name}: {headers}")
+        else:
+            print(f"{m.filepath.name}: {m.get_headers()}")
 
 if __name__ == "__main__":
     inicializar_todos_arquivos()

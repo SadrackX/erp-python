@@ -1,13 +1,14 @@
-from dataclasses import dataclass
+﻿from dataclasses import dataclass
 from typing import List, Optional
 from datetime import datetime
 
 @dataclass
 class ItemPedido:
-    id_pedido: str
-    id_produto: str
-    quantidade: int
-    preco_unitario: float
+    id_item: str = ''
+    id_pedido: str = ''
+    id_produto: str = ''
+    quantidade: int = 1
+    preco_unitario: float = 0.0
     desconto: float = 0.0
 
     @property
@@ -16,6 +17,7 @@ class ItemPedido:
 
     def to_dict(self) -> dict:
         return {
+            'id_item': self.id_item,
             'id_pedido': self.id_pedido,
             'id_produto': self.id_produto,
             'quantidade': str(self.quantidade),
@@ -26,10 +28,11 @@ class ItemPedido:
     @classmethod
     def from_dict(cls, data: dict):
         return cls(
-            id_pedido=data['id_pedido'],
-            id_produto=data['id_produto'],
-            quantidade=int(data['quantidade']),
-            preco_unitario=float(data['preco_unitario']),
+            id_item=data.get('id_item', ''),
+            id_pedido=data.get('id_pedido', ''),
+            id_produto=data.get('id_produto', ''),
+            quantidade=int(data.get('quantidade', 1)),
+            preco_unitario=float(data.get('preco_unitario', 0)),
             desconto=float(data.get('desconto', '0'))
         )
 

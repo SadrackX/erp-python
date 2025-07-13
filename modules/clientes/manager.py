@@ -1,4 +1,4 @@
-import csv
+﻿import csv
 import uuid
 from pathlib import Path
 from core import logger
@@ -38,12 +38,19 @@ class ClienteManager(CSVManager):
             'ativo'
         ]
     
+    def get_next_id(self) -> str:
+        clientes = self.get_all()
+        if not clientes:
+            return '0001'
+        max_id = max([int(c['id']) for c in clientes if c['id'].isdigit()], default=0)
+        return str(max_id + 1).zfill(4)
+    
     def cadastrar_cliente(self, cliente: Cliente) -> str:
         """Garante que cada cliente seja salvo em linha separada"""
         try:
             # Garante que o ID existe
             if not cliente.id:
-                cliente.id = str(uuid.uuid4())
+                cliente.id = self.get_next_id()
             
             # Converte para dict e remove valores None
             #dados = {k: v for k, v in cliente.to_dict().items() if v is not None}

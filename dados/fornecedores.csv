@@ -1,2 +1,2 @@
-id,nome,cnpj,telefone,email,produtos_fornecidos,observacoes,ativo
-ec1fb30f-57cc-4762-872d-fac982450257,Thallyelson Mariano Gomes,123654,83981273917,thallyelsom@gmail.com,"ADESIVO,LONA",,True
+﻿id,nome,cnpj,telefone,email,produtos_fornecidos,observacoes,ativo
+0001,Thallyelson Mariano Gomes,123654,83981273917,thallyelsom@gmail.com,"ADESIVO,LONA",,True

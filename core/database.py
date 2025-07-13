@@ -1,4 +1,4 @@
-import csv
+﻿import csv
 import os
 from pathlib import Path
 from typing import List, Dict, Optional
@@ -35,19 +35,27 @@ class CSVManager:
             writer.writerow(data)  # Escreve os dados em nova linha
     
     def get_all(self) -> List[Dict]:
-        """Retorna todos os registros válidos"""
+        """Retorna todos os registros válidos, limpando espaços e BOM das chaves"""
         try:
             with open(self.filepath, mode='r', encoding='utf-8') as f:
                 reader = csv.DictReader(f)
-                records = list(reader)
+                records = []
+                for row in reader:
+                    clean_row = {}
+                    for k, v in row.items():
+                        if k is None:
+                            continue
+                        key = k.strip().replace('\ufeff', '')
+                        clean_row[key] = v.strip() if isinstance(v, str) else v
+                    records.append(clean_row)
                 print(f"Registros lidos de {self.filepath}: {records}")  # Log de depuração
-                return [row for row in records if row] # Filtra registros com ID válido
+                return [row for row in records if row]
         except FileNotFoundError:
             print(f"Arquivo {self.filepath} não encontrado, criando novo...")
             self._ensure_file_exists()
             return []
         except Exception as e:
-            print(f"Erro ao ler {self.filename}: {str(e)}")
+            print(f"Erro ao ler {getattr(self, 'filepath', 'arquivo desconhecido')}: {str(e)}")
             return []
         
     def find_by_id(self, id_value: str) -> Optional[Dict]:

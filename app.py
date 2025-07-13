@@ -1,6 +1,6 @@
 ﻿# -*- coding: utf-8 -*-
 from core import logger
-from flask import Flask, render_template, request, redirect, url_for, session, flash
+from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
 from modules.auth.manager import UsuarioManager
 from modules.auth.models import NivelAcesso
 from modules.relatorios.dashboard import Dashboard
@@ -89,7 +89,6 @@ def produtos_novo():
         novo = Produto(
             id='',
             nome=request.form['nome'],
-            quantidade=int(request.form['quantidade']),
             preco_custo=float(request.form['preco_custo']),
             preco_venda=float(request.form['preco_venda']),
             observacao=request.form['observacao'],
@@ -135,28 +134,138 @@ def pedidos():
     if 'usuario_nome' not in session:
         return redirect(url_for('login'))
     pedidos = PedidoManager().buscar_todos()
-    return render_template('pedidos_list.html', usuario_nome=session['usuario_nome'], usuario_nivel=session['usuario_nivel'], pedidos=pedidos)
+    # Monta dicionário de clientes {id: nome}
+    clientes_dict = {c.id: c.nome for c in ClienteManager().buscar_todos()}
+    return render_template(
+        'pedidos_list.html',
+        usuario_nome=session['usuario_nome'],
+        usuario_nivel=session['usuario_nivel'],
+        pedidos=pedidos,
+        clientes=clientes_dict
+    )
 
 @app.route('/pedidos/novo', methods=['GET', 'POST'])
 def pedidos_novo():
     if 'usuario_nome' not in session:
         return redirect(url_for('login'))
     if request.method == 'POST':
+        # Recebe produtos do pedido em JSON
+        import json
+        produtos_json = request.form.get('produtos_json')
+        itens = []
+        if produtos_json:
+            produtos = json.loads(produtos_json)
+            for p in produtos:
+                itens.append(ItemPedido(
+                    id_pedido='',  # será preenchido ao salvar o pedido
+                    id_produto=p['id_produto'],
+                    quantidade=p['quantidade'],
+                    preco_unitario=p['preco_unitario'],
+                    desconto=0.0
+                ))
         novo = Pedido(
             id='',
             id_cliente=request.form['id_cliente'],
-            id_forma_pagamento=request.form['id_forma_pagamento'],
-            data=datetime.fromisoformat(request.form['data']),
+            id_forma_pagamento=request.form['id_forma_pagamento'] if 'id_forma_pagamento' in request.form else '',
+            data=datetime.now(),
             status=request.form['status'],
-            itens=[],  # Itens devem ser cadastrados separadamente
-            observacoes=request.form['observacoes'],
-            desconto_total=float(request.form['desconto_total']),
-            valor_frete=float(request.form['valor_frete'])
+            itens=itens,
+            observacoes=request.form.get('observacoes'),
+            desconto_total=float(request.form.get('desconto_total', 0)),
+            valor_frete=float(request.form.get('valor_frete', 0))
         )
         PedidoManager().criar_pedido(novo)
         flash('Pedido cadastrado!')
         return redirect(url_for('pedidos'))
     return render_template('pedidos_form.html', usuario_nome=session['usuario_nome'], usuario_nivel=session['usuario_nivel'])
+
+@app.route('/pedidos/<pedido_id>')
+def pedido_detalhes(pedido_id):
+    if 'usuario_nome' not in session:
+        return redirect(url_for('login'))
+    pedido = PedidoManager().buscar_por_id(pedido_id)
+    if not pedido:
+        flash('Pedido não encontrado!')
+        return redirect(url_for('pedidos'))
+    cliente = ClienteManager().buscar_por_id(pedido.id_cliente)
+    produtos = []
+    for item in pedido.itens:
+        prod = ProdutoManager().buscar_por_id(item.id_produto)
+        produtos.append({
+            'nome': prod.nome if prod else 'Produto removido',
+            'preco_unitario': item.preco_unitario,
+            'quantidade': item.quantidade,
+            'total': item.total
+        })
+    return render_template('pedido_detalhes.html', pedido=pedido, cliente=cliente, produtos=produtos, usuario_nome=session['usuario_nome'], usuario_nivel=session['usuario_nivel'])
+
+@app.route('/pedidos/<pedido_id>/editar', methods=['GET', 'POST'])
+def pedido_editar(pedido_id):
+    if 'usuario_nome' not in session:
+        return redirect(url_for('login'))
+    pedido = PedidoManager().buscar_por_id(pedido_id)
+    if not pedido:
+        flash('Pedido não encontrado!')
+        return redirect(url_for('pedidos'))
+    if request.method == 'POST':
+        novos_dados = {
+            'status': request.form['status'],
+            'observacoes': request.form.get('observacoes'),
+            'desconto_total': request.form.get('desconto_total', pedido.desconto_total),
+            'valor_frete': request.form.get('valor_frete', pedido.valor_frete)
+        }
+        PedidoManager().atualizar_pedido(pedido_id, novos_dados)
+        flash('Pedido atualizado!')
+        return redirect(url_for('pedido_detalhes', pedido_id=pedido_id))
+    return render_template('pedido_editar.html', pedido=pedido, usuario_nome=session['usuario_nome'], usuario_nivel=session['usuario_nivel'])
+
+@app.route('/pedidos/<pedido_id>/cancelar')
+def pedido_cancelar(pedido_id):
+    if 'usuario_nome' not in session:
+        return redirect(url_for('login'))
+    PedidoManager().cancelar_pedido(pedido_id)
+    flash('Pedido cancelado!')
+    return redirect(url_for('pedidos'))
+
+@app.route('/buscar_clientes')
+def buscar_clientes():
+    termo = request.args.get('q', '').lower()
+    clientes = ClienteManager().buscar_todos()
+    resultados = []
+    for c in clientes:
+        if (
+            termo in c.nome.lower() or
+            termo in (c.cpf_cnpj or '').lower() or
+            termo in (c.email or '').lower()
+        ):
+            resultados.append({
+                'id': c.id,
+                'nome': c.nome,
+                'tipo': c.tipo,
+                'cpf_cnpj': c.cpf_cnpj,
+                'email': c.email,
+                'celular': c.celular,
+                'endereco': c.endereco,
+                'bairro': c.bairro,
+                'cidade': c.cidade,
+                'cep': c.cep,
+                'uf': c.uf
+            })
+    return jsonify(resultados)
+
+@app.route('/buscar_produtos')
+def buscar_produtos():
+    termo = request.args.get('q', '').lower()
+    produtos = ProdutoManager().buscar_todos()
+    resultados = []
+    for p in produtos:
+        if termo in p.nome.lower():
+            resultados.append({
+                'id': p.id,
+                'nome': p.nome,
+                'preco_venda': p.preco_venda
+            })
+    return jsonify(resultados)
 
 @app.route('/logout')
 def logout():
@@ -165,12 +274,3 @@ def logout():
 
 if __name__ == '__main__':
     app.run(debug=True, port=5001)
-    logout()  # Limpa a sessão ao iniciar o app)
-    if not UsuarioManager.get_all():
-        logger.log("Usuário admin criado automaticamente")  # Se não houver usuários    
-        UsuarioManager.criar_usuario(
-        nome="Admin",
-        email="admin@erp.com",
-        senha="admin123",
-        nivel=NivelAcesso.ADMIN
-    )

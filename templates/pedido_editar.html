@@ -1,0 +1,21 @@
+﻿{% extends 'base.html' %}
+{% block conteudo %}
+<h3>Editar Pedido</h3>
+<form method="post">
+    <p><strong>ID:</strong> {{ pedido.id }}</p>
+    <label>Status:</label><br>
+    <select name="status" required>
+        <option value="rascunho" {% if pedido.status == 'rascunho' %}selected{% endif %}>Rascunho</option>
+        <option value="finalizado" {% if pedido.status == 'finalizado' %}selected{% endif %}>Finalizado</option>
+        <option value="cancelado" {% if pedido.status == 'cancelado' %}selected{% endif %}>Cancelado</option>
+    </select><br>
+    <label>Observações:</label><br>
+    <input type="text" name="observacoes" value="{{ pedido.observacoes }}"><br>
+    <label>Desconto Total:</label><br>
+    <input type="number" step="0.01" name="desconto_total" value="{{ pedido.desconto_total }}"><br>
+    <label>Valor Frete:</label><br>
+    <input type="number" step="0.01" name="valor_frete" value="{{ pedido.valor_frete }}"><br>
+    <input type="submit" value="Salvar Alterações">
+</form>
+<a href="{{ url_for('pedido_detalhes', pedido_id=pedido.id) }}">Voltar para detalhes do pedido</a>
+{% endblock %}

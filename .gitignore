@@ -15,5 +15,5 @@ venv/
 .vs/
 .vscode/
 .idea/
-.backups/
-.logs/
+backups/
+logs/

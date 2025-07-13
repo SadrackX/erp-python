@@ -1,4 +1,4 @@
-import uuid
+﻿import uuid
 from core.database import CSVManager
 from .models import Fornecedor
 from typing import List, Optional
@@ -19,9 +19,16 @@ class FornecedorManager(CSVManager):
             'ativo'
         ]
     
+    def get_next_id(self) -> str:
+        fornecedores = self.get_all()
+        if not fornecedores:
+            return '0001'
+        max_id = max([int(f['id']) for f in fornecedores if f['id'].isdigit()], default=0)
+        return str(max_id + 1).zfill(4)
+    
     def cadastrar_fornecedor(self, fornecedor: Fornecedor) -> str:
         """Cadastra novo fornecedor e retorna o ID"""
-        fornecedor.id = str(uuid.uuid4())
+        fornecedor.id = self.get_next_id()
         self.save(fornecedor.to_dict())
         return fornecedor.id
     

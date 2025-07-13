@@ -1,3 +1,3 @@
-id,nome,tipo,cpf_cnpj,email,celular,endereco,bairro,cidade,cep,uf,observacoes,ativo
-6e243fa7-8a0d-422d-bb81-996978858fdc,Thallyelson Mariano Gomes,PF,08928838479,thallyelsom@gmail.com,83981273917,Rua adfadfadf,centro,SOUSA,58807250,pb,,True
-45875bfd-5bd9-4b80-8cdd-d60b3310b8e6,Teste log,PJ,08928838479,thallyelsom@gmail.com,83981273917,Rua adfadfadf,centro,SOUSA,58807250,pb,,True
+﻿id,nome,tipo,cpf_cnpj,email,celular,endereco,bairro,cidade,cep,uf,observacoes,ativo
+0001,Teste log,PF,08928838479,thallyelsom@gmail.com,83981273917,Rua adfadfadf,centro,SOUSA,58807250,pb,,True
+0002,Thallyelson Mariano Gomes,PF,08928838479,thallyelsom@gmail.com,83981273917,Rua adfadfadf,centro,SOUSA,58807250,pb,,True

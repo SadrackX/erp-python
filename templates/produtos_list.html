@@ -6,9 +6,7 @@
     <h4>Lista de Produtos</h4>
     <table border="1" cellpadding="5" cellspacing="0">
         <tr>
-            <th>ID</th>
             <th>Nome</th>
-            <th>Quantidade</th>
             <th>Preço de Custo</th>
             <th>Preço de Venda</th>
             <th>Observação</th>
@@ -16,9 +14,7 @@
         </tr>
         {% for produto in produtos %}
         <tr>
-            <td>{{ produto.id }}</td>
             <td>{{ produto.nome }}</td>
-            <td>{{ produto.quantidade }}</td>
             <td>{{ produto.preco_custo }}</td>
             <td>{{ produto.preco_venda }}</td>
             <td>{{ produto.observacao }}</td>

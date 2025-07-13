@@ -7,26 +7,28 @@
     <table border="1" cellpadding="5" cellspacing="0">
         <tr>
             <th>ID</th>
-            <th>ID Cliente</th>
-            <th>ID Forma Pagamento</th>
+            <th>Cliente</th>
             <th>Data</th>
             <th>Status</th>
-            <th>Observações</th>
-            <th>Desconto Total</th>
-            <th>Valor Frete</th>
             <th>Total</th>
+            <th>Ações</th>
         </tr>
         {% for pedido in pedidos %}
         <tr>
             <td>{{ pedido.id }}</td>
-            <td>{{ pedido.id_cliente }}</td>
-            <td>{{ pedido.id_forma_pagamento }}</td>
-            <td>{{ pedido.data }}</td>
+            <td>{{ clientes[pedido.id_cliente] if clientes[pedido.id_cliente] else pedido.id_cliente }}</td>
+            <td>{{ pedido.data.strftime('%d/%m/%Y %H:%M') if pedido.data else '' }}</td>
             <td>{{ pedido.status }}</td>
-            <td>{{ pedido.observacoes }}</td>
-            <td>{{ pedido.desconto_total }}</td>
-            <td>{{ pedido.valor_frete }}</td>
-            <td>{{ pedido.total }}</td>
+            <td>R$ {{ '%.2f' % pedido.total }}</td>
+            <td>
+                <a href="#">Gerar OS</a>
+                <a href="#">Gerar Recibo</a>
+                <a href="{{ url_for('pedido_detalhes', pedido_id=pedido.id) }}">Detalhes</a>
+                <a href="{{ url_for('pedido_editar', pedido_id=pedido.id) }}">Editar</a>
+                {% if pedido.status != 'cancelado' %}
+                <a href="{{ url_for('pedido_cancelar', pedido_id=pedido.id) }}" onclick="return confirm('Cancelar este pedido?');">Cancelar</a>
+                {% endif %}
+            </td>
         </tr>
         {% endfor %}
     </table>

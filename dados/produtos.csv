@@ -1,2 +1,4 @@
-id,nome,quantidade,preco_custo,preco_venda,observacao,ativo
-9a8818da-f5ff-44fb-9e9b-574452351dbe,ADESIVO,1000,15.00,70.00,,True
+﻿id,nome,preco_custo,preco_venda,observacao,ativo
+0001,ACM,250.00,500.00,,True
+0002,LONA ,15.00,70.00,,True
+0003,ADESIVO,12.00,80.00,,True

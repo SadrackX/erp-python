@@ -1,42 +1,46 @@
-from core.database import CSVManager
+﻿from core.database import CSVManager
 from .models import Produto
 from typing import List, Optional
-import uuid
 
 class ProdutoManager(CSVManager):
     def __init__(self):
         super().__init__('produtos.csv')
-    
+
     def get_headers(self) -> list[str]:
         return [
             'id',
             'nome',
-            'quantidade',
             'preco_custo',
             'preco_venda',
             'observacao',
             'ativo'
         ]
-    
+
+    def get_next_id(self) -> str:
+        produtos = self.get_all()
+        if not produtos:
+            return '0001'
+        max_id = max([int(p['id']) for p in produtos if p['id'].isdigit()], default=0)
+        return str(max_id + 1).zfill(4)
+
     def cadastrar_produto(self, produto: Produto) -> str:
         """Cadastra um novo produto e retorna o ID"""
         if not produto.id:
-            produto.id = str(uuid.uuid4())
-        
+            produto.id = self.get_next_id()
         try:
             self.save(produto.to_dict())
             return produto.id
         except Exception as e:
             print(f"Erro ao cadastrar produto: {e}")
             return None
-    
+
     def buscar_todos(self) -> List[Produto]:
         """Retorna todos os produtos cadastrados"""
         produtos = []
         for p in self.get_all():
             try:
                 # Verifica se todos os campos obrigatórios existem
-                required_fields = ['id', 'nome', 'quantidade', 'preco_custo', 'preco_venda']
+                required_fields = ['id', 'nome', 'preco_custo', 'preco_venda']
                 if all(field in p for field in required_fields):
                     produtos.append(Produto.from_dict(p))
                 else:
@@ -44,12 +48,12 @@ class ProdutoManager(CSVManager):
             except Exception as e:
                 print(f"Erro ao carregar produto: {e}. Dados: {p}")
         return produtos
-    
+
     def buscar_por_id(self, produto_id: str) -> Optional[Produto]:
         """Busca um produto pelo ID"""
         produto = self.find_by_id(produto_id)
         return Produto.from_dict(produto) if produto else None
-    
+
     def atualizar_produto(self, produto_id: str, novos_dados: dict) -> bool:
         """Atualiza um produto existente"""
         produto = self.buscar_por_id(produto_id)
@@ -62,29 +66,7 @@ class ProdutoManager(CSVManager):
                 setattr(produto, campo, valor)
         
         return self.update(produto_id, produto.to_dict())
-    
+
     def remover_produto(self, produto_id: str) -> bool:
         """Marca um produto como inativo (soft delete)"""
         return self.atualizar_produto(produto_id, {'ativo': False})
-    
-    def total_ativos(self) -> int:
-        """Retorna a quantidade total de produtos ativos em estoque"""
-        return sum(
-            1 for produto in self.buscar_todos()
-            if produto.ativo and produto.quantidade > 0
-        )
-    def total_estoque(self) -> int:
-        """Retorna a quantidade total de itens em estoque"""
-        return sum(
-            produto.quantidade
-            for produto in self.buscar_todos()
-            if produto.ativo
-        )
-
-def valor_total_estoque(self) -> float:
-    """Retorna o valor total do estoque (preço de custo)"""
-    return sum(
-        produto.quantidade * produto.preco_custo
-        for produto in self.buscar_todos()
-        if produto.ativo
-    )
