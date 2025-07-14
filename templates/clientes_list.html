@@ -1,38 +1,100 @@
 ﻿{% extends 'base.html' %}
 {% block conteudo %}
     <h3>Clientes</h3>
-    <!-- Botão para abrir o modal -->
+    <!-- Botão para abrir o modal de novo cliente -->
     <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#clienteModal">
-
       Novo Cliente
     </button>
     <hr>
     <h4>Lista de Clientes</h4>
-    <table border="1" cellpadding="5" cellspacing="0">
-        <tr>
-            <th>Nome</th>
-            <th>Tipo</th>
-            <th>CPF/CNPJ</th>
-            <th>Email</th>
-            <th>Telefone</th>
-            <th>Endereco</th>
-            <th>CEP</th>        
-            <th>Ações</th>   
-        </tr>
+    <table class="table table-striped" border="1" cellpadding="5" cellspacing="0">
+        <thead class="thead-dark">
+            <tr>
+                <th scope="col">Nome</th>
+                <th scope="col">CPF/CNPJ</th>
+                <th scope="col">Telefone</th>
+                <th scope="col">Endereco</th>
+                <th scope="col">CEP</th>
+                <th scope="col">Ações</th>
+            </tr>
+        </thead>
         {% for cliente in clientes %}
         <tr>
             <td>{{ cliente.nome }}</td>
-            <td>{{ cliente.tipo }}</td>
             <td>{{ cliente.cpf_cnpj }}</td>
-            <td>{{ cliente.email }}</td>
             <td>{{ cliente.celular }}</td>
             <td>{{ cliente.endereco }}, {{ cliente.bairro }}, {{ cliente.cidade }}-{{ cliente.uf }}</td>
             <td>{{ cliente.cep }}</td>
             <td>
-                <a href="#">Editar</a>
-                <a href="#">Detalhes</a>
+                <button type="button" class="btn btn-sm btn-warning" data-toggle="modal" data-target="#editarClienteModal{{ cliente.id }}">Editar</button>
             </td>
         </tr>
+        <!-- Modal de Edição de Cliente -->
+        <div class="modal fade" id="editarClienteModal{{ cliente.id }}" tabindex="-1" role="dialog" aria-labelledby="editarClienteModalLabel{{ cliente.id }}" aria-hidden="true">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <form method="POST" action="{{ url_for('clientes_novo') }}?editar={{ cliente.id }}">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="editarClienteModalLabel{{ cliente.id }}">Editar Cliente</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                  <div class="form-row">
+                    <div class="form-group col-md-6">
+                      <label for="nome{{ cliente.id }}">Nome</label>
+                      <input type="text" class="form-control" id="nome{{ cliente.id }}" name="nome" value="{{ cliente.nome }}" required>
+                    </div>
+                    <div class="form-group col-md-3">
+                      <label for="tipo{{ cliente.id }}">Tipo</label>
+                      <select class="form-control" id="tipo{{ cliente.id }}" name="tipo" required>
+                        <option value="PF" {% if cliente.tipo == 'PF' %}selected{% endif %}>PF</option>
+                        <option value="PJ" {% if cliente.tipo == 'PJ' %}selected{% endif %}>PJ</option>
+                      </select>
+                    </div>
+                    <div class="form-group col-md-3">
+                      <label for="cpf_cnpj{{ cliente.id }}">CPF/CNPJ</label>
+                      <input type="text" class="form-control cpf-cnpj" id="cpf_cnpj{{ cliente.id }}" name="cpf_cnpj" value="{{ cliente.cpf_cnpj }}" required>
+                    </div>
+                    <div class="form-group col-md-6">
+                      <label for="email{{ cliente.id }}">E-mail</label>
+                      <input type="email" class="form-control" id="email{{ cliente.id }}" name="email" value="{{ cliente.email }}" required>
+                    </div>
+                    <div class="form-group col-md-6">
+                      <label for="celular{{ cliente.id }}">Telefone</label>
+                      <input type="text" class="form-control" id="celular{{ cliente.id }}" name="celular" value="{{ cliente.celular }}" required>
+                    </div>
+                    <div class="form-group col-md-6">
+                      <label for="endereco{{ cliente.id }}">Endereço</label>
+                      <input type="text" class="form-control" id="endereco{{ cliente.id }}" name="endereco" value="{{ cliente.endereco }}" required>
+                    </div>
+                    <div class="form-group col-md-3">
+                      <label for="bairro{{ cliente.id }}">Bairro</label>
+                      <input type="text" class="form-control" id="bairro{{ cliente.id }}" name="bairro" value="{{ cliente.bairro }}" required>
+                    </div>
+                    <div class="form-group col-md-3">
+                      <label for="cidade{{ cliente.id }}">Cidade</label>
+                      <input type="text" class="form-control" id="cidade{{ cliente.id }}" name="cidade" value="{{ cliente.cidade }}" required>
+                    </div>
+                    <div class="form-group col-md-3">
+                      <label for="cep{{ cliente.id }}">CEP</label>
+                      <input type="text" class="form-control cep" id="cep{{ cliente.id }}" name="cep" value="{{ cliente.cep }}" required>
+                    </div>
+                    <div class="form-group col-md-3">
+                      <label for="uf{{ cliente.id }}">UF</label>
+                      <input type="text" class="form-control" id="uf{{ cliente.id }}" name="uf" maxlength="2" value="{{ cliente.uf }}" required>
+                    </div>
+                  </div>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                  <button type="submit" class="btn btn-primary">Salvar</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
         {% endfor %}
     </table>
 
@@ -60,42 +122,41 @@
                     <option value="PJ">PJ</option>
                   </select>
                 </div>
-                <div class="col-md-3">
-                  <label for="cpf_cnpj" class="form-label">CPF/CNPJ</label>
-                  <input type="text" class="form-control" id="cpf_cnpj" name="cpf_cnpj" required>
+                <div class="form-group col-md-3">
+                  <label for="cpf_cnpj">CPF/CNPJ</label>
+                  <input type="text" class="form-control cpf-cnpj" id="cpf_cnpj" name="cpf_cnpj" required>
                 </div>
-                <div class="col-md-6">
-                  <label for="email" class="form-label">E-mail</label>
+                <div class="form-group col-md-6">
+                  <label for="email">E-mail</label>
                   <input type="email" class="form-control" id="email" name="email" required>
                 </div>
-                <div class="col-md-6">
-                  <label for="celular" class="form-label">Telefone</label>
+                <div class="form-group col-md-6">
+                  <label for="celular">Telefone</label>
                   <input type="text" class="form-control" id="celular" name="celular" required>
                 </div>
-                <div class="col-md-6">
-                  <label for="endereco" class="form-label">Endereço</label>
+                <div class="form-group col-md-6">
+                  <label for="endereco">Endereço</label>
                   <input type="text" class="form-control" id="endereco" name="endereco" required>
                 </div>
-                <div class="col-md-3">
-                  <label for="bairro" class="form-label">Bairro</label>
+                <div class="form-group col-md-3">
+                  <label for="bairro">Bairro</label>
                   <input type="text" class="form-control" id="bairro" name="bairro" required>
                 </div>
-                <div class="col-md-3">
-                  <label for="cidade" class="form-label">Cidade</label>
+                <div class="form-group col-md-3">
+                  <label for="cidade">Cidade</label>
                   <input type="text" class="form-control" id="cidade" name="cidade" required>
                 </div>
-                <div class="col-md-3">
-                  <label for="cep" class="form-label">CEP</label>
-                  <input type="text" class="form-control" id="cep" name="cep" required>
+                <div class="form-group col-md-3">
+                  <label for="cep">CEP</label>
+                  <input type="text" class="form-control cep" id="cep" name="cep" required>
                 </div>
-                <div class="col-md-3">
-                  <label for="uf" class="form-label">UF</label>
+                <div class="form-group col-md-3">
+                  <label for="uf">UF</label>
                   <input type="text" class="form-control" id="uf" name="uf" maxlength="2" required>
                 </div>
               </div>
             </div>
             <div class="modal-footer">
-             
               <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
               <button type="submit" class="btn btn-primary">Salvar</button>
             </div>
@@ -103,4 +164,47 @@
         </div>
       </div>
     </div>
+
+<script>
+function validarCpfCnpj(valor) {
+    valor = valor.replace(/\\D/g, '');
+    if (valor.length === 11) {
+        // Validação simples de CPF
+        return /^\\d{11}$/.test(valor);
+    } else if (valor.length === 14) {
+        // Validação simples de CNPJ
+        return /^\\d{14}$/.test(valor);
+    }
+    return false;
+}
+function validarCep(valor) {
+    return /^\\d{5}-?\\d{3}$/.test(valor);
+}
+function adicionarValidacaoCliente(form) {
+    form.addEventListener('submit', function(e) {
+        var cpfCnpj = form.querySelector('[name=\"cpf_cnpj\"]').value;
+        var cep = form.querySelector('[name=\"cep\"]').value;
+        var msg = '';
+        if (!validarCpfCnpj(cpfCnpj)) {
+            msg += 'CPF/CNPJ inválido!\\n';
+        }
+        if (!validarCep(cep)) {
+            msg += 'CEP inválido!\\n';
+        }
+        if (msg) {
+            alert(msg);
+            e.preventDefault();
+        }
+    });
+}
+document.addEventListener('DOMContentLoaded', function() {
+    // Modal novo cliente
+    var formNovo = document.querySelector('#clienteModal form');
+    if (formNovo) adicionarValidacaoCliente(formNovo);
+    // Modais de edição
+    document.querySelectorAll('[id^=\"editarClienteModal\"] form').forEach(function(form) {
+        adicionarValidacaoCliente(form);
+    });
+});
+</script>
 {% endblock %}

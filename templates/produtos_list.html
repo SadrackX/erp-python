@@ -4,22 +4,24 @@
     <a href="{{ url_for('produtos_novo') }}">Cadastrar novo produto</a>
     <hr>
     <h4>Lista de Produtos</h4>
-    <table border="1" cellpadding="5" cellspacing="0">
-        <tr>
-            <th>Nome</th>
-            <th>Preço de Custo</th>
-            <th>Preço de Venda</th>
-            <th>Observação</th>
-            <th>Ativo</th>
-        </tr>
-        {% for produto in produtos %}
-        <tr>
-            <td>{{ produto.nome }}</td>
-            <td>{{ produto.preco_custo }}</td>
-            <td>{{ produto.preco_venda }}</td>
-            <td>{{ produto.observacao }}</td>
-            <td>{{ 'Sim' if produto.ativo else 'Não' }}</td>
-        </tr>
-        {% endfor %}
+    <table class="table table-striped" border="1" cellpadding="5" cellspacing="0">
+        <thead class="thead-dark">
+            <tr>
+                <th>Nome</th>
+                <th>Preço de Custo</th>
+                <th>Preço de Venda</th>
+                <th>Observação</th>
+                <th>Ativo</th>
+            </tr>
+            </thead>
+            {% for produto in produtos %}
+            <tr>
+                <td>{{ produto.nome }}</td>
+                <td>{{ produto.preco_custo }}</td>
+                <td>{{ produto.preco_venda }}</td>
+                <td>{{ produto.observacao }}</td>
+                <td>{{ 'Sim' if produto.ativo else 'Não' }}</td>
+            </tr>
+            {% endfor %}
     </table>
 {% endblock %}

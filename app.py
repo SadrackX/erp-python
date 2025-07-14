@@ -53,24 +53,44 @@ def clientes_novo():
     if 'usuario_nome' not in session:
         return redirect(url_for('login'))
     if request.method == 'POST':
-        novo = Cliente(
-            id='',
-            nome=request.form['nome'],
-            tipo=request.form['tipo'],
-            cpf_cnpj=request.form['cpf_cnpj'],
-            email=request.form['email'],
-            celular=request.form['celular'],
-            endereco=request.form['endereco'],
-            bairro=request.form['bairro'],
-            cidade=request.form['cidade'],
-            cep=request.form['cep'],
-            uf=request.form['uf'],
-            observacoes=None,
-            ativo=True
-        )
-        ClienteManager().cadastrar_cliente(novo)
-        flash('Cliente cadastrado!')
-        return redirect(url_for('clientes'))
+        editar_id = request.args.get('editar')
+        if editar_id:
+            # Atualização de cliente existente
+            novos_dados = {
+                'nome': request.form['nome'],
+                'tipo': request.form['tipo'],
+                'cpf_cnpj': request.form['cpf_cnpj'],
+                'email': request.form['email'],
+                'celular': request.form['celular'],
+                'endereco': request.form['endereco'],
+                'bairro': request.form['bairro'],
+                'cidade': request.form['cidade'],
+                'cep': request.form['cep'],
+                'uf': request.form['uf'],
+                'ativo': True
+            }
+            ClienteManager().atualizar_cliente(editar_id, novos_dados)
+            flash('Cliente atualizado com sucesso!')
+            return redirect(url_for('clientes'))
+        else:
+            novo = Cliente(
+                id='',
+                nome=request.form['nome'],
+                tipo=request.form['tipo'],
+                cpf_cnpj=request.form['cpf_cnpj'],
+                email=request.form['email'],
+                celular=request.form['celular'],
+                endereco=request.form['endereco'],
+                bairro=request.form['bairro'],
+                cidade=request.form['cidade'],
+                cep=request.form['cep'],
+                uf=request.form['uf'],
+                observacoes=None,
+                ativo=True
+            )
+            ClienteManager().cadastrar_cliente(novo)
+            flash('Cliente cadastrado!')
+            return redirect(url_for('clientes'))
     return render_template('clientes_form.html', usuario_nome=session['usuario_nome'], usuario_nivel=session['usuario_nivel'])
 
 # PRODUTOS
