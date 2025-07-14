@@ -1,7 +1,11 @@
 ﻿{% extends 'base.html' %}
 {% block conteudo %}
     <h3>Clientes</h3>
-    <a href="{{ url_for('clientes_novo') }}">Cadastrar novo cliente</a>
+    <!-- Botão para abrir o modal -->
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#clienteModal">
+
+      Novo Cliente
+    </button>
     <hr>
     <h4>Lista de Clientes</h4>
     <table border="1" cellpadding="5" cellspacing="0">
@@ -31,4 +35,72 @@
         </tr>
         {% endfor %}
     </table>
+
+    <!-- Modal de Cadastro de Cliente -->
+    <div class="modal fade" id="clienteModal" tabindex="-1" role="dialog" aria-labelledby="clienteModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <form method="POST" action="{{ url_for('clientes_novo') }}">
+            <div class="modal-header">
+              <h5 class="modal-title" id="clienteModalLabel">Novo Cliente</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <div class="form-row">
+                <div class="form-group col-md-6">
+                  <label for="nome">Nome</label>
+                  <input type="text" class="form-control" id="nome" name="nome" required>
+                </div>
+                <div class="form-group col-md-3">
+                  <label for="tipo">Tipo</label>
+                  <select class="form-control" id="tipo" name="tipo" required>
+                    <option value="PF">PF</option>
+                    <option value="PJ">PJ</option>
+                  </select>
+                </div>
+                <div class="col-md-3">
+                  <label for="cpf_cnpj" class="form-label">CPF/CNPJ</label>
+                  <input type="text" class="form-control" id="cpf_cnpj" name="cpf_cnpj" required>
+                </div>
+                <div class="col-md-6">
+                  <label for="email" class="form-label">E-mail</label>
+                  <input type="email" class="form-control" id="email" name="email" required>
+                </div>
+                <div class="col-md-6">
+                  <label for="celular" class="form-label">Telefone</label>
+                  <input type="text" class="form-control" id="celular" name="celular" required>
+                </div>
+                <div class="col-md-6">
+                  <label for="endereco" class="form-label">Endereço</label>
+                  <input type="text" class="form-control" id="endereco" name="endereco" required>
+                </div>
+                <div class="col-md-3">
+                  <label for="bairro" class="form-label">Bairro</label>
+                  <input type="text" class="form-control" id="bairro" name="bairro" required>
+                </div>
+                <div class="col-md-3">
+                  <label for="cidade" class="form-label">Cidade</label>
+                  <input type="text" class="form-control" id="cidade" name="cidade" required>
+                </div>
+                <div class="col-md-3">
+                  <label for="cep" class="form-label">CEP</label>
+                  <input type="text" class="form-control" id="cep" name="cep" required>
+                </div>
+                <div class="col-md-3">
+                  <label for="uf" class="form-label">UF</label>
+                  <input type="text" class="form-control" id="uf" name="uf" maxlength="2" required>
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer">
+             
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+              <button type="submit" class="btn btn-primary">Salvar</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
 {% endblock %}

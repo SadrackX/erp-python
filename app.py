@@ -134,7 +134,6 @@ def pedidos():
     if 'usuario_nome' not in session:
         return redirect(url_for('login'))
     pedidos = PedidoManager().buscar_todos()
-    # Monta dicionário de clientes {id: nome}
     clientes_dict = {c.id: c.nome for c in ClienteManager().buscar_todos()}
     return render_template(
         'pedidos_list.html',
@@ -149,7 +148,6 @@ def pedidos_novo():
     if 'usuario_nome' not in session:
         return redirect(url_for('login'))
     if request.method == 'POST':
-        # Recebe produtos do pedido em JSON
         import json
         produtos_json = request.form.get('produtos_json')
         itens = []
@@ -157,7 +155,7 @@ def pedidos_novo():
             produtos = json.loads(produtos_json)
             for p in produtos:
                 itens.append(ItemPedido(
-                    id_pedido='',  # será preenchido ao salvar o pedido
+                    id_pedido='',
                     id_produto=p['id_produto'],
                     quantidade=p['quantidade'],
                     preco_unitario=p['preco_unitario'],

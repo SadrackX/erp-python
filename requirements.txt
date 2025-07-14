@@ -2,3 +2,4 @@
 python-dotenv==1.0.0
 rich==13.4.2  # Para melhorar a exibição no terminal
 uuid==1.30
+flask==2.3.2
