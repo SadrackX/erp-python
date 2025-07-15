@@ -190,7 +190,7 @@ def pedidos_novo():
             itens=itens,
             observacoes=request.form.get('observacoes'),
             desconto_total=float(request.form.get('desconto_total', 0)),
-            valor_frete=float(request.form.get('valor_frete', 0))
+            data_previsao_entrega=None  # Será calculada automaticamente            
         )
         PedidoManager().criar_pedido(novo)
         flash('Pedido cadastrado!')

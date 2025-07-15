@@ -1,6 +1,6 @@
-﻿from dataclasses import dataclass
+﻿from dataclasses import dataclass, field
 from typing import List, Optional
-from datetime import datetime
+from datetime import datetime, timedelta
 
 @dataclass
 class ItemPedido:
@@ -36,6 +36,8 @@ class ItemPedido:
             desconto=float(data.get('desconto', '0'))
         )
 
+
+
 @dataclass
 class Pedido:
     id: str
@@ -43,18 +45,38 @@ class Pedido:
     id_forma_pagamento: str
     data: datetime
     status: str  # 'rascunho', 'finalizado', 'cancelado'
-    itens: List[ItemPedido]
+    itens: List[ItemPedido] = field(default_factory=list)
     observacoes: Optional[str] = None
     desconto_total: float = 0.0
-    valor_frete: float = 0.0
+    data_previsao_entrega: Optional[datetime] = None  # Novo campo
+
+    def __post_init__(self):
+        """Calcula automaticamente a previsão se não for fornecida"""
+        if self.data_previsao_entrega is None and self.status != 'rascunho':
+            self.calcular_previsao_entrega()
+
+    def definir_prazo_entrega(self, pedido_id: str, dias_uteis: int = None, data_manual: datetime = None) -> bool:
+        """Define a previsão de entrega por dias úteis ou data fixa"""
+        pedido = self.buscar_por_id(pedido_id)
+        if not pedido:
+            return False
+    
+        if data_manual:
+            pedido.data_previsao_entrega = data_manual
+        elif dias_uteis:
+            pedido.calcular_previsao_entrega(dias_uteis)
+        else:
+            pedido.calcular_previsao_entrega()  # Usa o padrão (5 dias)
+    
+        return self.update(pedido_id, {'data_previsao_entrega': pedido.data_previsao_entrega.isoformat()})
 
     @property
     def total(self) -> float:
         subtotal = sum(item.total for item in self.itens)
-        return subtotal - self.desconto_total + self.valor_frete
+        return subtotal - self.desconto_total
 
     def to_dict(self) -> dict:
-        return {
+        dados = {
             'id': self.id,
             'id_cliente': self.id_cliente,
             'id_forma_pagamento': self.id_forma_pagamento,
@@ -62,8 +84,10 @@ class Pedido:
             'status': self.status,
             'observacoes': self.observacoes or '',
             'desconto_total': f"{self.desconto_total:.2f}",
-            'valor_frete': f"{self.valor_frete:.2f}"
+            'data_previsao_entrega': self.data_previsao_entrega.isoformat() 
+                if self.data_previsao_entrega else None
         }
+        return {k: v for k, v in dados.items() if v is not None}
 
     @classmethod
     def from_dict(cls, data: dict, itens: List[ItemPedido] = None):
@@ -76,5 +100,6 @@ class Pedido:
             itens=itens or [],
             observacoes=data.get('observacoes'),
             desconto_total=float(data.get('desconto_total', '0')),
-            valor_frete=float(data.get('valor_frete', '0'))
+            data_previsao_entrega=datetime.fromisoformat(data['data_previsao_entrega']) 
+                if data.get('data_previsao_entrega') else None
         )

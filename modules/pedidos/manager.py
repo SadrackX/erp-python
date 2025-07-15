@@ -19,7 +19,7 @@ class PedidoManager(CSVManager):
             'status',
             'observacoes',
             'desconto_total',
-            'valor_frete'
+            'data_previsao_entrega'
         ]
     
     def get_next_id(self) -> str:
@@ -32,7 +32,12 @@ class PedidoManager(CSVManager):
     def criar_pedido(self, pedido: Pedido) -> str:
         pedido.id = self.get_next_id()
         pedido.data = datetime.now()
+
+        if pedido.data_previsao_entrega is None and pedido.status != 'rascunho':
+            pedido.calcular_previsao_entrega()
+
         self.save(pedido.to_dict())
+
         for item in pedido.itens:
             item.id_pedido = pedido.id
             self.itens_manager.adicionar_item(item)
@@ -53,6 +58,10 @@ class PedidoManager(CSVManager):
         return pedidos
     
     def atualizar_pedido(self, pedido_id: str, novos_dados: dict) -> bool:
+        if 'data_previsao_entrega' in novos_dados and novos_dados['data_previsao_entrega']:
+            novos_dados['data_previsao_entrega'] = datetime.fromisoformat(
+                novos_dados['data_previsao_entrega']
+            ).isoformat()
         return self.update(pedido_id, novos_dados)
     
     def atualizar_itens_pedido(self, pedido_id: str, novos_itens: List[ItemPedido]) -> bool:
@@ -65,6 +74,14 @@ class PedidoManager(CSVManager):
     def cancelar_pedido(self, pedido_id: str) -> bool:
         return self.update(pedido_id, {'status': 'cancelado'})
     
+    def buscar_por_periodo_entrega(self, data_inicio: datetime, data_fim: datetime) -> List[Pedido]:
+        """Filtra pedidos por período de previsão de entrega"""
+        return [
+            pedido for pedido in self.buscar_todos()
+            if (pedido.data_previsao_entrega 
+                and data_inicio <= pedido.data_previsao_entrega <= data_fim)
+    ]
+
     def total_este_mes(self) -> float:
         """Retorna o valor total de pedidos deste mês"""
         hoje = datetime.now()
