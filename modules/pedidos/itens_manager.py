@@ -11,10 +11,9 @@ class ItensPedidoManager(CSVManager):
         return [
             'id_item',
             'id_pedido',
-            'id_produto',
+            'nome',
             'quantidade',
-            'preco_unitario',
-            'desconto'
+            'preco_unitario'
         ]
     
     def get_next_id(self) -> str:

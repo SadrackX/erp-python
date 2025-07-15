@@ -7,7 +7,6 @@
 <p><strong>Cliente:</strong> {{ cliente.nome if cliente else pedido.id_cliente }}</p>
 <p><strong>Observações:</strong> {{ pedido.observacoes }}</p>
 <p><strong>Desconto Total:</strong> R$ {{ '%.2f' % pedido.desconto_total }}</p>
-<p><strong>Valor Frete:</strong> R$ {{ '%.2f' % pedido.valor_frete }}</p>
 <h4>Produtos do Pedido</h4>
 <table border="1" cellpadding="5">
     <tr><th>Nome</th><th>Preço Unitário</th><th>Quantidade</th><th>Total</th></tr>

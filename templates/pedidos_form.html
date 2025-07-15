@@ -22,6 +22,8 @@
         <label>Status:</label><br>
         <select name="status" required>
             <option value="rascunho">Rascunho</option>
+            <option value="design">Design</option>
+            <option value="producao">Produção</option>
             <option value="finalizado">Finalizado</option>
             <option value="cancelado">Cancelado</option>
         </select><br>
@@ -32,7 +34,6 @@
     </form>
     {% include 'partials/modal_produto_pedido.html' %}
     <a href="{{ url_for('pedidos') }}">Voltar para lista de pedidos</a>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
     // --- Cliente autocomplete ---
     $('#busca-cliente').on('input', function() {
@@ -67,14 +68,14 @@
     });
     // --- Produto autocomplete/modal ---
     $('#abrir-modal-produto').on('click', function() {
-        $('#modal-produto').show();
+        $('#modal-produto').modal('show');
         $('#busca-produto').val('').focus();
         $('#preco-produto').val('');
         $('#quantidade-produto').val(1);
         $('#sugestoes-produtos').hide();
     });
     $('#fechar-modal-produto').on('click', function() {
-        $('#modal-produto').hide();
+        $('#modal-produto').modal('hide');
     });
     $('#busca-produto').on('input', function() {
         var termo = $(this).val();
@@ -94,6 +95,7 @@
         $('#busca-produto').data('produto', p);
         $('#sugestoes-produtos').hide();
     });
+
     // --- Adicionar produto à tabela ---
     var produtosPedido = [];
     function atualizarTabelaProdutos() {
@@ -114,24 +116,26 @@
         $('#valor-final').text('R$ '+totalPedido.toFixed(2));
         $('#produtos_json').val(JSON.stringify(produtosPedido));
     }
+
     window.removerProduto = function(idx) {
         produtosPedido.splice(idx, 1);
         atualizarTabelaProdutos();
     }
-    $('#adicionar-produto').on('click', function() {
-        var p = $('#busca-produto').data('produto');
-        if (!p) { alert('Selecione um produto!'); return; }
+
+    $('#adicionar-produto').on('click', function () {
+        var p = $('#busca-produto').val();
+        //if (!p) { alert('Selecione um produto!'); return; }
         var preco = parseFloat($('#preco-produto').val());
         var qtd = parseInt($('#quantidade-produto').val());
         if (isNaN(preco) || isNaN(qtd) || qtd < 1) { alert('Preencha preço e quantidade!'); return; }
         produtosPedido.push({
-            id_produto: p.id,
-            nome: p.nome,
+            id_produto: parseInt(produtosPedido.idx)+1,
+            nome: p,
             preco_unitario: preco,
             quantidade: qtd
         });
         atualizarTabelaProdutos();
-        $('#modal-produto').hide();
+        $('#modal-produto').modal('hide');
     });
     </script>
 {% endblock %}

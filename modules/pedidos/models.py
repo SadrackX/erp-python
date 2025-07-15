@@ -6,23 +6,23 @@ from datetime import datetime, timedelta
 class ItemPedido:
     id_item: str = ''
     id_pedido: str = ''
-    id_produto: str = ''
+    nome: str = ''
     quantidade: int = 1
     preco_unitario: float = 0.0
-    desconto: float = 0.0
+    data_previsao_entrega: Optional[datetime] = None  # Novo campo
+    
 
     @property
     def total(self) -> float:
-        return (self.preco_unitario * self.quantidade) - self.desconto
+        return (self.preco_unitario * self.quantidade)
 
     def to_dict(self) -> dict:
         return {
             'id_item': self.id_item,
             'id_pedido': self.id_pedido,
-            'id_produto': self.id_produto,
+            'nome': self.nome,
             'quantidade': str(self.quantidade),
-            'preco_unitario': f"{self.preco_unitario:.2f}",
-            'desconto': f"{self.desconto:.2f}"
+            'preco_unitario': f"{self.preco_unitario:.2f}"
         }
 
     @classmethod
@@ -30,10 +30,9 @@ class ItemPedido:
         return cls(
             id_item=data.get('id_item', ''),
             id_pedido=data.get('id_pedido', ''),
-            id_produto=data.get('id_produto', ''),
+            nome=data.get('nome', ''),
             quantidade=int(data.get('quantidade', 1)),
-            preco_unitario=float(data.get('preco_unitario', 0)),
-            desconto=float(data.get('desconto', '0'))
+            preco_unitario=float(data.get('preco_unitario', 0))
         )
 
 
@@ -69,6 +68,22 @@ class Pedido:
             pedido.calcular_previsao_entrega()  # Usa o padrão (5 dias)
     
         return self.update(pedido_id, {'data_previsao_entrega': pedido.data_previsao_entrega.isoformat()})
+    def calcular_previsao_entrega(self, dias_uteis: int = 5):
+        """
+        Calcula a data de previsão de entrega somando dias úteis à data do pedido.
+        Por padrão, considera 5 dias úteis.
+        """
+        def adicionar_dias_uteis(data_inicial, qtd_dias):
+            data = data_inicial
+            dias_adicionados = 0
+            while dias_adicionados < qtd_dias:
+                data += timedelta(days=1)
+                if data.weekday() < 5:  # Segunda (0) a sexta (4)
+                    dias_adicionados += 1
+            return data
+
+        self.data_previsao_entrega = adicionar_dias_uteis(self.data, dias_uteis)
+
 
     @property
     def total(self) -> float:

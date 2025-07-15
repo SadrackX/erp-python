@@ -1,1 +1,9 @@
-﻿id,id_cliente,id_forma_pagamento,data,status,observacoes,desconto_total,data_previsao_entrega
+id,id_cliente,id_forma_pagamento,data,status,observacoes,desconto_total,data_previsao_entrega
+0001,0001,,2025-07-15T16:49:40.400962,rascunho,,0.00,
+0002,0003,,2025-07-15T17:23:12.152502,design,Tiago é que na arte,0.0,
+0003,0001,,2025-07-15T17:26:31.337662,rascunho,,0.00,
+0004,0001,,2025-07-15T17:28:18.597311,rascunho,,0.00,
+0005,0001,,2025-07-15T17:29:14.489452,rascunho,,0.00,
+0006,0001,,2025-07-15T17:30:47.457472,rascunho,,0.00,
+0007,0001,,2025-07-15T17:32:25.394802,finalizado,,0.0,
+0008,0001,,2025-07-15T17:34:07.566112,rascunho,,0.0,

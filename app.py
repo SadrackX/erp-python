@@ -10,7 +10,7 @@ from modules.produtos.manager import ProdutoManager
 from modules.produtos.models import Produto
 from modules.fornecedores.manager import FornecedorManager
 from modules.fornecedores.models import Fornecedor
-from modules.pedidos.manager import PedidoManager
+from modules.pedidos.manager import ItensPedidoManager, PedidoManager
 from modules.pedidos.models import Pedido, ItemPedido
 import os
 from datetime import datetime
@@ -176,10 +176,9 @@ def pedidos_novo():
             for p in produtos:
                 itens.append(ItemPedido(
                     id_pedido='',
-                    id_produto=p['id_produto'],
+                    nome=p['nome'],
                     quantidade=p['quantidade'],
-                    preco_unitario=p['preco_unitario'],
-                    desconto=0.0
+                    preco_unitario=p['preco_unitario']
                 ))
         novo = Pedido(
             id='',
@@ -208,9 +207,9 @@ def pedido_detalhes(pedido_id):
     cliente = ClienteManager().buscar_por_id(pedido.id_cliente)
     produtos = []
     for item in pedido.itens:
-        prod = ProdutoManager().buscar_por_id(item.id_produto)
+        prod = ItensPedidoManager().buscar_itens_por_pedido(item.id_pedido)
         produtos.append({
-            'nome': prod.nome if prod else 'Produto removido',
+            'nome': item.nome if prod else 'Produto removido',
             'preco_unitario': item.preco_unitario,
             'quantidade': item.quantidade,
             'total': item.total
@@ -229,8 +228,7 @@ def pedido_editar(pedido_id):
         novos_dados = {
             'status': request.form['status'],
             'observacoes': request.form.get('observacoes'),
-            'desconto_total': request.form.get('desconto_total', pedido.desconto_total),
-            'valor_frete': request.form.get('valor_frete', pedido.valor_frete)
+            'desconto_total': request.form.get('desconto_total', pedido.desconto_total)
         }
         PedidoManager().atualizar_pedido(pedido_id, novos_dados)
         flash('Pedido atualizado!')
