@@ -15,15 +15,9 @@
         <input type="hidden" name="id_cliente" id="id_cliente" required>
         <!-- Produtos do Pedido -->
         <label>Adicionar Produto:</label>
-        <button type="button" id="abrir-modal-produto">Adicionar Produto</button>
+        <button type="button" id="abrir-modal-produto" data-toggle="modal" data-target="#modal-produto">Adicionar Produto</button>
         <br><br>
-        <!-- Tabela de produtos adicionados -->
-        <table id="tabela-produtos" border="1" cellpadding="5" style="margin-bottom:16px; width:auto;">
-            <thead>
-                <tr><th>Nome</th><th>Preço Unitário</th><th>Quantidade</th><th>Total</th><th>Ações</th></tr>
-            </thead>
-            <tbody></tbody>
-        </table>
+        {% include 'partials/tabela_itens_pedido.html' %}
         <!-- Status e valor final -->
         <label>Status:</label><br>
         <select name="status" required>
@@ -36,19 +30,7 @@
         <input type="hidden" name="produtos_json" id="produtos_json">
         <input type="submit" value="Salvar">
     </form>
-    <!-- Modal de produto (simples, pode ser melhorado) -->
-    <div id="modal-produto" style="display:none; position:fixed; top:20%; left:50%; transform:translate(-50%,0); background:#fff; border:1px solid #ccc; padding:20px; z-index:100;">
-        <label>Buscar Produto:</label><br>
-        <input type="text" id="busca-produto" placeholder="Nome do produto" autocomplete="off">
-        <div id="sugestoes-produtos" style="background:#fff; border:1px solid #ccc; display:none; position:absolute; z-index:10;"></div>
-        <br>
-        <label>Preço Unitário:</label><br>
-        <input type="number" step="0.01" id="preco-produto"><br>
-        <label>Quantidade:</label><br>
-        <input type="number" id="quantidade-produto" value="1" min="1"><br>
-        <button type="button" id="adicionar-produto">Adicionar</button>
-        <button type="button" id="fechar-modal-produto">Cancelar</button>
-    </div>
+    {% include 'partials/modal_produto_pedido.html' %}
     <a href="{{ url_for('pedidos') }}">Voltar para lista de pedidos</a>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>

@@ -1,9 +1,28 @@
 ﻿{% extends 'base.html' %}
 {% block conteudo %}
     <h3>Dashboard</h3>
-    {% if resumo %}
-        <pre>{{ resumo }}</pre>
-    {% else %}
-        <p>Resumo do dashboard aqui.</p>
-    {% endif %}
+<div class="container" style="display:flex; align-items:center; justify-content: space-between">
+   <div class="card" style="width: 18rem; margin:7px">
+       <div class="card-body">
+           <h6 class="card-title">Lucro Mensal</h6>
+           <h5 class="card-subtitle mb-2 text-muted">99,00</h5>
+       </div>
+   </div>
+  
+   <div class="card" style="width: 18rem; margin:7px">
+       <div class="card-body">
+           <h6 class="card-title">Lucro Mensal</h6>
+           <h5 class="card-subtitle mb-2 text-muted">99,00</h5>
+       </div>
+   </div>
+  
+   <div class="card" style="width: 18rem; margin:7px">
+       <div class="card-body">
+           <h6 class="card-title">Lucro Mensal</h6>
+           <h5 class="card-subtitle mb-2 text-muted">99,00</h5>
+       </div>
+   </div>
+
+  
+</div>
 {% endblock %}
