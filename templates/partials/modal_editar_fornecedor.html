@@ -1,0 +1,47 @@
+﻿{# Modal de edicao de novo fornecedor reutilizavel #}
+<div class="modal fade" id="editarfornecedorModal{{ fornecedor.id }}" tabindex="-1" role="dialog" aria-labelledby="editarfornecedorModalLabel{{ fornecedor.id }}" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form method="POST" action="{{ url_for('fornecedores_novo') }}?editar={{ fornecedor.id }}">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editarfornecedorModalLabel{{ fornecedor.id }}">Editar Fornecedor</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="nome{{ fornecedor.id }}">Nome</label>
+                            <input type="text" class="form-control" id="nome{{ fornecedor.id }}" name="nome" value="{{ fornecedor.nome }}" required>
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label for="cnpj{{ fornecedor.id }}">CNPJ</label>
+                            <input type="text" class="form-control" id="cnpj{{ fornecedor.id }}" name="cnpj" value="{{ fornecedor.cnpj }}" required>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="email{{ fornecedor.id }}">E-mail</label>
+                            <input type="email{{ fornecedor.id }}" class="form-control" id="email{{ fornecedor.id }}" name="email" value="{{ fornecedor.email }}">
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="telefone{{ fornecedor.id }}">Telefone</label>
+                            <input type="text" class="form-control" id="telefone{{ fornecedor.id }}" name="telefone" value="{{ fornecedor.telefone }}">
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="produtos_fornecidos{{ fornecedor.id }}">Produtos Fornecidos</label>
+                            <input type="text" class="form-control" id="produtos_fornecidos{{ fornecedor.id }}" name="produtos_fornecidos" value="{{ fornecedor.produtos_fornecidos }}" required>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="observacoes{{ fornecedor.id }}">Observações</label>
+                            <input type="text" class="form-control" id="observacoes{{ fornecedor.id }}" name="observacoes" value="{{ fornecedor.observacoes }}">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
