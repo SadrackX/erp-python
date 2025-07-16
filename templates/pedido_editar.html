@@ -1,12 +1,13 @@
 ﻿{% extends 'base.html' %}
 {% block conteudo %}
 <!-- Editar Pedido -->
-<div class="container" id="editarPedido{{ pedido }}" aria-labelledby="editarPedidoform{{ pedido }}">
+<div class="container">
     <div class="row">
         <div class="col-md-12">
             <hr>
             <h5>Editar Pedido</h5>
-            <form id="pedido-form" method="post" action="{{ url_for('pedidos_novo') }}?editar={{ pedido_id }}">
+            <form id="pedido-form" method="post">
+                <input hidden id="id" name="id" value="{{ pedido.id }}">
                 <div class="form-row">
                     <div class="form-group col-md-6">
                         <label for="nome">Nome do cliente</label>
@@ -57,9 +58,6 @@
                 <!-- Produtos do Pedido -->
                 <button type="button" class="btn btn-primary" id="abrir-modal-produto" data-toggle="modal" data-target="#modal-produto">Adicionar Produto</button>
                 {% include 'partials/tabela_itens_pedido.html' %}
-                {% for p in produtos %}
-                <input type="hidden" name="produtos[]" value="{{ p.id_produto }}:{{ p.nome }}:{{ p.preco_unitario }}:{{ p.quantidade }}">
-                {% endfor %}
 
                 <!-- Status e valor final -->
                 <div class="form-group mt-3">
@@ -181,7 +179,9 @@ $(document).on('click', '.sugestao-produto', function() {
 });
 
 // --- Adicionar produto à tabela ---
-var produtosPedido = [];
+    if (typeof produtosPedido === 'undefined') {
+        var produtosPedido = [];
+    }
 function atualizarTabelaProdutos() {
     var html = '';
     var totalPedido = 0;
@@ -221,6 +221,8 @@ $('#adicionar-produto').on('click', function () {
     atualizarTabelaProdutos();
     $('#modal-produto').modal('hide');
 });
+var produtosPedido = {{ produtos | tojson }};
+atualizarTabelaProdutos();
 </script>
 
 {% endblock %}
