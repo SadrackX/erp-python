@@ -91,7 +91,7 @@ def clientes_novo():
             ClienteManager().cadastrar_cliente(novo)
             flash('Cliente cadastrado!')
             return redirect(url_for('clientes'))
-    return render_template('clientes_form.html', usuario_nome=session['usuario_nome'], usuario_nivel=session['usuario_nivel'])
+    return render_template('clientes_list.html', usuario_nome=session['usuario_nome'], usuario_nivel=session['usuario_nivel'])
 
 # PRODUTOS
 @app.route('/produtos')
@@ -259,7 +259,7 @@ def pedidos_novo():
         PedidoManager().criar_pedido(novo)
         flash('Pedido cadastrado!')
         return redirect(url_for('pedidos'))
-    return render_template('pedidos_form.html', usuario_nome=session['usuario_nome'], usuario_nivel=session['usuario_nivel'])
+    return render_template('pedido_editar.html', usuario_nome=session['usuario_nome'], usuario_nivel=session['usuario_nivel'])
     """ if 'usuario_nome' not in session:
         return redirect(url_for('login'))
     if request.method == 'POST':
