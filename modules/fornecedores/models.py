@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+﻿from dataclasses import dataclass
 from typing import Optional, List
 
 @dataclass
@@ -8,7 +8,7 @@ class Fornecedor:
     cnpj: str
     telefone: str
     email: Optional[str] = None
-    produtos_fornecidos: Optional[List[str]] = None  # IDs dos produtos
+    produtos_fornecidos: Optional[str] = None  # IDs dos produtos
     observacoes: Optional[str] = None
     ativo: bool = True
 
@@ -19,7 +19,7 @@ class Fornecedor:
             'cnpj': self.cnpj,
             'telefone': self.telefone,
             'email': self.email or '',
-            'produtos_fornecidos': ','.join(self.produtos_fornecidos) if self.produtos_fornecidos else '',
+            'produtos_fornecidos': self.produtos_fornecidos or '',
             'observacoes': self.observacoes or '',
             'ativo': str(self.ativo)
         }
@@ -32,7 +32,7 @@ class Fornecedor:
             cnpj=data['cnpj'],
             telefone=data['telefone'],
             email=data['email'] or None,
-            produtos_fornecidos=data['produtos_fornecidos'].split(',') if data['produtos_fornecidos'] else None,
+            produtos_fornecidos=data['produtos_fornecidos'] or None,
             observacoes=data['observacoes'] or None,
-            ativo=data.get('ativo', 'True').lower() == 'true'
+            ativo=str(data.get('ativo', 'True')).lower() == 'true'
         )

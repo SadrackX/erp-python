@@ -1,5 +1,8 @@
 ﻿import uuid
+
+from core.auth import AuthManager
 from core.database import CSVManager
+from modules.auditoria.manager import TipoEvento
 from .models import Fornecedor
 from typing import List, Optional
 
@@ -43,15 +46,25 @@ class FornecedorManager(CSVManager):
     
     def atualizar_fornecedor(self, fornecedor_id: str, novos_dados: dict) -> bool:
         """Atualiza fornecedor existente"""
-        fornecedor = self.buscar_por_id(fornecedor_id)
-        if not fornecedor:
+        fornecedor_antigo = self.buscar_por_id(fornecedor_id)
+        if not fornecedor_antigo:
             return False
-        
-        for campo, valor in novos_dados.items():
-            if hasattr(fornecedor, campo):
-                setattr(fornecedor, campo, valor)
-        
-        return self.update(fornecedor_id, fornecedor.to_dict())
+
+        fornecedor_atualizado = Fornecedor.from_dict({**fornecedor_antigo.__dict__, **novos_dados})
+        success = self.update(fornecedor_id, fornecedor_atualizado.to_dict())
+
+        if success:
+            usuario_atual = AuthManager.get_usuario_atual()
+            if usuario_atual:  # Só registra se houver usuário logado
+                self.auditoria.registrar(
+                    usuario_id=usuario_atual.id,
+                    evento=TipoEvento.UPDATE,
+                    tabela="fornecedor",
+                    registro_id=fornecedor_id,
+                    dados_anteriores=fornecedor_antigo.to_dict(),
+                    dados_novos=fornecedor_atualizado.to_dict()
+                )
+        return success
     
     def adicionar_produto(self, fornecedor_id: str, produto_id: str) -> bool:
         """Adiciona um produto à lista de fornecidos"""

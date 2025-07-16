@@ -39,15 +39,17 @@ class ItemPedido:
 
 @dataclass
 class Pedido:
-    id: str
-    id_cliente: str
-    id_forma_pagamento: str
-    data: datetime
-    status: str  # 'rascunho', 'finalizado', 'cancelado'
-    itens: List[ItemPedido] = field(default_factory=list)
-    observacoes: Optional[str] = None
-    desconto_total: float = 0.0
-    data_previsao_entrega: Optional[datetime] = None  # Novo campo
+    def __init__(self, id, id_cliente, id_forma_pagamento, data, status, itens, observacoes, desconto_total, data_previsao_entrega):
+        self.id = id
+        self.id_cliente = id_cliente
+        self.id_forma_pagamento = id_forma_pagamento
+        self.data = data
+        self.status = status
+        self.itens = itens
+        self.observacoes = observacoes
+        self.desconto_total = desconto_total
+        self.data_previsao_entrega = data_previsao_entrega
+        #self.total = sum(item.total for item in itens) - desconto_total
 
     def __post_init__(self):
         """Calcula automaticamente a previsão se não for fornecida"""

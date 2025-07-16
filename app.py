@@ -132,20 +132,35 @@ def fornecedores_novo():
     if 'usuario_nome' not in session:
         return redirect(url_for('login'))
     if request.method == 'POST':
-        produtos_fornecidos = [x.strip() for x in request.form['produtos_fornecidos'].split(',') if x.strip()]
-        novo = Fornecedor(
-            id='',
-            nome=request.form['nome'],
-            cnpj=request.form['cnpj'],
-            telefone=request.form['telefone'],
-            email=request.form['email'],
-            produtos_fornecidos=produtos_fornecidos,
-            observacoes=request.form['observacoes'],
-            ativo=True
-        )
-        FornecedorManager().cadastrar_fornecedor(novo)
-        flash('Fornecedor cadastrado!')
-        return redirect(url_for('fornecedores'))
+        editar_id = request.args.get('editar')
+        if editar_id:
+            # Atualização de fornecedor existente
+            novos_dados = {
+                'nome': request.form['nome'],
+                'cnpj': request.form['cnpj'],
+                'email': request.form['email'],
+                'telefone': request.form['telefone'],
+                'produtos_fornecidos': request.form['produtos_fornecidos'],
+                'observacoes': request.form['observacoes'],
+                'ativo': True
+            }
+            FornecedorManager().atualizar_fornecedor(editar_id, novos_dados)
+            flash('Fornecedor atualizado com sucesso!')
+            return redirect(url_for('fornecedores'))
+        else:
+            novo = Fornecedor(
+                id='',
+                nome=request.form['nome'],
+                cnpj=request.form['cnpj'],
+                email=request.form['email'],
+                telefone=request.form['telefone'],
+                produtos_fornecidos=request.form['produtos_fornecidos'],
+                observacoes=['observacoes'],
+                ativo=True
+            )
+            FornecedorManager().cadastrar_fornecedor(novo)
+            flash('Fornecedor cadastrado!')
+            return redirect(url_for('fornecedores'))
     return render_template('fornecedores_form.html', usuario_nome=session['usuario_nome'], usuario_nivel=session['usuario_nivel'])
 
 # PEDIDOS
@@ -180,16 +195,82 @@ def pedidos_novo():
                     quantidade=p['quantidade'],
                     preco_unitario=p['preco_unitario']
                 ))
+        cliente_id = request.form['id_cliente']
+        if cliente_id == 'novo':
+            novo_cliente = Cliente(
+                id='',
+                nome=request.form['nome_cliente'],
+                tipo=request.form['tipo_cliente'],
+                cpf_cnpj=request.form['cpf_cnpj_cliente'],
+                email=request.form['email_cliente'],
+                celular=request.form['telefone_cliente'],
+                endereco=request.form['endereco_cliente'],
+                bairro=request.form['bairro_cliente'],
+                cidade=request.form['cidade_cliente'],
+                cep=request.form['cep_cliente'],
+                uf=request.form['uf_cliente'],
+                observacoes=None,
+                ativo=True
+            )
+            cliente_id = ClienteManager().cadastrar_cliente(novo_cliente)
         novo = Pedido(
             id='',
-            id_cliente=request.form['id_cliente'],
+            id_cliente=cliente_id,
             id_forma_pagamento=request.form['id_forma_pagamento'] if 'id_forma_pagamento' in request.form else '',
             data=datetime.now(),
             status=request.form['status'],
             itens=itens,
             observacoes=request.form.get('observacoes'),
             desconto_total=float(request.form.get('desconto_total', 0)),
-            data_previsao_entrega=None  # Será calculada automaticamente            
+            data_previsao_entrega=None  # Será calculada automaticamente
+        )
+        PedidoManager().criar_pedido(novo)
+        flash('Pedido cadastrado!')
+        return redirect(url_for('pedidos'))
+    return render_template('pedidos_form.html', usuario_nome=session['usuario_nome'], usuario_nivel=session['usuario_nivel'])
+    if 'usuario_nome' not in session:
+        return redirect(url_for('login'))
+    if request.method == 'POST':
+        import json
+        produtos_json = request.form.get('produtos_json')
+        itens = []
+        if produtos_json:
+            produtos = json.loads(produtos_json)
+            for p in produtos:
+                itens.append(ItemPedido(
+                    id_pedido='',
+                    nome=p['nome'],
+                    quantidade=p['quantidade'],
+                    preco_unitario=p['preco_unitario']
+                ))
+        cliente_id = request.form['id_cliente']
+        if cliente_id == 'novo':
+            novo_cliente = Cliente(
+                id='',
+                nome=request.form['nome_cliente'],
+                tipo=request.form['tipo_cliente'],
+                cpf_cnpj=request.form['cpf_cnpj_cliente'],
+                email=request.form['email_cliente'],
+                celular=request.form['telefone_cliente'],
+                endereco=request.form['endereco_cliente'],
+                bairro=request.form['bairro_cliente'],
+                cidade=request.form['cidade_cliente'],
+                cep=request.form['cep_cliente'],
+                uf=request.form['uf_cliente'],
+                observacoes=None,
+                ativo=True
+            )
+            cliente_id = ClienteManager().cadastrar_cliente(novo_cliente)
+        novo = Pedido(
+            id='',
+            id_cliente=cliente_id,
+            id_forma_pagamento=request.form['id_forma_pagamento'] if 'id_forma_pagamento' in request.form else '',
+            data=datetime.now(),
+            status=request.form['status'],
+            itens=itens,
+            observacoes=request.form.get('observacoes'),
+            desconto_total=float(request.form.get('desconto_total', 0)),
+            data_previsao_entrega=None  # Será calculada automaticamente
         )
         PedidoManager().criar_pedido(novo)
         flash('Pedido cadastrado!')
