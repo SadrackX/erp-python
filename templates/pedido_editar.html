@@ -1,6 +1,6 @@
 ﻿{% extends 'base.html' %}
 {% block conteudo %}
-<h3>Editar Pedido</h3>
+<!--<h3>Editar Pedido</h3>
 <form method="post">
     <p><strong>ID:</strong> {{ pedido.id }}</p>
     <label>Status:</label><br>
@@ -18,4 +18,230 @@
     <input type="submit" value="Salvar Alterações">
 </form>
 <a href="{{ url_for('pedido_detalhes', pedido_id=pedido.id) }}">Voltar para detalhes do pedido</a>
+-->
+
+
+<!-- Editar Pedido -->
+ <div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <hr>
+            <h5>Editar Pedido</h5>
+            <form id="pedido-form" method="post" action="{{ url_for('pedidos_novo') }}?editar={{ pedido.id }}">
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="nome{{ cliente.id }}">Nome do cliente</label>
+                        <input type="text" class="form-control" id="nome{{ cliente.id }}" name="nome" value="{{ cliente.nome }}" required>
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label for="tipo{{ cliente.id }}">Tipo</label>
+                        <select class="form-control" id="tipo{{ cliente.id }}" name="tipo" value="{{ cliente.tipo }}" required>
+                            <option value="PF">PF</option>
+                            <option value="PJ">PJ</option>
+                        </select>
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label for="cpf_cnpj{{ cliente.id }}">CPF/CNPJ</label>
+                        <input type="text" class="form-control" id="cpf_cnpj{{ cliente.id }}" name="cpf_cnpj" value="{{ cliente.cpf_cnpj }}" required>
+                        <div id="sugestoes-clientes" style="background:#fff; border:1px solid #ccc; display:none; position:absolute; z-index:10;"></div>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="email{{ cliente.id }}">E-mail</label>
+                        <input type="email{{ cliente.id }}" class="form-control" id="email{{ cliente.id }}" name="email" value="{{ cliente.email }}" required>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="celular{{ cliente.id }}">Telefone</label>
+                        <input type="text" class="form-control" id="celular{{ cliente.id }}" name="celular" value="{{ cliente.celular }}" required>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="endereco{{ cliente.id }}">Endereço</label>
+                        <input type="text" class="form-control" id="endereco{{ cliente.id }}" name="endereco" value="{{ cliente.endereco }}" required>
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label for="bairro{{ cliente.id }}">Bairro</label>
+                        <input type="text" class="form-control" id="bairro{{ cliente.id }}" name="bairro" value="{{ cliente.bairro }}" required>
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label for="cidade{{ cliente.id }}">Cidade</label>
+                        <input type="text" class="form-control" id="cidade{{ cliente.id }}" name="cidade" value="{{ cliente.cidade }}" required>
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label for="cep{{ cliente.id }}">CEP</label>
+                        <input type="text" class="form-control" id="cep{{ cliente.id }}" name="cep" value="{{ cliente.cep }}" required>
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label for="uf{{ cliente.id }}">UF</label>
+                        <input type="text" class="form-control" id="uf{{ cliente.id }}" name="uf" value="{{ cliente.uf }}" maxlength="2" required>
+                    </div>
+                </div>
+                <hr>
+                <!-- Produtos do Pedido -->
+                <button type="button" class="btn btn-primary" id="abrir-modal-produto" data-toggle="modal" data-target="#modal-produto">Adicionar Produto</button>
+                {% include 'partials/tabela_itens_pedido.html' %}
+                {% for p in produtos %}
+                <input type="hidden" name="produtos[]" value="{{ p.id_produto }}:{{ p.nome }}:{{ p.preco_unitario }}:{{ p.quantidade }}">
+                {% endfor %}
+
+                <!-- Status e valor final -->
+                <div class="form-group mt-3">
+                    <label>Status:</label>
+                    <select name="status" required class="form-control">
+                        <option value="rascunho">Rascunho</option>
+                        <option value="design">Design</option>
+                        <option value="producao">Produção</option>
+                        <option value="finalizado">Finalizado</option>
+                        <option value="cancelado">Cancelado</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Valor Final do Pedido:</label>
+                    <span id="valor-final">R$ 0,00</span><br>
+                </div>
+                <input type="hidden" name="produtos_json" id="produtos_json">
+                <input type="hidden" name="id_cliente" id="id_cliente" value="novo">
+                <hr>
+                <div class="container" style="text-align: right;">
+                    <a href="{{ url_for('pedidos') }}" class="btn btn-secondary">Cancelar</a>
+                    <button type="submit" class="btn btn-primary">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+ </div>
+
+<!-- Modal Adicionar Produto -->
+<div class="modal fade" id="modal-produto" tabindex="-1" role="dialog" aria-labelledby="modalProdutoLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalProdutoLabel">Adicionar Produto</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <label>Buscar Produto:</label>
+        <input type="text" id="busca-produto" placeholder="Nome do produto" autocomplete="off" class="form-control mb-2">
+        <div id="sugestoes-produtos" style="background:#fff; border:1px solid #ccc; display:none; position:absolute; z-index:10;"></div>
+
+        <label>Preço Unitário:</label>
+        <input type="number" id="preco-produto" class="form-control mb-2">
+
+        <label>Quantidade:</label>
+        <input type="number" id="quantidade-produto" value="1" min="1" class="form-control">
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+        <button type="submit" class="btn btn-primary" id="adicionar-produto">Adicionar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+    // --- Cliente autocomplete ---
+    $('#cpf_cnpj').on('input', function() {
+        var termo = $(this).val();
+        if (termo.length < 3) { $('#sugestoes-clientes').hide(); return; }
+        $.getJSON('{{ url_for('buscar_clientes') }}', {q: termo}, function(res) {
+            var html = '';
+            res.forEach(function(c) {
+                html += '<div class="sugestao-cliente" data-id="'+c.id+'" data-json="'+encodeURIComponent(JSON.stringify(c))+'"> ('+c.cpf_cnpj+')</div>';
+            });
+            $('#sugestoes-clientes').html(html).show();
+        });
+    });
+    $('#cpf_cnpj').focusout(function() {
+        $('#sugestoes-clientes').hide();
+    });
+    $(document).on('click', '.sugestao-cliente', function() {
+        var c = JSON.parse(decodeURIComponent($(this).data('json')));
+        $('#id_cliente').val(c.id);
+        $('#nome').val(c.nome);
+        $('#tipo').val(c.tipo);
+        $('#cpf_cnpj').val(c.cpf_cnpj);
+        $('#email').val(c.email);
+        $('#celular').val(c.celular);
+        $('#endereco').val(c.endereco);
+        $('#bairro').val(c.bairro);
+        $('#cidade').val(c.cidade);
+        $('#cep').val(c.cep);
+        $('#uf').val(c.uf);
+        $('#sugestoes-clientes').hide();
+    });
+
+    // --- Produto autocomplete/modal ---
+    $('#abrir-modal-produto').on('click', function() {
+        $('#modal-produto').modal('show');
+        $('#busca-produto').val('').focus();
+        $('#preco-produto').val('');
+        $('#quantidade-produto').val(1);
+        $('#sugestoes-produtos').hide();
+    });
+    $('#fechar-modal-produto').on('click', function() {
+        $('#modal-produto').modal('hide');
+    });
+    $('#busca-produto').on('input', function() {
+        var termo = $(this).val();
+        if (termo.length < 2) { $('#sugestoes-produtos').hide(); return; }
+        $.getJSON('{{ url_for('buscar_produtos') }}', {q: termo}, function(res) {
+            var html = '';
+            res.forEach(function(p) {
+                html += '<div class="sugestao-produto" data-id="'+p.id+'" data-json="'+encodeURIComponent(JSON.stringify(p))+'">'+p.nome+' (R$ '+p.preco_venda+')</div>';
+            });
+            $('#sugestoes-produtos').html(html).show();
+        });
+    });
+    $(document).on('click', '.sugestao-produto', function() {
+        var p = JSON.parse(decodeURIComponent($(this).data('json')));
+        $('#preco-produto').val(p.preco_venda);
+        $('#busca-produto').val(p.nome);
+        $('#busca-produto').data('produto', p);
+        $('#sugestoes-produtos').hide();
+    });
+
+    // --- Adicionar produto à tabela ---
+    var produtosPedido = [];
+    function atualizarTabelaProdutos() {
+        var html = '';
+        var totalPedido = 0;
+        produtosPedido.forEach(function(p, idx) {
+            var total = p.preco_unitario * p.quantidade;
+            totalPedido += total;
+            html += '<tr>';
+            html += '<td>'+p.nome+'</td>';
+            html += '<td>R$ '+p.preco_unitario.toFixed(2)+'</td>';
+            html += '<td>'+p.quantidade+'</td>';
+            html += '<td>R$ '+total.toFixed(2)+'</td>';
+            html += '<td><button class="btn btn-secondary btn-sm" onclick="removerProduto('+idx+')">Remover</button></td>';
+            html += '</tr>';
+        });
+        $('#tabela-produtos tbody').html(html);
+        $('#valor-final').text('R$ '+totalPedido.toFixed(2));
+        $('#produtos_json').val(JSON.stringify(produtosPedido));
+    }
+
+    window.removerProduto = function(idx) {
+        produtosPedido.splice(idx, 1);
+        atualizarTabelaProdutos();
+    }
+
+    $('#adicionar-produto').on('click', function () {
+        var p = $('#busca-produto').val();
+        //if (!p) { alert('Selecione um produto!'); return; }
+        var preco = parseFloat($('#preco-produto').val());
+        var qtd = parseInt($('#quantidade-produto').val());
+        if (isNaN(preco) || isNaN(qtd) || qtd < 1) { alert('Preencha preço e quantidade!'); return; }
+        produtosPedido.push({
+            id_produto: parseInt(produtosPedido.idx)+1,
+            nome: p,
+            preco_unitario: preco,
+            quantidade: qtd
+        });
+        atualizarTabelaProdutos();
+        $('#modal-produto').modal('hide');
+    });
+    </script>
+
 {% endblock %}

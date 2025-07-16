@@ -5,89 +5,86 @@
     <div class="row">
         <div class="col-md-12">
             <hr>
- <h5>Novo Pedido</h5>
+            <h5>Novo Pedido</h5>
+            <form id="pedido-form" method="post" action="{{ url_for('pedidos_novo') }}">
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="nome">Nome do cliente</label>
+                        <input type="text" class="form-control" id="nome" name="nome" required>
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label for="tipo">Tipo</label>
+                        <select class="form-control" id="tipo" name="tipo" required>
+                            <option value="PF">PF</option>
+                            <option value="PJ">PJ</option>
+                        </select>
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label for="cpf_cnpj">CPF/CNPJ</label>
+                        <input type="text" class="form-control" id="cpf_cnpj" name="cpf_cnpj" required>
+                        <div id="sugestoes-clientes" style="background:#fff; border:1px solid #ccc; display:none; position:absolute; z-index:10;"></div>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="email">E-mail</label>
+                        <input type="email" class="form-control" id="email" name="email" required>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="celular">Telefone</label>
+                        <input type="text" class="form-control" id="celular" name="celular" required>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="endereco">Endereço</label>
+                        <input type="text" class="form-control" id="endereco" name="endereco" required>
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label for="bairro">Bairro</label>
+                        <input type="text" class="form-control" id="bairro" name="bairro" required>
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label for="cidade">Cidade</label>
+                        <input type="text" class="form-control" id="cidade" name="cidade" required>
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label for="cep">CEP</label>
+                        <input type="text" class="form-control" id="cep" name="cep" required>
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label for="uf">UF</label>
+                        <input type="text" class="form-control" id="uf" name="uf" maxlength="2" required>
+                    </div>
+                </div>
+                <hr>
+                <!-- Produtos do Pedido -->
+                <button type="button" class="btn btn-primary" id="abrir-modal-produto" data-toggle="modal" data-target="#modal-produto">Adicionar Produto</button>
+                {% include 'partials/tabela_itens_pedido.html' %}
 
-        <form id="pedido-form" method="post" action="{{ url_for('pedidos_novo') }}">
-          
-            
-          <div class="form-row">
-            <div class="form-group col-md-6">
-              <label for="nome">Nome do cliente</label>
-              <input type="text" class="form-control" id="nome" name="nome" required>
-            </div>
-            <div class="form-group col-md-3">
-              <label for="tipo">Tipo</label>
-              <select class="form-control" id="tipo" name="tipo" required>
-                <option value="PF">PF</option>
-                <option value="PJ">PJ</option>
-              </select>
-            </div>
-            <div class="form-group col-md-3">
-              <label for="cpf_cnpj">CPF/CNPJ</label>
-              <input type="text" class="form-control" id="cpf_cnpj" name="cpf_cnpj" required>
-            </div>
-            <div class="form-group col-md-6">
-              <label for="email">E-mail</label>
-              <input type="email" class="form-control" id="email" name="email" required>
-            </div>
-            <div class="form-group col-md-6">
-              <label for="celular">Telefone</label>
-              <input type="text" class="form-control" id="celular" name="celular" required>
-            </div>
-            <div class="form-group col-md-6">
-              <label for="endereco">Endereço</label>
-              <input type="text" class="form-control" id="endereco" name="endereco" required>
-            </div>
-            <div class="form-group col-md-3">
-              <label for="bairro">Bairro</label>
-              <input type="text" class="form-control" id="bairro" name="bairro" required>
-            </div>
-            <div class="form-group col-md-3">
-              <label for="cidade">Cidade</label>
-              <input type="text" class="form-control" id="cidade" name="cidade" required>
-            </div>
-            <div class="form-group col-md-3">
-              <label for="cep">CEP</label>
-              <input type="text" class="form-control" id="cep" name="cep" required>
-            </div>
-            <div class="form-group col-md-3">
-              <label for="uf">UF</label>
-              <input type="text" class="form-control" id="uf" name="uf" maxlength="2" required>
-            </div>
-          </div>
-          <hr>
-          <!-- Produtos do Pedido -->
-          <button type="button" class="btn btn-primary" id="abrir-modal-produto" data-toggle="modal" data-target="#modal-produto">Adicionar Produto</button>
-          {% include 'partials/tabela_itens_pedido.html' %}
+                <!-- Status e valor final -->
+                <div class="form-group mt-3">
+                    <label>Status:</label>
+                    <select name="status" required class="form-control">
+                        <option value="rascunho">Rascunho</option>
+                        <option value="design">Design</option>
+                        <option value="producao">Produção</option>
+                        <option value="finalizado">Finalizado</option>
+                        <option value="cancelado">Cancelado</option>
+                    </select>
+                </div>
 
-          <!-- Status e valor final -->
-          <div class="form-group mt-3">
-            <label>Status:</label>
-            <select name="status" required class="form-control">
-              <option value="rascunho">Rascunho</option>
-              <option value="design">Design</option>
-              <option value="producao">Produção</option>
-              <option value="finalizado">Finalizado</option>
-              <option value="cancelado">Cancelado</option>
-            </select>
-          </div>
-
-          <div class="form-group">
-            <label>Valor Final do Pedido:</label>
-            <span id="valor-final">R$ 0,00</span><br>
-          </div>
-          <input type="hidden" name="produtos_json" id="produtos_json">          
-       
-      </div>
-      <hr>
-      <div class="container" style="text-align: right;">
-            <a href="{{ url_for('pedidos') }}" class="btn btn-secondary">Cancelar</a>
-            <button type="submit" class="btn btn-primary">Salvar</button>
-      </div>
-       </form>
-  </div>
+                <div class="form-group">
+                    <label>Valor Final do Pedido:</label>
+                    <span id="valor-final">R$ 0,00</span><br>
+                </div>
+                <input type="hidden" name="produtos_json" id="produtos_json">
+                <input type="hidden" name="id_cliente" id="id_cliente" value="novo">
+                <hr>
+                <div class="container" style="text-align: right;">
+                    <a href="{{ url_for('pedidos') }}" class="btn btn-secondary">Cancelar</a>
+                    <button type="submit" class="btn btn-primary">Salvar</button>
+                </div>
+            </form>
+        </div>
     </div>
-</div>
+ </div>
 
 <!-- Modal Adicionar Produto -->
 <div class="modal fade" id="modal-produto" tabindex="-1" role="dialog" aria-labelledby="modalProdutoLabel" aria-hidden="true">
@@ -120,36 +117,36 @@
 
 <script>
     // --- Cliente autocomplete ---
-    $('#busca-cliente').on('input', function() {
+    $('#cpf_cnpj').on('input', function() {
         var termo = $(this).val();
-        if (termo.length < 2) { $('#sugestoes-clientes').hide(); return; }
+        if (termo.length < 3) { $('#sugestoes-clientes').hide(); return; }
         $.getJSON('{{ url_for('buscar_clientes') }}', {q: termo}, function(res) {
             var html = '';
             res.forEach(function(c) {
-                html += '<div class="sugestao-cliente" data-id="'+c.id+'" data-json="'+encodeURIComponent(JSON.stringify(c))+'">'+c.nome+' ('+c.cpf_cnpj+')</div>';
+                html += '<div class="sugestao-cliente" data-id="'+c.id+'" data-json="'+encodeURIComponent(JSON.stringify(c))+'"> ('+c.cpf_cnpj+')</div>';
             });
             $('#sugestoes-clientes').html(html).show();
         });
     });
+    $('#cpf_cnpj').focusout(function() {
+        $('#sugestoes-clientes').hide();
+    });
     $(document).on('click', '.sugestao-cliente', function() {
         var c = JSON.parse(decodeURIComponent($(this).data('json')));
         $('#id_cliente').val(c.id);
-        var row = '';
-        row += '<td>'+c.nome+'</td>';
-        row += '<td>'+c.tipo+'</td>';
-        row += '<td>'+c.cpf_cnpj+'</td>';
-        row += '<td>'+c.email+'</td>';
-        row += '<td>'+c.celular+'</td>';
-        row += '<td>'+c.endereco+'</td>';
-        row += '<td>'+c.bairro+'</td>';
-        row += '<td>'+c.cidade+'</td>';
-        row += '<td>'+c.cep+'</td>';
-        row += '<td>'+c.uf+'</td>';
-        $('#cliente-dados').html(row);
-        $('#info-cliente').show();
+        $('#nome').val(c.nome);
+        $('#tipo').val(c.tipo);
+        $('#cpf_cnpj').val(c.cpf_cnpj);
+        $('#email').val(c.email);
+        $('#celular').val(c.celular);
+        $('#endereco').val(c.endereco);
+        $('#bairro').val(c.bairro);
+        $('#cidade').val(c.cidade);
+        $('#cep').val(c.cep);
+        $('#uf').val(c.uf);
         $('#sugestoes-clientes').hide();
-        $('#busca-cliente').val(c.nome);
     });
+
     // --- Produto autocomplete/modal ---
     $('#abrir-modal-produto').on('click', function() {
         $('#modal-produto').modal('show');

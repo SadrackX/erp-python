@@ -183,6 +183,38 @@ def pedidos_novo():
     if 'usuario_nome' not in session:
         return redirect(url_for('login'))
     if request.method == 'POST':
+        editar_id = request.args.get('editar')
+        if editar_id:
+            # Atualização de pedido existente
+            novo_cliente = Cliente(
+                    id=request.form['id_cliente'] if request.form['id_cliente'] != 'novo' else '',
+                    nome=request.form['nome'],
+                    tipo=request.form['tipo'],
+                    cpf_cnpj=request.form['cpf_cnpj'],
+                    email=request.form['email'],
+                    celular=request.form['celular'],
+                    endereco=request.form['endereco'],
+                    bairro=request.form['bairro'],
+                    cidade=request.form['cidade'],
+                    cep=request.form['cep'],
+                    uf=request.form['uf'],
+                    observacoes=None,
+                    ativo=True
+                )
+            novos_dados = Pedido(
+                id_cliente=novo_cliente.id,
+                id_forma_pagamento=request.form['id_forma_pagamento'] if 'id_forma_pagamento' in request.form else '',
+                data=datetime.now(),
+                status=request.form['status'],
+                itens=itens,
+                observacoes=request.form.get('observacoes'),
+                desconto_total=float(request.form.get('desconto_total', 0)),
+                data_previsao_entrega=None,  # Será calculada automaticamente
+                ativo=True
+            )
+            PedidoManager().atualizar_pedido(editar_id, novos_dados)
+            flash('Pedido atualizado!')
+            return redirect(url_for('pedido_detalhes', pedido_id=editar_id))
         import json
         produtos_json = request.form.get('produtos_json')
         itens = []
@@ -199,16 +231,16 @@ def pedidos_novo():
         if cliente_id == 'novo':
             novo_cliente = Cliente(
                 id='',
-                nome=request.form['nome_cliente'],
-                tipo=request.form['tipo_cliente'],
-                cpf_cnpj=request.form['cpf_cnpj_cliente'],
-                email=request.form['email_cliente'],
-                celular=request.form['telefone_cliente'],
-                endereco=request.form['endereco_cliente'],
-                bairro=request.form['bairro_cliente'],
-                cidade=request.form['cidade_cliente'],
-                cep=request.form['cep_cliente'],
-                uf=request.form['uf_cliente'],
+                nome=request.form['nome'],
+                tipo=request.form['tipo'],
+                cpf_cnpj=request.form['cpf_cnpj'],
+                email=request.form['email'],
+                celular=request.form['celular'],
+                endereco=request.form['endereco'],
+                bairro=request.form['bairro'],
+                cidade=request.form['cidade'],
+                cep=request.form['cep'],
+                uf=request.form['uf'],
                 observacoes=None,
                 ativo=True
             )
@@ -228,7 +260,7 @@ def pedidos_novo():
         flash('Pedido cadastrado!')
         return redirect(url_for('pedidos'))
     return render_template('pedidos_form.html', usuario_nome=session['usuario_nome'], usuario_nivel=session['usuario_nivel'])
-    if 'usuario_nome' not in session:
+    """ if 'usuario_nome' not in session:
         return redirect(url_for('login'))
     if request.method == 'POST':
         import json
@@ -276,7 +308,7 @@ def pedidos_novo():
         flash('Pedido cadastrado!')
         return redirect(url_for('pedidos'))
     return render_template('pedidos_form.html', usuario_nome=session['usuario_nome'], usuario_nivel=session['usuario_nivel'])
-
+ """
 @app.route('/pedidos/<pedido_id>')
 def pedido_detalhes(pedido_id):
     if 'usuario_nome' not in session:
@@ -297,7 +329,7 @@ def pedido_detalhes(pedido_id):
         })
     return render_template('pedido_detalhes.html', pedido=pedido, cliente=cliente, produtos=produtos, usuario_nome=session['usuario_nome'], usuario_nivel=session['usuario_nivel'])
 
-@app.route('/pedidos/<pedido_id>/editar', methods=['GET', 'POST'])
+""" @app.route('/pedidos/<pedido_id>/editar', methods=['GET', 'POST'])
 def pedido_editar(pedido_id):
     if 'usuario_nome' not in session:
         return redirect(url_for('login'))
@@ -315,7 +347,7 @@ def pedido_editar(pedido_id):
         flash('Pedido atualizado!')
         return redirect(url_for('pedido_detalhes', pedido_id=pedido_id))
     return render_template('pedido_editar.html', pedido=pedido, usuario_nome=session['usuario_nome'], usuario_nivel=session['usuario_nivel'])
-
+ """
 @app.route('/pedidos/<pedido_id>/cancelar')
 def pedido_cancelar(pedido_id):
     if 'usuario_nome' not in session:

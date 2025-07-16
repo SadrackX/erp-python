@@ -5,3 +5,5 @@ id,nome,tipo,cpf_cnpj,email,celular,endereco,bairro,cidade,cep,uf,observacoes,at
 0004,THALLYELSON MARIANO GOMES,PF,08928838479,thallyelson@hotmail.com,88 8888 8888,EMILIO PIRES,centro,SOUSA,58800207,pb,,True
 0005,Teste log,PF,08928838479,thallyelsom@gmail.com,83981273917,Rua adfadfadf,centro,SOUSA,58807250,rn,,True
 0006,MOREIRA E COSTA IMPRESSAO DE MATERIAL PUBLICITARIO,PF,554,adesignsousapb@gmail.com,45,EMILIO PIRES,CENTRO,SOUSA,58800207,PB,,True
+0007,teste 003,PF,08928838479,adesignsousapb@gmail.com,83 9 9999-9999,EMILIO PIRES,SORRILANDIA,SOUSA,58800207,pb,,True
+0008,TESTE INSCE,PF,0892222,adesignsousapb@gmail.com,83 9 9999-9999,EMILIO PIRES,SORRILANDIA,SOUSA,58800207,PB,,True
