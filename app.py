@@ -55,44 +55,31 @@ def clientes():
 def clientes_novo():
     if 'usuario_nome' not in session:
         return redirect(url_for('login'))
+    editar_id = request.args.get('editar')
+    cliente = ClienteManager().buscar_por_id(editar_id) if editar_id else None
     if request.method == 'POST':
-        editar_id = request.args.get('editar')
-        if editar_id:
-            # Atualização de cliente existente
-            novos_dados = {
-                'nome': request.form['nome'],
-                'tipo': request.form['tipo'],
-                'cpf_cnpj': request.form['cpf_cnpj'],
-                'email': request.form['email'],
-                'celular': request.form['celular'],
-                'endereco': request.form['endereco'],
-                'bairro': request.form['bairro'],
-                'cidade': request.form['cidade'],
-                'cep': request.form['cep'],
-                'uf': request.form['uf'],
-                'ativo': True
-            }
-            ClienteManager().atualizar_cliente(editar_id, novos_dados)
+        cliente = {
+            'nome': request.form['nome'],
+            'tipo': request.form['tipo'],
+            'cpf_cnpj': request.form['cpf_cnpj'],
+            'email': request.form['email'],
+            'celular': request.form['celular'],
+            'endereco': request.form['endereco'],
+            'bairro': request.form['bairro'],
+            'cidade': request.form['cidade'],
+            'cep': request.form['cep'],
+            'uf': request.form['uf'],
+            'ativo': True
+        }       
+        if editar_id:        
+            # Atualização de cliente existente   
+            ClienteManager().atualizar_cliente(editar_id, cliente)
             logger.log(f"Cliente {request.form['nome']} atualizado com sucesso!", 'info')
             return redirect(url_for('clientes'))
-        else:
-            novo = Cliente(
-                id='',
-                nome=request.form['nome'],
-                tipo=request.form['tipo'],
-                cpf_cnpj=request.form['cpf_cnpj'],
-                email=request.form['email'],
-                celular=request.form['celular'],
-                endereco=request.form['endereco'],
-                bairro=request.form['bairro'],
-                cidade=request.form['cidade'],
-                cep=request.form['cep'],
-                uf=request.form['uf'],
-                observacoes=None,
-                ativo=True
-            )
-            ClienteManager().cadastrar_cliente(novo)
-            logger.log(f"Cliente {novo.nome} cadastrado!", 'info')
+        else:          
+            # Cadastro de novo cliente  
+            ClienteManager().cadastrar_cliente(Cliente.from_dict(cliente))
+            logger.log(f"Cliente {request.form['nome']} cadastrado!", 'info')
             return redirect(url_for('clientes'))
     return render_template('clientes_list.html', usuario_nome=session['usuario_nome'], usuario_nivel=session['usuario_nivel'])
 
@@ -105,13 +92,12 @@ def produtos():
     return render_template('produtos_list.html', usuario_nome=session['usuario_nome'], usuario_nivel=session['usuario_nivel'], produtos=produtos)
 
 @app.route('/produtos/novo', methods=['GET', 'POST'])
-def produtos_novo():
+def produtos_novo():    
     if 'usuario_nome' not in session:
         return redirect(url_for('login'))
     produto_id = request.args.get('editar')
     produto = ProdutoManager().buscar_por_id(produto_id) if produto_id else None
-    if request.method == 'POST':        
-           
+    if request.method == 'POST':               
         produto = {
             'id': produto_id or '',
             'nome': request.form['nome'],
@@ -120,16 +106,16 @@ def produtos_novo():
             'observacao': request.form.get('observacao', ''),
             'ativo': request.form.get('ativo', 'on') == 'on'
         }
-
         if produto_id:
+            # Atualização de produto existente
             ProdutoManager().atualizar_produto(produto_id, produto)
             logger.log(f"Produto {request.form['nome']} atualizado com sucesso!", 'info')
+            return redirect(url_for('produtos'))
         else:
+            # Cadastro de novo produto
             ProdutoManager().cadastrar_produto(Produto.from_dict(produto))
             logger.log(f"Produto {request.form['nome']} cadastrado!", 'info')
-
-        return redirect(url_for('produtos'))
-
+            return redirect(url_for('produtos'))
     return render_template('produtos_list.html', produto=produto, usuario_nome=session['usuario_nome'], usuario_nivel=session['usuario_nivel'])
 
 # FORNECEDORES
@@ -144,38 +130,30 @@ def fornecedores():
 def fornecedores_novo():
     if 'usuario_nome' not in session:
         return redirect(url_for('login'))
+    fornecedor_id = request.args.get('editar')
+    fornecedor = FornecedorManager().buscar_por_id(fornecedor_id) if fornecedor_id else None
     if request.method == 'POST':
-        editar_id = request.args.get('editar')
-        if editar_id:
+        fornecedor = {
+            'id': fornecedor_id or '',
+            'nome': request.form['nome'],
+            'cnpj': request.form['cnpj'],
+            'email': request.form['email'],
+            'telefone': request.form['telefone'],
+            'produtos_fornecidos': request.form.get('produtos_fornecidos', ''),
+            'observacoes': request.form.get('observacoes', ''),
+            'ativo': request.form.get('ativo', 'on') == 'on'
+        }
+        if fornecedor_id:
             # Atualização de fornecedor existente
-            novos_dados = {
-                'nome': request.form['nome'],
-                'cnpj': request.form['cnpj'],
-                'email': request.form['email'],
-                'telefone': request.form['telefone'],
-                'produtos_fornecidos': request.form['produtos_fornecidos'],
-                'observacoes': request.form['observacoes'],
-                'ativo': True
-            }
-            FornecedorManager().atualizar_fornecedor(editar_id, novos_dados)
-            logger.log(f"Fornecedor {novos_dados.nome} atualizado com sucesso!", 'info')
+            FornecedorManager().atualizar_fornecedor(fornecedor_id, fornecedor)
+            logger.log(f"Fornecedor {request.form['nome']} atualizado com sucesso!", 'info')
             return redirect(url_for('fornecedores'))
         else:
-            novo = Fornecedor(
-                id='',
-                nome=request.form['nome'],
-                cnpj=request.form['cnpj'],
-                email=request.form['email'],
-                telefone=request.form['telefone'],
-                produtos_fornecidos=request.form['produtos_fornecidos'],
-                observacoes=['observacoes'],
-                ativo=True
-            )
-            FornecedorManager().cadastrar_fornecedor(novo)
-            logger.log(f"Fornecedor {novo.nome} cadastrado!", 'info')
+            # Cadastro de novo fornecedor
+            FornecedorManager().cadastrar_fornecedor(Fornecedor.from_dict(fornecedor))
+            logger.log(f"Fornecedor {request.form['nome']} cadastrado!", 'info')
             return redirect(url_for('fornecedores'))
-    return render_template('fornecedores_form.html', usuario_nome=session['usuario_nome'], usuario_nivel=session['usuario_nivel'])
-
+    return render_template('fornecedores_list.html', fornecedor=fornecedor, usuario_nome=session['usuario_nome'], usuario_nivel=session['usuario_nivel'])
 # PEDIDOS
 @app.route('/pedidos')
 def pedidos():

@@ -3,7 +3,7 @@
 <div class="" style="display: flex; justify-content: space-between; align-items: center; padding-top: 20px; ">
     <h3>Clientes</h3>
     <!-- Botão para abrir o modal de novo cliente -->
-    <a href="" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#clienteModal">Cadastrar Novo Cliente</a>
+    <button type="button" class="btn btn-primary btn-sm" onclick="abrirModalCliente()">Cadastrar Novo Cliente</button>
 </div>
 <hr>
     <table class="table table-striped" border="1" cellpadding="5" cellspacing="0">
@@ -23,55 +23,91 @@
             <td>{{ cliente.endereco }}, {{ cliente.bairro }}, {{ cliente.cidade }}-{{ cliente.uf }}</td>
             <td>{{ cliente.cep }}</td>
             <td>
-                <button type="button" class="btn btn-sm btn-warning" data-toggle="modal" data-target="#editarClienteModal{{ cliente.id }}">Editar</button>
+                <button type="button" class="btn btn-sm btn-warning" onclick="abrirModalCliente({{ cliente.to_dict() }})">Editar</button>
             </td>
         </tr>
-        {% include 'partials/modal_editar_cliente.html' %}
         {% endfor %}
     </table>
 
     {% include 'partials/modal_novo_cliente.html' %}
 
 <script>
-function validarCpfCnpj(valor) {
-    valor = valor.replace(/\D/g, '');
-    if (valor.length === 11) {
-        // Validação simples de CPF
-        return /^\d{11}$/.test(valor);
-    } else if (valor.length === 14) {
-        // Validação simples de CNPJ
-        return /^\d{14}$/.test(valor);
+    function validarCpfCnpj(valor) {
+        valor = valor.replace(/\D/g, '');
+        if (valor.length === 11) {
+            // Validação simples de CPF
+            return /^\d{11}$/.test(valor);
+        } else if (valor.length === 14) {
+            // Validação simples de CNPJ
+            return /^\d{14}$/.test(valor);
+        }
+        return false;
     }
-    return false;
-}
-function validarCep(valor) {
-    return /^\d{5}-?\d{3}$/.test(valor);
-}
-function adicionarValidacaoCliente(form) {
-    form.addEventListener('submit', function(e) {
-        var cpfCnpj = form.querySelector('[name="cpf_cnpj"]').value;
-        var cep = form.querySelector('[name="cep"]').value;
-        var msg = '';
-        if (!validarCpfCnpj(cpfCnpj)) {
-            msg += 'CPF/CNPJ inválido!\n';
-        }
-        if (!validarCep(cep)) {
-            msg += 'CEP inválido!\n';
-        }
-        if (msg) {
-            alert(msg);
-            e.preventDefault();
-        }
+    function validarCep(valor) {
+        return /^\d{5}-?\d{3}$/.test(valor);
+    }
+    function adicionarValidacaoCliente(form) {
+        form.addEventListener('submit', function(e) {
+            var cpfCnpj = form.querySelector('[name="cpf_cnpj"]').value;
+            var cep = form.querySelector('[name="cep"]').value;
+            var msg = '';
+            if (!validarCpfCnpj(cpfCnpj)) {
+                msg += 'CPF/CNPJ inválido!\n';
+            }
+            if (!validarCep(cep)) {
+                msg += 'CEP inválido!\n';
+            }
+            if (msg) {
+                alert(msg);
+                e.preventDefault();
+            }
+        });
+    }
+    document.addEventListener('DOMContentLoaded', function() {
+        // Modal novo cliente
+        var formNovo = document.querySelector('#clienteModal form');
+        if (formNovo) adicionarValidacaoCliente(formNovo);
+        // Modais de edição
+        document.querySelectorAll('[id^="editarClienteModal"] form').forEach(function(form) {
+            adicionarValidacaoCliente(form);
+        });
     });
-}
-document.addEventListener('DOMContentLoaded', function() {
-    // Modal novo cliente
-    var formNovo = document.querySelector('#clienteModal form');
-    if (formNovo) adicionarValidacaoCliente(formNovo);
-    // Modais de edição
-    document.querySelectorAll('[id^="editarClienteModal"] form').forEach(function(form) {
-        adicionarValidacaoCliente(form);
-    });
-});
+
+    function abrirModalCliente(cliente = null) {
+        const modalLabel = document.getElementById('clienteModalLabel');
+        const form = document.getElementById('cliente-form');
+        const idInput = document.getElementById('cliente-id');
+        const nomeInput = document.getElementById('nome');
+        const tipoInput = document.getElementById('tipo');
+        const cpfCnpjInput = document.getElementById('cpf_cnpj');
+        const emailInput = document.getElementById('email');
+        const celularInput = document.getElementById('celular');
+        const enderecoInput = document.getElementById('endereco');
+        const bairroInput = document.getElementById('bairro');
+        const cidadeInput = document.getElementById('cidade');
+        const cepInput = document.getElementById('cep');
+        const ufInput = document.getElementById('uf');
+        if (cliente) {
+            modalLabel.textContent = 'Editar Cliente';
+            idInput.value = cliente.id;
+            nomeInput.value = cliente.nome;
+            tipoInput.value = cliente.tipo;
+            cpfCnpjInput.value = cliente.cpf_cnpj;
+            emailInput.value = cliente.email;
+            celularInput.value = cliente.celular;
+            enderecoInput.value = cliente.endereco;
+            bairroInput.value = cliente.bairro;
+            cidadeInput.value = cliente.cidade;
+            cepInput.value = cliente.cep;
+            ufInput.value = cliente.uf;
+            form.action = "{{ url_for('clientes_novo') }}?editar=" + cliente.id;
+        } else {
+            modalLabel.textContent = 'Cadastrar Cliente';
+            form.reset();
+            form.action = "{{ url_for('clientes_novo') }}";
+        }
+
+        $('#clienteModal').modal('show');
+    }
 </script>
 {% endblock %}

@@ -1,4 +1,5 @@
-﻿{% extends 'base.html' %}
+{% extends 'base.html' %}
+{% include 'partials/modal_novo_pedido.html' %}
 {% block conteudo %}
 <!-- Novo Pedido -->
  <div class="container">
@@ -238,5 +239,47 @@
         atualizarTabelaProdutos();
         $('#modal-produto').modal('hide');
     });
+
+    
+    // Função para abrir o modal de novo produto
+    onload(function (pedido = null) {
+        const modalLabel = document.getElementById('pedidoModalLabel');
+        const form = document.getElementById('pedido-form');
+        const idInput = document.getElementById('pedido-id');
+        const clienteInput = document.getElementById('id_cliente');
+        const dataInput = document.getElementById('data');
+        const dataEntregaInput = document.getElementById('data_previsao_entrega');
+        const statusInput = document.getElementById('status');
+        const observacaoInput = document.getElementById('observacao');
+        const tabelaProdutos = document.getElementById('tabela-produtos').getElementsByTagName('tbody')[0];
+        tabelaProdutos.innerHTML = ''; // Limpa a tabela de produtos
+        if (pedido) {
+            modalLabel.textContent = 'Editar Pedido';
+            idInput.value = pedido.id;
+            clienteInput.value = pedido.id_cliente;
+            dataInput.value = pedido.data ? pedido.data.strftime('%Y-%m-%dT%H:%M') : '';
+            dataEntregaInput.value = pedido.data_previsao_entrega ? pedido.data_previsao_entrega.strftime('%Y-%m-%d') : '';
+            statusInput.value = pedido.status;
+            observacaoInput.value = pedido.observacao;
+
+            // Preenche a tabela de produtos
+            pedido.produtos.forEach(produto => {
+                const row = tabelaProdutos.insertRow();
+                row.innerHTML = `<td>${produto.nome}</td>
+                                 <td>R$ ${produto.preco_unitario.toFixed(2)}</td>
+                                 <td>${produto.quantidade}</td>
+                                 <td>R$ ${(produto.preco_unitario * produto.quantidade).toFixed(2)}</td>
+                                 <td><button type="button" class="btn btn-danger btn-sm" onclick="removerProduto(this)">Remover</button></td>`;
+            });
+            form.action = "{{ url_for('pedidos_novo') }}?editar=" + pedido.id;
+
+        } else {
+            modalLabel.textContent = 'Cadastrar Pedido';
+            form.reset(); 
+            form.action = "{{ url_for('pedidos_novo') }}";           
+        }
+    })
+    
+        
     </script>
     {% endblock %}

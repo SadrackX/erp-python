@@ -2,7 +2,7 @@
 <div class="modal fade" id="clienteModal" tabindex="-1" role="dialog" aria-labelledby="clienteModalLabel" aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
-      <form method="POST" action="{{ url_for('clientes_novo') }}">
+      <form id="cliente-form" method="POST" action="{{ url_for('clientes_novo') }}">
         <div class="modal-header">
           <h5 class="modal-title" id="clienteModalLabel">Novo Cliente</h5>
           <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
@@ -11,6 +11,7 @@
         </div>
         <div class="modal-body">
           <div class="form-row">
+            <input type="hidden" id="cliente-id" name="id" value="">
             <div class="form-group col-md-12">
               <label for="nome">Nome</label>
               <input type="text" class="form-control" id="nome" name="nome" required>
