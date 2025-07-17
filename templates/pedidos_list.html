@@ -26,8 +26,7 @@
             <td>{{ pedido.status }}</td>
             <td>R$ {{ '%.2f' % pedido.total }}</td>
             <td>
-                <a href="{{ url_for('pedido_editar', pedido_id=pedido.id) }}" class="btn btn-warning btn-sm">Editar</a>
-                <button type="button" class="btn btn-info btn-sm" onclick="abrirModalPedido({{ pedido.to_dict() }})">Visualizar</button>
+                <a href="{{ url_for('pedidos_novo', editar=pedido.id) }}" class="btn btn-warning btn-sm">Editar</a>
                 {% if pedido.status != 'cancelado' %}
                 <a href="{{ url_for('pedido_cancelar', pedido_id=pedido.id) }}" class="btn btn-danger btn-sm" onclick="return confirm('Cancelar este pedido?');">Cancelar</a>
                 {% endif %}

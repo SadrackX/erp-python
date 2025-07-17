@@ -173,20 +173,33 @@ def pedidos():
 def pedidos_novo():
     if 'usuario_nome' not in session:
         return redirect(url_for('login'))
+
+    pedido_id = request.form.get('id_pedido') or request.args.get('editar')
+    pedido = PedidoManager().buscar_por_id(pedido_id) if pedido_id else None
+    cliente = None
+
+    if pedido:
+        cliente = ClienteManager().buscar_por_id(pedido.id_cliente)
+
     if request.method == 'POST':
         import json
         produtos_json = request.form.get('produtos_json')
         itens = []
+
         if produtos_json:
-            produtos = json.loads(produtos_json)
-            for p in produtos:
-                itens.append(ItemPedido(
-                    id_pedido='',
-                    nome=p['nome'],
-                    quantidade=p['quantidade'],
-                    preco_unitario=p['preco_unitario']
-                ))
-        cliente_id = request.form['id_cliente']
+            try:
+                produtos = json.loads(produtos_json)
+                for p in produtos:
+                    itens.append(ItemPedido(
+                        id_pedido='',  # será atualizado depois
+                        nome=p.get('nome'),
+                        quantidade=int(p.get('quantidade')),
+                        preco_unitario=float(p.get('preco_unitario'))
+                    ))
+            except Exception as e:
+                print("Erro ao carregar produtos:", e)
+
+        cliente_id = request.form.get('id_cliente')
         if cliente_id == 'novo':
             novo_cliente = Cliente(
                 id='',
@@ -204,79 +217,45 @@ def pedidos_novo():
                 ativo=True
             )
             cliente_id = ClienteManager().cadastrar_cliente(novo_cliente)
-        data_previsao = request.form.get('data_previsao_entrega')
-        if data_previsao:
-            try:
-                data_previsao = datetime.strptime(data_previsao, "%Y-%m-%d")
-            except ValueError:
-                data_previsao = None
-        else:
-            data_previsao = None
-        novo = Pedido(
-            id='',
-            id_cliente=cliente_id,
-            id_forma_pagamento=request.form['id_forma_pagamento'] if 'id_forma_pagamento' in request.form else '',
-            data=datetime.now(),
-            status=request.form['status'],
-            itens=itens,
-            observacoes=request.form.get('observacoes'),
-            desconto_total=float(request.form.get('desconto_total', 0)),
-            data_previsao_entrega=data_previsao  # Será calculada automaticamente
-        )
-        PedidoManager().criar_pedido(novo)
-        logger.log(f"Pedido {novo.id} cadastrado!", 'info')
-        return redirect(url_for('pedidos'))
-    return render_template('pedidos_form.html', usuario_nome=session['usuario_nome'], usuario_nivel=session['usuario_nivel'])
 
-    """ if 'usuario_nome' not in session:
-        return redirect(url_for('login'))
-    if request.method == 'POST':
-        import json
-        produtos_json = request.form.get('produtos_json')
-        itens = []
-        if produtos_json:
-            produtos = json.loads(produtos_json)
-            for p in produtos:
-                itens.append(ItemPedido(
-                    id_pedido='',
-                    nome=p['nome'],
-                    quantidade=p['quantidade'],
-                    preco_unitario=p['preco_unitario']
-                ))
-        cliente_id = request.form['id_cliente']
-        if cliente_id == 'novo':
-            novo_cliente = Cliente(
-                id='',
-                nome=request.form['nome_cliente'],
-                tipo=request.form['tipo_cliente'],
-                cpf_cnpj=request.form['cpf_cnpj_cliente'],
-                email=request.form['email_cliente'],
-                celular=request.form['telefone_cliente'],
-                endereco=request.form['endereco_cliente'],
-                bairro=request.form['bairro_cliente'],
-                cidade=request.form['cidade_cliente'],
-                cep=request.form['cep_cliente'],
-                uf=request.form['uf_cliente'],
-                observacoes=None,
-                ativo=True
-            )
-            cliente_id = ClienteManager().cadastrar_cliente(novo_cliente)
-        novo = Pedido(
-            id='',
+        data_previsao = request.form.get('data_previsao_entrega')
+        try:
+            data_previsao = datetime.strptime(data_previsao, "%Y-%m-%d") if data_previsao else None
+        except ValueError:
+            data_previsao = None
+
+        novo_pedido = Pedido(
+            id=pedido_id or '',
             id_cliente=cliente_id,
-            id_forma_pagamento=request.form['id_forma_pagamento'] if 'id_forma_pagamento' in request.form else '',
+            id_forma_pagamento=request.form.get('id_forma_pagamento', ''),
             data=datetime.now(),
-            status=request.form['status'],
+            status=request.form.get('status', 'rascunho'),
             itens=itens,
             observacoes=request.form.get('observacoes'),
             desconto_total=float(request.form.get('desconto_total', 0)),
-            data_previsao_entrega=None  # Será calculada automaticamente
+            data_previsao_entrega=data_previsao
         )
-        PedidoManager().criar_pedido(novo)
-        flash('Pedido cadastrado!')
+
+        if pedido_id:
+            PedidoManager().atualizar_pedido(pedido_id, novo_pedido)
+        else:
+            PedidoManager().criar_pedido(novo_pedido)
+
+        logger.log(f"Pedido {novo_pedido.id} {'atualizado' if pedido_id else 'cadastrado'}!", 'info')
         return redirect(url_for('pedidos'))
-    return render_template('pedidos_form.html', usuario_nome=session['usuario_nome'], usuario_nivel=session['usuario_nivel'])
- """
+    if pedido_id:
+        pedido = PedidoManager().buscar_por_id(pedido_id)
+        cliente = ClienteManager().buscar_por_id(pedido.id_cliente) if pedido else None
+    else:
+        pedido = None
+        cliente = None
+
+    return render_template('pedidos_form.html',
+                           pedido=pedido,
+                           cliente=cliente,
+                           usuario_nome=session['usuario_nome'],
+                           usuario_nivel=session['usuario_nivel'])
+
 @app.route('/pedidos/<pedido_id>')
 def pedido_detalhes(pedido_id):
     if 'usuario_nome' not in session:
@@ -297,87 +276,6 @@ def pedido_detalhes(pedido_id):
         })
     return render_template('pedido_detalhes.html', pedido=pedido, cliente=cliente, produtos=produtos, usuario_nome=session['usuario_nome'], usuario_nivel=session['usuario_nivel'])
 
-@app.route('/pedidos/<pedido_id>/editar', methods=['GET', 'POST'])
-def pedido_editar(pedido_id):
-    if 'usuario_nome' not in session:
-        return redirect(url_for('login'))
-    pedido = PedidoManager().buscar_por_id(pedido_id)
-    if not pedido:
-        logger.log('Pedido não encontrado!', 'error')
-        return redirect(url_for('pedidos'))       
-    if isinstance(pedido.data_previsao_entrega, datetime):
-        pedido.data_previsao_entrega = pedido.data_previsao_entrega.strftime("%Y-%m-%d") 
-    cliente = ClienteManager().buscar_por_id(pedido.id_cliente)
-    produtos = []
-    for item in pedido.itens:
-        prod = ItensPedidoManager().buscar_itens_por_pedido(item.id_pedido)
-        produtos.append({
-            'nome': item.nome if prod else 'Produto removido',
-            'preco_unitario': item.preco_unitario,
-            'quantidade': item.quantidade,
-            'total': item.total
-        })
-  
-    if request.method == 'POST':
-
-        import json
-        produtos_json = request.form.get('produtos_json')
-        itens = []
-        if produtos_json:
-            produtos = json.loads(produtos_json)
-            for p in produtos:
-                itens.append(ItemPedido(
-                    id_pedido='',  # Será atualizado depois
-                    nome=p['nome'],
-                    quantidade=int(p['quantidade']),
-                    preco_unitario=float(p['preco_unitario'])
-                ))
-
-        cliente_id = request.form['id_cliente']
-        if cliente_id == 'novo':
-            novo_cliente = Cliente(
-                id='',
-                nome=request.form['nome'],
-                tipo=request.form['tipo'],
-                cpf_cnpj=request.form['cpf_cnpj'],
-                email=request.form['email'],
-                celular=request.form['celular'],
-                endereco=request.form['endereco'],
-                bairro=request.form['bairro'],
-                cidade=request.form['cidade'],
-                cep=request.form['cep'],
-                uf=request.form['uf'],
-                observacoes=None,
-                ativo=True
-            )
-        data_previsao = request.form.get('data_previsao_entrega')
-        if data_previsao:
-            try:
-                data_previsao = datetime.strptime(data_previsao, "%Y-%m-%d")
-            except ValueError:
-                data_previsao = None
-        else:
-            data_previsao = None
-        novo = Pedido(
-            id=pedido_id,
-            id_cliente=cliente_id,
-            id_forma_pagamento=request.form['id_forma_pagamento'] if 'id_forma_pagamento' in request.form else '',
-            data=datetime.now(),
-            status=request.form['status'],
-            itens=itens,
-            observacoes=request.form.get('observacoes'),
-            desconto_total=float(request.form.get('desconto_total', 0)),
-            data_previsao_entrega=data_previsao  # Será calculada automaticamente
-        )
-        if request.form['status'] in ['design', 'producao'] and not request.form.get('data_previsao_entrega'):
-            flash('Data de entrega é obrigatória para pedidos em design ou produção!')
-            return render_template('pedido_editar.html', pedido=pedido, cliente=cliente, produtos=produtos, usuario_nome=session['usuario_nome'], usuario_nivel=session['usuario_nivel'])
-        PedidoManager().atualizar_pedido(pedido_id, novo.to_dict())
-        PedidoManager().atualizar_itens_pedido(pedido_id, novo.itens)
-        logger.log(f"Pedido {novo.id} atualizado!", 'info')
-        return redirect(url_for('pedidos'))
-    return render_template('pedido_editar.html', pedido=pedido, cliente=cliente, produtos=produtos, usuario_nome=session['usuario_nome'], usuario_nivel=session['usuario_nivel'])
- 
 @app.route('/pedidos/<pedido_id>/cancelar')
 def pedido_cancelar(pedido_id):
     if 'usuario_nome' not in session:
