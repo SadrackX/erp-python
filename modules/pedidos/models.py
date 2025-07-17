@@ -69,7 +69,8 @@ class Pedido:
         else:
             pedido.calcular_previsao_entrega()  # Usa o padrão (5 dias)
     
-        return self.update(pedido_id, {'data_previsao_entrega': pedido.data_previsao_entrega.isoformat()})
+        return self.update(pedido_id, {'data_previsao_entrega': pedido.data_previsao_entrega.date()})
+    
     def calcular_previsao_entrega(self, dias_uteis: int = 5):
         """
         Calcula a data de previsão de entrega somando dias úteis à data do pedido.
@@ -92,22 +93,35 @@ class Pedido:
         subtotal = sum(item.total for item in self.itens)
         return subtotal - self.desconto_total
 
-    def to_dict(self) -> dict:
-        dados = {
+    def to_dict(self):
+        return {
             'id': self.id,
             'id_cliente': self.id_cliente,
             'id_forma_pagamento': self.id_forma_pagamento,
-            'data': self.data.isoformat(),
+            'data': self.data.isoformat() if isinstance(self.data, datetime) else str(self.data),
             'status': self.status,
             'observacoes': self.observacoes or '',
-            'desconto_total': f"{self.desconto_total:.2f}",
-            'data_previsao_entrega': self.data_previsao_entrega.isoformat() 
-                if self.data_previsao_entrega else None
+            'desconto_total': float(self.desconto_total),
+            'data_previsao_entrega': self.data_previsao_entrega.strftime("%Y-%m-%d") if isinstance(self.data_previsao_entrega, datetime) else self.data_previsao_entrega or ''
         }
         return {k: v for k, v in dados.items() if v is not None}
 
     @classmethod
     def from_dict(cls, data: dict, itens: List[ItemPedido] = None):
+        # Função auxiliar para converter string para datetime, se necessário
+        def parse_data(data_str: Optional[str]) -> Optional[datetime]:
+            if data_str is None:
+                return None
+            try:
+                # Tenta como ISO (com ou sem hora)
+                return datetime.fromisoformat(data_str)
+            except ValueError:
+                # Tenta como formato customizado (ex: YYYY-MM-DD)
+                try:
+                    return datetime.strptime(data_str, "%Y-%m-%d")
+                except ValueError:
+                    return None
+
         return cls(
             id=data['id'],
             id_cliente=data['id_cliente'],
@@ -117,6 +131,5 @@ class Pedido:
             itens=itens or [],
             observacoes=data.get('observacoes'),
             desconto_total=float(data.get('desconto_total', '0')),
-            data_previsao_entrega=datetime.fromisoformat(data['data_previsao_entrega']) 
-                if data.get('data_previsao_entrega') else None
+            data_previsao_entrega=parse_data(data.get('data_previsao_entrega'))
         )

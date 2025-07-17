@@ -1,4 +1,5 @@
 ﻿import csv
+import os
 from core.database import CSVManager
 from typing import List
 from .models import ItemPedido
@@ -36,9 +37,22 @@ class ItensPedidoManager(CSVManager):
                 itens.append(ItemPedido.from_dict(item))
         return itens
     
-    def remover_itens_por_pedido(self, pedido_id: str) -> None:
-        itens_restantes = [item for item in self.get_all() if item['id_pedido'] != pedido_id]
-        with open(self.filepath, mode='w', newline='', encoding='utf-8') as f:
+    def remover_itens_por_pedido(self, pedido_id: str) -> bool:
+        registros = self.get_all()
+        restantes = [r for r in registros if r['id_pedido'] != pedido_id]
+
+        with open(self.filepath, mode='w', encoding='utf-8', newline='') as f:
             writer = csv.DictWriter(f, fieldnames=self.get_headers())
             writer.writeheader()
-            writer.writerows(itens_restantes)
+            for r in restantes:
+                writer.writerow(r)
+
+        return len(registros) > len(restantes)
+
+    def save(self, item: ItemPedido) -> None:
+        with open(self.filepath, mode='a', newline='', encoding='utf-8') as f:
+            writer = csv.DictWriter(f, fieldnames=self.get_headers())
+            file_is_empty = os.stat(self.filepath).st_size == 0
+            if file_is_empty:
+                writer.writeheader()
+            writer.writerow(item)

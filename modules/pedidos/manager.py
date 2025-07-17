@@ -59,9 +59,9 @@ class PedidoManager(CSVManager):
     
     def atualizar_pedido(self, pedido_id: str, novos_dados: dict) -> bool:
         if 'data_previsao_entrega' in novos_dados and novos_dados['data_previsao_entrega']:
-            novos_dados['data_previsao_entrega'] = datetime.fromisoformat(
-                novos_dados['data_previsao_entrega']
-            ).isoformat()
+            novos_dados['data_previsao_entrega'] = datetime.strptime(novos_dados['data_previsao_entrega'], "%Y-%m-%d")
+        else:
+            novos_dados['data_previsao_entrega'] = None
         return self.update(pedido_id, novos_dados)
     
     def atualizar_itens_pedido(self, pedido_id: str, novos_itens: List[ItemPedido]) -> bool:

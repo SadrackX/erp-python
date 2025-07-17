@@ -7,68 +7,75 @@
             <hr>
             <h5>Editar Pedido</h5>
             <form id="pedido-form" method="post">
-                <input hidden id="id" name="id" value="{{ pedido.id }}">
+                <input hidden id="id_pedido" value="{{ pedido.id }}">
                 <div class="form-row">
-                    <div class="form-group col-md-6">
+                    <div class="form-group col-md-7">
                         <label for="nome">Nome do cliente</label>
-                        <input type="text" class="form-control" id="nome" name="nome" value="{{ cliente.nome }}" required>
+                        <input type="text" class="form-control" id="nome" name="nome" value="{{ cliente.nome }}" readonly>
                     </div>
-                    <div class="form-group col-md-3">
+                    <div class="form-group col-md-2">
                         <label for="tipo">Tipo</label>
-                        <select class="form-control" id="tipo" name="tipo" required>
+                        <select class="form-control" id="tipo" name="tipo" readonly>
                             <option value="PF" {{ 'selected' if cliente.tipo == 'PF' }}>PF</option>
                             <option value="PJ" {{ 'selected' if cliente.tipo == 'PJ' }}>PJ</option>
                         </select>
                     </div>
                     <div class="form-group col-md-3">
                         <label for="cpf_cnpj">CPF/CNPJ</label>
-                        <input type="text" class="form-control" id="cpf_cnpj" name="cpf_cnpj" value="{{ cliente.cpf_cnpj }}" required>
-                        <div id="sugestoes-clientes" style="background:#fff; border:1px solid #ccc; display:none; position:absolute; z-index:10;"></div>
+                        <input type="text" class="form-control" id="cpf_cnpj" name="cpf_cnpj" value="{{ cliente.cpf_cnpj }}" readonly>
                     </div>
                     <div class="form-group col-md-6">
                         <label for="email">E-mail</label>
-                        <input type="email" class="form-control" id="email" name="email" value="{{ cliente.email }}" required>
+                        <input type="email" class="form-control" id="email" name="email" value="{{ cliente.email }}" readonly>
                     </div>
                     <div class="form-group col-md-6">
                         <label for="celular">Telefone</label>
-                        <input type="text" class="form-control" id="celular" name="celular" value="{{ cliente.celular }}" required>
+                        <input type="text" class="form-control" id="celular" name="celular" value="{{ cliente.celular }}" readonly>
                     </div>
                     <div class="form-group col-md-6">
                         <label for="endereco">Endereço</label>
-                        <input type="text" class="form-control" id="endereco" name="endereco" value="{{ cliente.endereco }}" required>
+                        <input type="text" class="form-control" id="endereco" name="endereco" value="{{ cliente.endereco }}" readonly>
                     </div>
                     <div class="form-group col-md-3">
                         <label for="bairro">Bairro</label>
-                        <input type="text" class="form-control" id="bairro" name="bairro" value="{{ cliente.bairro }}" required>
+                        <input type="text" class="form-control" id="bairro" name="bairro" value="{{ cliente.bairro }}" readonly>
                     </div>
                     <div class="form-group col-md-3">
                         <label for="cidade">Cidade</label>
-                        <input type="text" class="form-control" id="cidade" name="cidade" value="{{ cliente.cidade }}" required>
+                        <input type="text" class="form-control" id="cidade" name="cidade" value="{{ cliente.cidade }}" readonly>
                     </div>
                     <div class="form-group col-md-3">
                         <label for="cep">CEP</label>
-                        <input type="text" class="form-control" id="cep" name="cep" value="{{ cliente.cep }}" required>
+                        <input type="text" class="form-control" id="cep" name="cep" value="{{ cliente.cep }}" readonly>
                     </div>
                     <div class="form-group col-md-3">
                         <label for="uf">UF</label>
-                        <input type="text" class="form-control" id="uf" name="uf" value="{{ cliente.uf }}" maxlength="2" required>
+                        <input type="text" class="form-control" id="uf" name="uf" value="{{ cliente.uf }}" maxlength="2" readonly>
                     </div>
                 </div>
                 <hr>
-                <!-- Produtos do Pedido -->
-                <button type="button" class="btn btn-primary" id="abrir-modal-produto" data-toggle="modal" data-target="#modal-produto">Adicionar Produto</button>
-                {% include 'partials/tabela_itens_pedido.html' %}
-
+                <div class="form-row">
+                    <!-- Produtos do Pedido -->
+                    <button type="button" class="btn btn-primary" id="abrir-modal-produto" data-toggle="modal" data-target="#modal-produto">Adicionar Produto</button>
+                    {% include 'partials/tabela_itens_pedido.html' %}
+                </div>
                 <!-- Status e valor final -->
-                <div class="form-group mt-3">
-                    <label>Status:</label>
-                    <select name="status" required class="form-control">
-                        <option value="rascunho" {{ 'selected' if pedido.status == 'rascunho' }}>Rascunho</option>
-                        <option value="design" {{ 'selected' if pedido.status == 'design' }}>Design</option>
-                        <option value="producao" {{ 'selected' if pedido.status == 'producao' }}>Produção</option>
-                        <option value="finalizado" {{ 'selected' if pedido.status == 'finalizado' }}>Finalizado</option>
-                        <option value="cancelado" {{ 'selected' if pedido.status == 'cancelado' }}>Cancelado</option>
-                    </select>
+                <div class="form-row">  
+                    <div class="form-group col-md-3">
+                        <label>Status:</label>
+                        <select name="status" required class="form-control">
+                            <option value="rascunho" {{ 'selected' if pedido.status == 'rascunho' }}>Rascunho</option>
+                            <option value="design" {{ 'selected' if pedido.status == 'design' }}>Design</option>
+                            <option value="producao" {{ 'selected' if pedido.status == 'producao' }}>Produção</option>
+                            <option value="finalizado" {{ 'selected' if pedido.status == 'finalizado' }}>Finalizado</option>
+                            <option value="cancelado" {{ 'selected' if pedido.status == 'cancelado' }}>Cancelado</option>
+                        </select>
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label for="data_previsao_entrega">Data Prevista de Entrega:</label>
+                        <input type="date" class="form-control" id="data_previsao_entrega" name="data_previsao_entrega"
+                            value="{{ pedido.data_previsao_entrega if pedido.data_previsao_entrega else '' }}">
+                    </div>
                 </div>
 
                 <div class="form-group">
@@ -116,37 +123,7 @@
   </div>
 </div>
 
-<script>
-// --- Cliente autocomplete ---
-$('#cpf_cnpj').on('input', function() {
-    var termo = $(this).val();
-    if (termo.length < 3) { $('#sugestoes-clientes').hide(); return; }
-    $.getJSON('{{ url_for('buscar_clientes') }}', {q: termo}, function(res) {
-        var html = '';
-        res.forEach(function(c) {
-            html += '<div class="sugestao-cliente" data-id="'+c.id+'" data-json="'+encodeURIComponent(JSON.stringify(c))+'"> ('+c.cpf_cnpj+')</div>';
-        });
-        $('#sugestoes-clientes').html(html).show();
-    });
-});
-$('#cpf_cnpj').focusout(function() {
-    $('#sugestoes-clientes').hide();
-});
-$(document).on('click', '.sugestao-cliente', function() {
-    var c = JSON.parse(decodeURIComponent($(this).data('json')));
-    $('#id_cliente').val(c.id);
-    $('#nome').val(c.nome);
-    $('#tipo').val(c.tipo);
-    $('#cpf_cnpj').val(c.cpf_cnpj);
-    $('#email').val(c.email);
-    $('#celular').val(c.celular);
-    $('#endereco').val(c.endereco);
-    $('#bairro').val(c.bairro);
-    $('#cidade').val(c.cidade);
-    $('#cep').val(c.cep);
-    $('#uf').val(c.uf);
-    $('#sugestoes-clientes').hide();
-});
+<script>    
 
 // --- Produto autocomplete/modal ---
 $('#abrir-modal-produto').on('click', function() {
@@ -177,6 +154,11 @@ $(document).on('click', '.sugestao-produto', function() {
     $('#busca-produto').data('produto', p);
     $('#sugestoes-produtos').hide();
 });
+$('#busca-produto').focusout(function() {
+        setTimeout(function() {
+            $('#sugestoes-produtos').hide();
+        }, 200);
+    });
 
 // --- Adicionar produto à tabela ---
     if (typeof produtosPedido === 'undefined') {
@@ -190,10 +172,10 @@ function atualizarTabelaProdutos() {
         totalPedido += total;
         html += '<tr>';
         html += '<td>'+p.nome+'</td>';
-        html += '<td>R$ '+p.preco_unitario.toFixed(2)+'</td>';
-        html += '<td>'+p.quantidade+'</td>';
-        html += '<td>R$ '+total.toFixed(2)+'</td>';
-        html += '<td><button class="btn btn-secondary btn-sm" onclick="removerProduto('+idx+')">Remover</button></td>';
+        html += '<td scope="col" style="width: 15%;">R$ '+p.preco_unitario.toFixed(2)+'</td>';
+        html += '<td scope="col" style="width: 5%;">'+p.quantidade+'</td>';
+        html += '<td scope="col" style="width: 15%;">R$ '+total.toFixed(2)+'</td>';
+        html += '<td scope="col" style="width: 5%;"><button class="btn btn-secondary btn-sm" onclick="removerProduto('+idx+')">Remover</button></td>';
         html += '</tr>';
     });
     $('#tabela-produtos tbody').html(html);
@@ -221,7 +203,8 @@ $('#adicionar-produto').on('click', function () {
     atualizarTabelaProdutos();
     $('#modal-produto').modal('hide');
 });
-var produtosPedido = {{ produtos | tojson }};
+
+var produtosPedido = {{ produtos | tojson | safe }} || [];
 atualizarTabelaProdutos();
 </script>
 

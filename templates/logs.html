@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% block conteudo %}
+<div class="container mt-4">
+    <h4>Visualizar Logs</h4>
+    <hr>
+
+    <!-- Filtro de dias -->
+    <form method="get" class="form-inline mb-3">
+        <label for="dias" class="mr-2">Mostrar logs dos últimos</label>
+        <input type="number" name="dias" id="dias" class="form-control form-control-sm mr-2" value="{{ dias }}" min="1" max="365">
+        <button type="submit" class="btn btn-primary btn-sm">Filtrar</button>
+    </form>
+
+    <!-- Tabela de logs -->
+    <div class="table-responsive">
+        <table class="table table-striped table-hover table-sm">
+            <thead class="thead-dark">
+                <tr>
+                    <th>Data</th>
+                    <th>Nível</th>
+                    <th>Mensagem</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if logs %}
+                    {% for log in logs %}
+                        <tr>
+                            <td>{{ log.data }}</td>
+                            <td>
+                                {% if log.nivel == 'ERROR' %}
+                                    <span class="badge badge-danger">{{ log.nivel }}</span>
+                                {% elif log.nivel == 'WARNING' %}
+                                    <span class="badge badge-warning">{{ log.nivel }}</span>
+                                {% else %}
+                                    <span class="badge badge-info">{{ log.nivel }}</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ log.mensagem }}</td>
+                        </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="3" class="text-center">Nenhum log encontrado.</td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

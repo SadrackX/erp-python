@@ -1,27 +1,47 @@
 ﻿{% extends 'base.html' %}
 {% block conteudo %}
-    <h3>Produtos</h3>
-    <a href="{{ url_for('produtos_novo') }}">Cadastrar novo produto</a>
+    <div class="" style="display: flex; justify-content: space-between; align-items: center; padding-top: 20px; ">
+        <h3>Produtos</h3>
+        <!-- Botão para abrir o modal de novo produto -->
+        <a href="" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#produtoModal">Cadastrar Novo Produto</a>
+    </div>
     <hr>
-    <h4>Lista de Produtos</h4>
+    <br/>
     <table class="table table-striped" border="1" cellpadding="5" cellspacing="0">
         <thead class="thead-dark">
             <tr>
-                <th>Nome</th>
-                <th>Preço de Custo</th>
-                <th>Preço de Venda</th>
-                <th>Observação</th>
-                <th>Ativo</th>
+                <th scope="col">Nome</th>
+                <th scope="col" style="width: 13%;">Preço de Custo</th>
+                <th scope="col" style="width: 13%;">Preço de Venda</th>
+                <th scope="col" >Observação</th>
+                <th scope="col" style="width: 5%;"></th>
             </tr>
             </thead>
             {% for produto in produtos %}
             <tr>
                 <td>{{ produto.nome }}</td>
-                <td>{{ produto.preco_custo }}</td>
-                <td>{{ produto.preco_venda }}</td>
+                <td>R$ {{ '%.2f' % produto.preco_custo }}</td>
+                <td>R$ {{ '%.2f' % produto.preco_venda }}</td>
                 <td>{{ produto.observacao }}</td>
-                <td>{{ 'Sim' if produto.ativo else 'Não' }}</td>
+                <td>
+                    <button type="button" class="btn btn-warning btn-sm" data-toggle="modal" data-target="#editarProdutoModal{{ produto.id }}">Editar</button>
+                </td>
             </tr>
+            {% include 'partials/modal_editar_produto.html' %}
             {% endfor %}
     </table>
+   
+    {% include 'partials/modal_novo_produto.html' %}
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var formNovo = document.querySelector('#produtoModal form');
+        if (formNovo) adicionarValidacaoProduto(formNovo);
+
+        document.querySelectorAll('[id^="editarProdutoModal"] form').forEach(function(form) {
+            adicionarValidacaoProduto(form);
+        });
+    });
+    </script>
+
 {% endblock %}

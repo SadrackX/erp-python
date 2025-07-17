@@ -66,18 +66,21 @@ class CSVManager:
         return None
     
     def update(self, id_value: str, new_data: Dict) -> bool:
-        """Atualiza um registro existente"""
+        """Atualiza um registro existente mantendo todos os campos"""
         records = self.get_all()
         updated = False
-        
+
+        valid_new_data = {k: v for k, v in new_data.items() if k in self.get_headers()}
+
         with open(self.filepath, mode='w', encoding='utf-8', newline='') as f:
             writer = csv.DictWriter(f, fieldnames=self.get_headers())
             writer.writeheader()
-            
+
             for record in records:
                 if record['id'] == id_value:
-                    record.update(new_data)
+                    record.update(valid_new_data)
                     updated = True
-                writer.writerow(record)
-        
+                safe_record = {field: record.get(field, '') for field in self.get_headers()}
+                writer.writerow(safe_record)
+
         return updated

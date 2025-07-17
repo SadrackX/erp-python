@@ -97,7 +97,7 @@
             </li>
             {% if usuario_nivel == "admin" %}
             <li class="nav-item">
-                <a href="#" data-svg="logs"><span class="material-icons">app_registration</span> Visualizar logs</a>
+                <a href="{{ url_for('logs') }}" data-svg="logs"><span class="material-icons">app_registration</span> Visualizar logs</a>
             </li>
             <li class="nav-item">
                 <a href="#" data-svg="backup"><span class="material-icons">restore_page</span> Backup/Restauracao</a>

@@ -15,6 +15,8 @@ from modules.pedidos.models import Pedido, ItemPedido
 import os
 from datetime import datetime
 
+from modules.relatorios.logviewer import LogViewer
+
 app = Flask(__name__)
 app.secret_key = 'erp_secret_key'
 
@@ -106,6 +108,19 @@ def produtos_novo():
     if 'usuario_nome' not in session:
         return redirect(url_for('login'))
     if request.method == 'POST':
+        editar_id = request.args.get('editar')
+        if editar_id:
+            # Atualização de produto existente
+            novos_dados = {
+                'nome': request.form['nome'],
+                'preco_custo': float(request.form['preco_custo']),
+                'preco_venda': float(request.form['preco_venda']),
+                'observacao': request.form['observacao'],
+                'ativo': True
+            }
+            ProdutoManager().atualizar_produto(editar_id, novos_dados)
+            flash('Produto atualizado com sucesso!')
+            return redirect(url_for('produtos'))
         novo = Produto(
             id='',
             nome=request.form['nome'],
@@ -213,6 +228,14 @@ def pedidos_novo():
                 ativo=True
             )
             cliente_id = ClienteManager().cadastrar_cliente(novo_cliente)
+        data_previsao = request.form.get('data_previsao_entrega')
+        if data_previsao:
+            try:
+                data_previsao = datetime.strptime(data_previsao, "%Y-%m-%d")
+            except ValueError:
+                data_previsao = None
+        else:
+            data_previsao = None
         novo = Pedido(
             id='',
             id_cliente=cliente_id,
@@ -222,7 +245,7 @@ def pedidos_novo():
             itens=itens,
             observacoes=request.form.get('observacoes'),
             desconto_total=float(request.form.get('desconto_total', 0)),
-            data_previsao_entrega=None  # Será calculada automaticamente
+            data_previsao_entrega=data_previsao  # Será calculada automaticamente
         )
         PedidoManager().criar_pedido(novo)
         flash('Pedido cadastrado!')
@@ -305,7 +328,9 @@ def pedido_editar(pedido_id):
     pedido = PedidoManager().buscar_por_id(pedido_id)
     if not pedido:
         flash('Pedido não encontrado!')
-        return redirect(url_for('pedidos'))        
+        return redirect(url_for('pedidos'))       
+    if isinstance(pedido.data_previsao_entrega, datetime):
+        pedido.data_previsao_entrega = pedido.data_previsao_entrega.strftime("%Y-%m-%d") 
     cliente = ClienteManager().buscar_por_id(pedido.id_cliente)
     produtos = []
     for item in pedido.itens:
@@ -316,13 +341,63 @@ def pedido_editar(pedido_id):
             'quantidade': item.quantidade,
             'total': item.total
         })
+  
     if request.method == 'POST':
-        novos_dados = {
-            'status': request.form['status'],
-            'observacoes': request.form.get('observacoes'),
-            'desconto_total': request.form.get('desconto_total', pedido.desconto_total)
-        }
-        PedidoManager().atualizar_pedido(pedido_id, novos_dados)
+
+        import json
+        produtos_json = request.form.get('produtos_json')
+        itens = []
+        if produtos_json:
+            produtos = json.loads(produtos_json)
+            for p in produtos:
+                itens.append(ItemPedido(
+                    id_pedido='',  # Será atualizado depois
+                    nome=p['nome'],
+                    quantidade=int(p['quantidade']),
+                    preco_unitario=float(p['preco_unitario'])
+                ))
+
+        cliente_id = request.form['id_cliente']
+        if cliente_id == 'novo':
+            novo_cliente = Cliente(
+                id='',
+                nome=request.form['nome'],
+                tipo=request.form['tipo'],
+                cpf_cnpj=request.form['cpf_cnpj'],
+                email=request.form['email'],
+                celular=request.form['celular'],
+                endereco=request.form['endereco'],
+                bairro=request.form['bairro'],
+                cidade=request.form['cidade'],
+                cep=request.form['cep'],
+                uf=request.form['uf'],
+                observacoes=None,
+                ativo=True
+            )
+        data_previsao = request.form.get('data_previsao_entrega')
+        if data_previsao:
+            try:
+                data_previsao = datetime.strptime(data_previsao, "%Y-%m-%d")
+            except ValueError:
+                data_previsao = None
+        else:
+            data_previsao = None
+        novo = Pedido(
+            id=pedido_id,
+            id_cliente=cliente_id,
+            id_forma_pagamento=request.form['id_forma_pagamento'] if 'id_forma_pagamento' in request.form else '',
+            data=datetime.now(),
+            status=request.form['status'],
+            itens=itens,
+            observacoes=request.form.get('observacoes'),
+            desconto_total=float(request.form.get('desconto_total', 0)),
+            data_previsao_entrega=data_previsao  # Será calculada automaticamente
+        )
+        if request.form['status'] in ['design', 'producao'] and not request.form.get('data_previsao_entrega'):
+            flash('Data de entrega é obrigatória para pedidos em design ou produção!')
+            return render_template('pedido_editar.html', pedido=pedido, cliente=cliente, produtos=produtos, usuario_nome=session['usuario_nome'], usuario_nivel=session['usuario_nivel'])
+        PedidoManager().atualizar_pedido(pedido_id, novo.to_dict())
+        PedidoManager().atualizar_itens_pedido(pedido_id, novo.itens)
         flash('Pedido atualizado!')
         return redirect(url_for('pedidos'))
     return render_template('pedido_editar.html', pedido=pedido, cliente=cliente, produtos=produtos, usuario_nome=session['usuario_nome'], usuario_nivel=session['usuario_nivel'])
@@ -375,6 +450,41 @@ def buscar_produtos():
             })
     return jsonify(resultados)
 
+@app.route('/logs')
+def logs():
+    if 'usuario_nome' not in session:
+        return redirect(url_for('login'))
+    
+    dias = request.args.get('dias', 30)
+    try:
+        dias = int(dias)
+    except ValueError:
+        dias = 30
+
+    logs = LogViewer().mostrar_logs(dias)
+    return render_template('logs.html', logs=logs, dias=dias , usuario_nome=session['usuario_nome'], usuario_nivel=session['usuario_nivel'])
+
+"""
+log("Pedido salvo com sucesso", "info")
+log("Cliente não encontrado", "warning")
+log("Erro na conexão com o banco", "error")
+log("Acesso negado ao usuário admin", "critical")
+import colorlog
+
+console_handler = colorlog.StreamHandler()
+console_handler.setFormatter(colorlog.ColoredFormatter(
+    "%(asctime)s | %(log_color)s%(levelname)-8s%(reset)s | %(message)s",
+    datefmt='%d/%m/%Y %H:%M:%S',
+    log_colors={
+        'DEBUG': 'cyan',
+        'INFO': 'white',
+        'WARNING': 'yellow',
+        'ERROR': 'red',
+        'CRITICAL': 'red,bg_white',
+    }
+))
+"""
+
 @app.route('/logout')
 def logout():
     session.clear()
@@ -382,3 +492,4 @@ def logout():
 
 if __name__ == '__main__':
     app.run(debug=True, port=5001)
+

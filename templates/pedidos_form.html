@@ -8,11 +8,11 @@
             <h5>Novo Pedido</h5>
             <form id="pedido-form" method="post" action="{{ url_for('pedidos_novo') }}">
                 <div class="form-row">
-                    <div class="form-group col-md-6">
+                    <div class="form-group col-md-7">
                         <label for="nome">Nome do cliente</label>
                         <input type="text" class="form-control" id="nome" name="nome" required>
                     </div>
-                    <div class="form-group col-md-3">
+                    <div class="form-group col-md-2">
                         <label for="tipo">Tipo</label>
                         <select class="form-control" id="tipo" name="tipo" required>
                             <option value="PF">PF</option>
@@ -20,7 +20,7 @@
                         </select>
                     </div>
                     <div class="form-group col-md-3">
-                        <label for="cpf_cnpj">CPF/CNPJ</label>
+                        <label for="cpf_cnpj">CPF/CNPJ - Pesquisa</label>
                         <input type="text" class="form-control" id="cpf_cnpj" name="cpf_cnpj" required>
                         <div id="sugestoes-clientes" style="background:#fff; border:1px solid #ccc; display:none; position:absolute; z-index:10;"></div>
                     </div>
@@ -54,20 +54,28 @@
                     </div>
                 </div>
                 <hr>
-                <!-- Produtos do Pedido -->
-                <button type="button" class="btn btn-primary" id="abrir-modal-produto" data-toggle="modal" data-target="#modal-produto">Adicionar Produto</button>
-                {% include 'partials/tabela_itens_pedido.html' %}
-
+                <div class="form-row">
+                    <!-- Produtos do Pedido -->
+                    <button type="button" class="btn btn-primary" id="abrir-modal-produto" data-toggle="modal" data-target="#modal-produto">Adicionar Produto</button>
+                    {% include 'partials/tabela_itens_pedido.html' %}
+                </div>  
                 <!-- Status e valor final -->
-                <div class="form-group mt-3">
-                    <label>Status:</label>
-                    <select name="status" required class="form-control">
-                        <option value="rascunho">Rascunho</option>
-                        <option value="design">Design</option>
-                        <option value="producao">Produção</option>
-                        <option value="finalizado">Finalizado</option>
-                        <option value="cancelado">Cancelado</option>
-                    </select>
+                <div class="form-row">  
+                    <div class="form-group col-md-3">
+                        <label for="status">Status:</label>
+                        <select name="status" required class="form-control">
+                            <option value="rascunho">Rascunho</option>
+                            <option value="design">Design</option>
+                            <option value="producao">Produção</option>
+                            <option value="finalizado">Finalizado</option>
+                            <option value="cancelado">Cancelado</option>
+                        </select>
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label for="data_previsao_entrega">Data Prevista de Entrega:</label>
+                        <input type="date" class="form-control" id="data_previsao_entrega" name="data_previsao_entrega"
+                            value="">
+                    </div>
                 </div>
 
                 <div class="form-group">
@@ -129,7 +137,9 @@
         });
     });
     $('#cpf_cnpj').focusout(function() {
-        $('#sugestoes-clientes').hide();
+        setTimeout(function() {
+            $('#sugestoes-clientes').hide();
+        }, 200);
     });
     $(document).on('click', '.sugestao-cliente', function() {
         var c = JSON.parse(decodeURIComponent($(this).data('json')));
@@ -169,6 +179,11 @@
             $('#sugestoes-produtos').html(html).show();
         });
     });
+    $('#busca-produto').focusout(function() {
+        setTimeout(function() {
+            $('#sugestoes-produtos').hide();
+        }, 200);
+    });
     $(document).on('click', '.sugestao-produto', function() {
         var p = JSON.parse(decodeURIComponent($(this).data('json')));
         $('#preco-produto').val(p.preco_venda);
@@ -187,10 +202,10 @@
             totalPedido += total;
             html += '<tr>';
             html += '<td>'+p.nome+'</td>';
-            html += '<td>R$ '+p.preco_unitario.toFixed(2)+'</td>';
-            html += '<td>'+p.quantidade+'</td>';
-            html += '<td>R$ '+total.toFixed(2)+'</td>';
-            html += '<td><button class="btn btn-secondary btn-sm" onclick="removerProduto('+idx+')">Remover</button></td>';
+            html += '<td scope="col" style="width: 15%;">R$ '+p.preco_unitario.toFixed(2)+'</td>';
+            html += '<td scope="col" style="width: 5%;">'+p.quantidade+'</td>';
+            html += '<td scope="col" style="width: 15%;">R$ '+total.toFixed(2)+'</td>';
+            html += '<td scope="col" style="width: 5%;"><button class="btn btn-secondary btn-sm" onclick="removerProduto('+idx+')">Remover</button></td>';
             html += '</tr>';
         });
         $('#tabela-produtos tbody').html(html);
