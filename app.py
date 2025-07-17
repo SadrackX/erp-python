@@ -1,4 +1,5 @@
 ﻿# -*- coding: utf-8 -*-
+from logging import log
 from core import logger
 from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
 from modules.auth.manager import UsuarioManager
@@ -32,7 +33,7 @@ def login():
             logger.log(f"Usuário {usuario.nome} logado com sucesso.")
             return redirect(url_for('dashboard'))
         else:
-            flash('Credenciais invalidas!')
+            logger.log('Credenciais invalidas!', 'error')
     return render_template('login.html')
 
 @app.route('/dashboard')
@@ -72,7 +73,7 @@ def clientes_novo():
                 'ativo': True
             }
             ClienteManager().atualizar_cliente(editar_id, novos_dados)
-            flash('Cliente atualizado com sucesso!')
+            logger.log(f"Cliente {request.form['nome']} atualizado com sucesso!", 'info')
             return redirect(url_for('clientes'))
         else:
             novo = Cliente(
@@ -91,7 +92,7 @@ def clientes_novo():
                 ativo=True
             )
             ClienteManager().cadastrar_cliente(novo)
-            flash('Cliente cadastrado!')
+            logger.log(f"Cliente {novo.nome} cadastrado!", 'info')
             return redirect(url_for('clientes'))
     return render_template('clientes_list.html', usuario_nome=session['usuario_nome'], usuario_nivel=session['usuario_nivel'])
 
@@ -107,32 +108,29 @@ def produtos():
 def produtos_novo():
     if 'usuario_nome' not in session:
         return redirect(url_for('login'))
-    if request.method == 'POST':
-        editar_id = request.args.get('editar')
-        if editar_id:
-            # Atualização de produto existente
-            novos_dados = {
-                'nome': request.form['nome'],
-                'preco_custo': float(request.form['preco_custo']),
-                'preco_venda': float(request.form['preco_venda']),
-                'observacao': request.form['observacao'],
-                'ativo': True
-            }
-            ProdutoManager().atualizar_produto(editar_id, novos_dados)
-            flash('Produto atualizado com sucesso!')
-            return redirect(url_for('produtos'))
-        novo = Produto(
-            id='',
-            nome=request.form['nome'],
-            preco_custo=float(request.form['preco_custo']),
-            preco_venda=float(request.form['preco_venda']),
-            observacao=request.form['observacao'],
-            ativo=True
-        )
-        ProdutoManager().cadastrar_produto(novo)
-        flash('Produto cadastrado!')
+    produto_id = request.args.get('editar')
+    produto = ProdutoManager().buscar_por_id(produto_id) if produto_id else None
+    if request.method == 'POST':        
+           
+        produto = {
+            'id': produto_id or '',
+            'nome': request.form['nome'],
+            'preco_custo': float(request.form['preco_custo']),
+            'preco_venda': float(request.form['preco_venda']),
+            'observacao': request.form.get('observacao', ''),
+            'ativo': request.form.get('ativo', 'on') == 'on'
+        }
+
+        if produto_id:
+            ProdutoManager().atualizar_produto(produto_id, produto)
+            logger.log(f"Produto {request.form['nome']} atualizado com sucesso!", 'info')
+        else:
+            ProdutoManager().cadastrar_produto(Produto.from_dict(produto))
+            logger.log(f"Produto {request.form['nome']} cadastrado!", 'info')
+
         return redirect(url_for('produtos'))
-    return render_template('produtos_form.html', usuario_nome=session['usuario_nome'], usuario_nivel=session['usuario_nivel'])
+
+    return render_template('produtos_list.html', produto=produto, usuario_nome=session['usuario_nome'], usuario_nivel=session['usuario_nivel'])
 
 # FORNECEDORES
 @app.route('/fornecedores')
@@ -160,7 +158,7 @@ def fornecedores_novo():
                 'ativo': True
             }
             FornecedorManager().atualizar_fornecedor(editar_id, novos_dados)
-            flash('Fornecedor atualizado com sucesso!')
+            logger.log(f"Fornecedor {novos_dados.nome} atualizado com sucesso!", 'info')
             return redirect(url_for('fornecedores'))
         else:
             novo = Fornecedor(
@@ -174,7 +172,7 @@ def fornecedores_novo():
                 ativo=True
             )
             FornecedorManager().cadastrar_fornecedor(novo)
-            flash('Fornecedor cadastrado!')
+            logger.log(f"Fornecedor {novo.nome} cadastrado!", 'info')
             return redirect(url_for('fornecedores'))
     return render_template('fornecedores_form.html', usuario_nome=session['usuario_nome'], usuario_nivel=session['usuario_nivel'])
 
@@ -248,7 +246,7 @@ def pedidos_novo():
             data_previsao_entrega=data_previsao  # Será calculada automaticamente
         )
         PedidoManager().criar_pedido(novo)
-        flash('Pedido cadastrado!')
+        logger.log(f"Pedido {novo.id} cadastrado!", 'info')
         return redirect(url_for('pedidos'))
     return render_template('pedidos_form.html', usuario_nome=session['usuario_nome'], usuario_nivel=session['usuario_nivel'])
 
@@ -307,7 +305,7 @@ def pedido_detalhes(pedido_id):
         return redirect(url_for('login'))
     pedido = PedidoManager().buscar_por_id(pedido_id)
     if not pedido:
-        flash('Pedido não encontrado!')
+        logger.log('Pedido não encontrado!', 'error')
         return redirect(url_for('pedidos'))
     cliente = ClienteManager().buscar_por_id(pedido.id_cliente)
     produtos = []
@@ -327,7 +325,7 @@ def pedido_editar(pedido_id):
         return redirect(url_for('login'))
     pedido = PedidoManager().buscar_por_id(pedido_id)
     if not pedido:
-        flash('Pedido não encontrado!')
+        logger.log('Pedido não encontrado!', 'error')
         return redirect(url_for('pedidos'))       
     if isinstance(pedido.data_previsao_entrega, datetime):
         pedido.data_previsao_entrega = pedido.data_previsao_entrega.strftime("%Y-%m-%d") 
@@ -398,7 +396,7 @@ def pedido_editar(pedido_id):
             return render_template('pedido_editar.html', pedido=pedido, cliente=cliente, produtos=produtos, usuario_nome=session['usuario_nome'], usuario_nivel=session['usuario_nivel'])
         PedidoManager().atualizar_pedido(pedido_id, novo.to_dict())
         PedidoManager().atualizar_itens_pedido(pedido_id, novo.itens)
-        flash('Pedido atualizado!')
+        logger.log(f"Pedido {novo.id} atualizado!", 'info')
         return redirect(url_for('pedidos'))
     return render_template('pedido_editar.html', pedido=pedido, cliente=cliente, produtos=produtos, usuario_nome=session['usuario_nome'], usuario_nivel=session['usuario_nivel'])
  
@@ -407,7 +405,7 @@ def pedido_cancelar(pedido_id):
     if 'usuario_nome' not in session:
         return redirect(url_for('login'))
     PedidoManager().cancelar_pedido(pedido_id)
-    flash('Pedido cancelado!')
+    logger.log(f"Pedido {pedido_id} cancelado!", 'info')
     return redirect(url_for('pedidos'))
 
 @app.route('/buscar_clientes')

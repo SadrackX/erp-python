@@ -3,3 +3,9 @@ id,nome,preco_custo,preco_venda,observacao,ativo
 0002,LONA,15.00,70.00,M²,True
 0003,ADESIVO,12.00,80.00,M²,True
 0004,BANNER 80X120,20.00,80.00,Com acabamento,True
+0005,Teste,12.00,12.00,,True
+0006,teste2,10.00,11.00,12,True
+,teste 003,12.00,13.00,14,True
+,teste 003,12.00,13.00,15,True
+0007,teste 003,12.00,13.00,17,True
+0008,Teste,30.00,40.00,50,True

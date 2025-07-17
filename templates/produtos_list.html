@@ -3,7 +3,7 @@
     <div class="" style="display: flex; justify-content: space-between; align-items: center; padding-top: 20px; ">
         <h3>Produtos</h3>
         <!-- Botão para abrir o modal de novo produto -->
-        <a href="" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#produtoModal">Cadastrar Novo Produto</a>
+        <a href="#" class="btn btn-primary btn-sm" onclick="abrirModalProduto()">Cadastrar Novo Produto</a>
     </div>
     <hr>
     <br/>
@@ -18,30 +18,47 @@
             </tr>
             </thead>
             {% for produto in produtos %}
-            <tr>
-                <td>{{ produto.nome }}</td>
-                <td>R$ {{ '%.2f' % produto.preco_custo }}</td>
-                <td>R$ {{ '%.2f' % produto.preco_venda }}</td>
-                <td>{{ produto.observacao }}</td>
-                <td>
-                    <button type="button" class="btn btn-warning btn-sm" data-toggle="modal" data-target="#editarProdutoModal{{ produto.id }}">Editar</button>
-                </td>
-            </tr>
-            {% include 'partials/modal_editar_produto.html' %}
+                <tr>
+                    <td>{{ produto.nome }}</td>
+                    <td>R$ {{ '%.2f' % produto.preco_custo }}</td>
+                    <td>R$ {{ '%.2f' % produto.preco_venda }}</td>
+                    <td>{{ produto.observacao }}</td>
+                    <td>
+                        <button type="button" class="btn btn-warning btn-sm" onclick="abrirModalProduto({{ produto.to_dict() }})">Editar</button>
+                    </td>
+                </tr>
             {% endfor %}
     </table>
    
     {% include 'partials/modal_novo_produto.html' %}
 
     <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        var formNovo = document.querySelector('#produtoModal form');
-        if (formNovo) adicionarValidacaoProduto(formNovo);
+    
+    function abrirModalProduto(produto = null) {
+        const modalLabel = document.getElementById('produtoModalLabel');
+        const form = document.getElementById('produto-form');
+        const idInput = document.getElementById('produto-id');
+        const nomeInput = document.getElementById('nome');
+        const precoCustoInput = document.getElementById('preco_custo');
+        const precoVendaInput = document.getElementById('preco_venda');
+        const observacaoInput = document.getElementById('observacao');
 
-        document.querySelectorAll('[id^="editarProdutoModal"] form').forEach(function(form) {
-            adicionarValidacaoProduto(form);
-        });
-    });
+        if (produto) {
+            modalLabel.textContent = 'Editar Produto';
+            idInput.value = produto.id;
+            nomeInput.value = produto.nome;
+            precoCustoInput.value = produto.preco_custo;
+            precoVendaInput.value = produto.preco_venda;
+            observacaoInput.value = produto.observacao;
+            form.action = "{{ url_for('produtos_novo') }}?editar=" + produto.id;
+        } else {
+            modalLabel.textContent = 'Cadastrar Produto';
+            form.reset();
+            form.action = "{{ url_for('produtos_novo') }}";
+        }
+
+        $('#produtoModal').modal('show');
+    }
     </script>
 
 {% endblock %}
