@@ -56,7 +56,7 @@ class ClienteManager(CSVManager):
             #dados = {k: v for k, v in cliente.to_dict().items() if v is not None}
             
             self.save(cliente.to_dict())
-            logger.log(f"Cliente cadastrado - ID: {cliente.id[:8]} | Nome: {cliente.nome}")
+            #logger.log(f"Cliente cadastrado - ID: {cliente.id[:8]} | Nome: {cliente.nome}")
             return cliente.id
         except Exception as e:
             logger.log(f"Erro ao cadastrar cliente: {str(e)}", "error")

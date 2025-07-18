@@ -260,6 +260,7 @@ def pedidos_novo():
     if 'usuario_nome' not in session:
         return redirect(url_for('login'))
     if request.method == 'POST':
+        data_str = request.form.get('data_previsao_entrega')
         produtos_json = request.form.get('produtos_json')
         itens = []
         if produtos_json:
@@ -298,7 +299,7 @@ def pedidos_novo():
             itens=itens,
             observacoes=request.form.get('observacoes'),
             desconto_total=float(request.form.get('desconto_total', 0)),
-            data_previsao_entrega=None  # Será calculada automaticamente
+            data_previsao_entrega=data_str  
         )
         PedidoManager().criar_pedido(novo)
         flash('Pedido cadastrado!')
@@ -313,6 +314,16 @@ def pedido_editar(pedido_id):
 
     pedido_id = pedido_id or request.args.get('editar')
     produtos_json = request.form.get('produtos_json')
+    produtos_att = []
+    if produtos_json:
+        produtos = json.loads(produtos_json)
+        for p in produtos:
+            produtos_att.append(ItemPedido(
+                id_pedido='',
+                nome=p['nome'],
+                quantidade=p['quantidade'],
+                preco_unitario=p['preco_unitario']
+            ))
     
     pedido_obj = PedidoManager().buscar_por_id(pedido_id) if pedido_id else None
     if not pedido_obj:
@@ -323,7 +334,7 @@ def pedido_editar(pedido_id):
 
     cliente = ClienteManager().buscar_por_id(pedido['id_cliente']) if pedido.get('id_cliente') else None
 
-    pedido['itens'] = []
+    pedido['itens'] = produtos_json
     itens = pedido.get('itens', [])
     if isinstance(itens, list):
         for item in itens:
@@ -338,44 +349,20 @@ def pedido_editar(pedido_id):
 
     if request.method == 'POST':
         data_str = request.form.get('data_previsao_entrega')
-        
-        
-        itens = []
-        for item in pedido['itens']:
-            prod = ItensPedidoManager().buscar_itens_por_pedido(item.id_pedido)
-            itens.append({
-                'nome': item.nome if prod else 'Produto removido',
-                'preco_unitario': item.preco_unitario,
-                'quantidade': item.quantidade,
-                'total': item.total
-            })
-        """ novo = Pedido(
-            id=pedido_id,
-            id_cliente=request.form['id_cliente'],
-            id_forma_pagamento=request.form.get('id_forma_pagamento', ''),
-            data=datetime.now(),
-            status=request.form['status'],
-            itens=itens,
-            observacoes=request.form.get('observacoes'),
-            desconto_total=float(request.form.get('desconto_total', 0)),
-            data_previsao_entrega=request.form['data_previsao_entrega'],  # Será calculada automaticamente
-        )        """ 
         novos_dados = {
             'status': request.form['status'],
             'observacoes': request.form.get('observacoes'),
             'desconto_total': request.form.get('desconto_total', pedido.get('desconto_total')),
             'id_cliente': request.form.get('id_cliente'),
             'data_previsao_entrega': data_str
-        } 
-
+        }
+        PedidoManager().atualizar_itens_pedido(pedido_id, produtos_att)
         PedidoManager().atualizar_pedido(pedido_id, novos_dados)
-        flash('Pedido atualizado!')
+        logger.log(f"Pedido {pedido_id} atualizado!", 'info')
         return redirect(url_for('pedidos'))
     
     if isinstance(pedido.get("data_previsao_entrega"), datetime):
         pedido["data_previsao_entrega"] = pedido["data_previsao_entrega"].strftime("%Y-%m-%d")
-
-    # pedido['itens'] = pedido['itens'] or []
 
     return render_template(
         'pedidos_form.html',

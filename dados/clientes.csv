@@ -10,3 +10,4 @@ id,nome,tipo,cpf_cnpj,email,celular,endereco,bairro,cidade,cep,uf,observacoes,at
 0009,sadrackx,PF,08928838479,thallyelsom@hotmail.com,83981273917,QNP 13 CONJUNTO N,centro,CEILÂNDIA,72241-314,pb,,True
 0010,sadrack hc,PJ,08928838479,thallyelsom@hotmail.com,83981273917,QNP 13 CONJUNTO N,centro,CEILÂNDIA,72241-314,pb,,True
 6b141413-448a-47af-a3a3-5aa2f8b69653,sadrack sdkx,PF,18928838478,exemplo@email.com,00 00000-0000,QNP 13 CONJUNTO N,centro,CEILÂNDIA,00000000,pb,,True
+0011,teste 1807,PF,08922214,thallyelsom@hotmail.com,83981273917,QNP 13 CONJUNTO N,centro,CEILÂNDIA,72241-314,pb,,True
