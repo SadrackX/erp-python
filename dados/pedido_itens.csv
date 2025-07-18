@@ -7,3 +7,4 @@ id_item,id_pedido,nome,quantidade,preco_unitario
 0018,0001,ADESIVO,1,80.00
 0019,0001,LONA,1,70.00
 0020,0001,ADESIVO,1,80.00
+0021,0006,teste 003,12,13.00

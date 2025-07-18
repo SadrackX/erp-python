@@ -6,55 +6,54 @@
         <div class="col-md-12">
             <hr>
             <h5>{{ "Editar Pedido" if pedido else "Novo Pedido" }}</h5>
-            <form id="pedido-form" method="post" action="{{ url_for('pedidos_novo', editar=pedido.id) if pedido else url_for('pedidos_novo') }}">
-                <input type="hidden" name="id_pedido" id="pedido-id" value="{{ pedido.id if pedido else '' }}">
+            <form id="pedido-form" method="post" action="{{ url_for('pedido_editar', pedido_id=pedido['id']) if pedido else url_for('pedidos_novo') }}">
 
                 <div class="form-row">
                     <!-- Dados do cliente -->
                     <div class="form-group col-md-7">
                         <label for="nome">Nome do cliente</label>
                         <input type="text" class="form-control" id="nome" name="nome"
-                            value="{{ cliente.nome if cliente else '' }}" required>                    
+                            value="{{ cliente['nome'] if cliente else '' }}" {% if pedido %}readonly disabled{% endif %} required>                    
                     </div>
                     <div class="form-group col-md-2">
                         <label for="tipo">Tipo</label>
-                        <select class="form-control" id="tipo" name="tipo" required>
+                        <select class="form-control" id="tipo" name="tipo" {% if pedido %}readonly disabled{% endif %} required>
                             <option value="PF" {% if cliente and cliente.tipo == 'PF' %}selected{% endif %}>PF</option>
                             <option value="PJ" {% if cliente and cliente.tipo == 'PJ' %}selected{% endif %}>PJ</option>
                         </select>
                     </div>
                     <div class="form-group col-md-3">
                         <label for="cpf_cnpj">CPF/CNPJ - Pesquisa</label>
-                        <input type="text" class="form-control" id="cpf_cnpj" name="cpf_cnpj" value="{{ cliente.cpf_cnpj if cliente else '' }}" required>
+                        <input type="text" class="form-control" id="cpf_cnpj" name="cpf_cnpj" value="{{ cliente['cpf_cnpj'] if cliente else '' }}" {% if pedido %}readonly disabled{% endif %} required>
                         <div id="sugestoes-clientes" style="background:#fff; border:1px solid #ccc; display:none; position:absolute; z-index:10;"></div>
                     </div>
                     <div class="form-group col-md-6">
                         <label for="email">E-mail</label>
-                        <input type="email" class="form-control" id="email" name="email" value="{{ cliente.email if cliente else '' }}" required>
+                        <input type="email" class="form-control" id="email" name="email" value="{{ cliente['email'] if cliente else '' }}" {% if pedido %}readonly disabled{% endif %} required>
                     </div>
                     <div class="form-group col-md-6">
                         <label for="celular">Telefone</label>
-                        <input type="text" class="form-control" id="celular" name="celular" value="{{ cliente.celular if cliente else '' }}" required>
+                        <input type="text" class="form-control" id="celular" name="celular" value="{{ cliente['celular'] if cliente else '' }}" {% if pedido %}readonly disabled{% endif %} required>
                     </div>
                     <div class="form-group col-md-6">
                         <label for="endereco">Endereço</label>
-                        <input type="text" class="form-control" id="endereco" name="endereco" value="{{ cliente.endereco if cliente else '' }}" required>
+                        <input type="text" class="form-control" id="endereco" name="endereco" value="{{ cliente['endereco'] if cliente else '' }}" {% if pedido %}readonly disabled{% endif %} required>
                     </div>
                     <div class="form-group col-md-3">
                         <label for="bairro">Bairro</label>
-                        <input type="text" class="form-control" id="bairro" name="bairro" value="{{ cliente.bairro if cliente else '' }}" required>
+                        <input type="text" class="form-control" id="bairro" name="bairro" value="{{ cliente['bairro'] if cliente else '' }}" {% if pedido %}readonly disabled{% endif %} required>
                     </div>
                     <div class="form-group col-md-3">
                         <label for="cidade">Cidade</label>
-                        <input type="text" class="form-control" id="cidade" name="cidade" value="{{ cliente.cidade if cliente else '' }}" required>
+                        <input type="text" class="form-control" id="cidade" name="cidade" value="{{ cliente['cidade'] if cliente else '' }}" {% if pedido %}readonly disabled{% endif %} required>
                     </div>
                     <div class="form-group col-md-3">
                         <label for="cep">CEP</label>
-                        <input type="text" class="form-control" id="cep" name="cep" value="{{ cliente.cep if cliente else '' }}" required>
+                        <input type="text" class="form-control" id="cep" name="cep" value="{{ cliente['cep'] if cliente else '' }}" {% if pedido %}readonly disabled{% endif %} required>
                     </div>
                     <div class="form-group col-md-3">
                         <label for="uf">UF</label>
-                        <input type="text" class="form-control" id="uf" name="uf" maxlength="2" value="{{ cliente.uf if cliente else '' }}" required>
+                        <input type="text" class="form-control" id="uf" name="uf" maxlength="2" value="{{ cliente['uf'] if cliente else '' }}" {% if pedido %}readonly disabled{% endif %} required>
                     </div>
                 </div>
 
@@ -88,10 +87,12 @@
                             <option value="cancelado" {% if pedido and pedido.status == 'cancelado' %}selected{% endif %}>Cancelado</option>
                         </select>
                     </div>
+
                     <div class="form-group col-md-3">
                         <label for="data_previsao_entrega">Data Prevista de Entrega:</label>
                         <input type="date" class="form-control" id="data_previsao_entrega" name="data_previsao_entrega"
-                               value="{{ pedido.data_previsao_entrega.strftime('%Y-%m-%d') if pedido and pedido.data_previsao_entrega else '' }}">
+                               value="{{ pedido['data_previsao_entrega'] if pedido and pedido.get('data_previsao_entrega') else '' }}"
+>
                     </div>
                 </div>
 
@@ -99,9 +100,10 @@
                     <label>Valor Final do Pedido:</label>
                     <span id="valor-final">R$ 0,00</span><br>
                 </div>
-
+                
+                <input type="hidden" name="id_pedido" id="pedido-id" value="{{ pedido['id'] if pedido else '' }}">
                 <input type="hidden" name="produtos_json" id="produtos_json">
-                <input type="hidden" name="id_cliente" id="id_cliente" value="{{ pedido.id_cliente if pedido else 'novo' }}">
+                <input type="hidden" name="id_cliente" id="id_cliente" value="{{ pedido['id_cliente'] if pedido else 'novo' }}">
 
                 <hr>
                 <div class="container" style="text-align: right;">
@@ -141,41 +143,42 @@
 </div>
 
 <script>
-    // Dados do pedido (se for edição)
+
     var pedido = {{ pedido | tojson | safe }} || null;
     var produtosPedido = pedido && pedido.itens ? pedido.itens : [];
-    var clientes = {{ clientes | tojson | safe }};
+    var cliente = {{ cliente | tojson | safe }} || null;
+    var produtos = {{ produtos | tojson | safe }} || [];
+    
 
+    function editarPedidoForm() {
+        if (!pedido) return;
 
-function editarPedidoForm() {
-    if (!pedido) return;
+        $('#pedido-id').val(pedido.id);
+        $('#status').val(pedido.status);
+        $('#id_cliente').val(pedido.id_cliente);
 
-    $('#pedido-id').val(pedido.id);
-    $('#status').val(pedido.status);
-    $('#id_cliente').val(pedido.id_cliente);
+        if (pedido.data_previsao_entrega) {
+            $('#data_previsao_entrega').val(pedido.data_previsao_entrega.split('T')[0]);
+        }
 
-    if (pedido.data_previsao_entrega) {
-        $('#data_previsao_entrega').val(pedido.data_previsao_entrega.split('T')[0]);
+        // Se cliente estiver embutido no pedido
+        if (pedido.cliente) {
+            $('#nome').val(pedido.cliente.nome);
+            $('#cpf_cnpj').val(pedido.cliente.cpf_cnpj);
+            $('#email').val(pedido.cliente.email);
+            $('#celular').val(pedido.cliente.celular);
+            $('#endereco').val(pedido.cliente.endereco);
+            $('#bairro').val(pedido.cliente.bairro);
+            $('#cidade').val(pedido.cliente.cidade);
+            $('#cep').val(pedido.cliente.cep);
+            $('#uf').val(pedido.cliente.uf);
+            $('#tipo').val(pedido.cliente.tipo);
+        }
+
+        // Atualiza tabela de produtos
+        atualizarTabelaProdutos();
+        produtosPedido = produtos;
     }
-
-    // Se cliente estiver embutido no pedido
-    if (pedido.cliente) {
-        $('#nome').val(pedido.cliente.nome);
-        $('#cpf_cnpj').val(pedido.cliente.cpf_cnpj);
-        $('#email').val(pedido.cliente.email);
-        $('#celular').val(pedido.cliente.celular);
-        $('#endereco').val(pedido.cliente.endereco);
-        $('#bairro').val(pedido.cliente.bairro);
-        $('#cidade').val(pedido.cliente.cidade);
-        $('#cep').val(pedido.cliente.cep);
-        $('#uf').val(pedido.cliente.uf);
-        $('#tipo').val(pedido.cliente.tipo);
-    }
-
-    // Atualiza tabela de produtos
-    produtosPedido = pedido.itens || [];
-    atualizarTabelaProdutos();
-}
 
     function atualizarTabelaProdutos() {
         var html = '';
@@ -205,18 +208,7 @@ function editarPedidoForm() {
         atualizarTabelaProdutos();
 
         // Preenche cliente no formulário (edição)
-        if (pedido && pedido.cliente) {
-            $('#nome').val(pedido.cliente.nome);
-            $('#tipo').val(pedido.cliente.tipo);
-            $('#cpf_cnpj').val(pedido.cliente.cpf_cnpj);
-            $('#email').val(pedido.cliente.email);
-            $('#celular').val(pedido.cliente.celular);
-            $('#endereco').val(pedido.cliente.endereco);
-            $('#bairro').val(pedido.cliente.bairro);
-            $('#cidade').val(pedido.cliente.cidade);
-            $('#cep').val(pedido.cliente.cep);
-            $('#uf').val(pedido.cliente.uf);
-        }
+       
 
         // Cliente autocomplete
         $('#cpf_cnpj').on('input', function () {
@@ -303,5 +295,6 @@ function editarPedidoForm() {
             $('#modal-produto').modal('hide');
         });
     });
+    editarPedidoForm();
 </script>
 {% endblock %}
