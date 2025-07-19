@@ -39,21 +39,22 @@ class ItemPedido:
 
 @dataclass
 class Pedido:
-    def __init__(self, id, id_cliente, id_forma_pagamento, data, status, itens, observacoes, desconto_total, data_previsao_entrega):
+    def __init__(self, id, id_cliente, data, status, itens, observacoes, desconto_total, data_previsao_entrega, forma_de_pagamento, valor_pago):
         self.id = id
         self.id_cliente = id_cliente
-        self.id_forma_pagamento = id_forma_pagamento
         self.data = data
         self.status = status
         self.itens = itens
         self.observacoes = observacoes
         self.desconto_total = desconto_total
         self.data_previsao_entrega = data_previsao_entrega
+        self.forma_de_pagemento = forma_de_pagamento
+        self.valor_pago = valor_pago
         #self.total = sum(item.total for item in itens) - desconto_total
 
     def __post_init__(self):
         """Calcula automaticamente a previsão se não for fornecida"""
-        if self.data_previsao_entrega is None and self.status != 'rascunho':
+        if self.data_previsao_entrega == '' and self.status != 'rascunho':
             self.calcular_previsao_entrega()
 
     def definir_prazo_entrega(self, pedido_id: str, dias_uteis: int = None, data_manual: datetime = None) -> bool:
@@ -97,12 +98,14 @@ class Pedido:
         return {
             'id': self.id,
             'id_cliente': self.id_cliente,
-            'id_forma_pagamento': self.id_forma_pagamento,
             'data': self.data.isoformat() if isinstance(self.data, datetime) else str(self.data),
             'status': self.status,
             'observacoes': self.observacoes or '',
             'desconto_total': float(self.desconto_total),
-            'data_previsao_entrega': self.data_previsao_entrega.strftime("%Y-%m-%d") if isinstance(self.data_previsao_entrega, datetime) else self.data_previsao_entrega or ''
+            'data_previsao_entrega': self.data_previsao_entrega.strftime("%Y-%m-%d") if isinstance(self.data_previsao_entrega, datetime) else self.data_previsao_entrega or '',
+            'forma_de_pagamento': self.forma_de_pagemento,
+            'valor_pago': float(self.valor_pago)
+
         }
         return {k: v for k, v in dados.items() if v is not None}
 
@@ -125,11 +128,12 @@ class Pedido:
         return cls(
             id=data['id'],
             id_cliente=data['id_cliente'],
-            id_forma_pagamento=data['id_forma_pagamento'],
             data=datetime.fromisoformat(data['data']),
             status=data['status'],
             itens=itens or [],
             observacoes=data.get('observacoes'),
             desconto_total=float(data.get('desconto_total', '0')),
-            data_previsao_entrega=parse_data(data.get('data_previsao_entrega'))
+            data_previsao_entrega=parse_data(data.get('data_previsao_entrega')),
+            forma_de_pagamento=data.get('forma_de_pagamento'),
+            valor_pago=float(data.get('valor_pago','0'))
         )

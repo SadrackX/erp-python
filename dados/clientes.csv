@@ -11,3 +11,13 @@ id,nome,tipo,cpf_cnpj,email,celular,endereco,bairro,cidade,cep,uf,observacoes,at
 0010,sadrack hc,PJ,08928838479,thallyelsom@hotmail.com,83981273917,QNP 13 CONJUNTO N,centro,CEILÂNDIA,72241-314,pb,,True
 6b141413-448a-47af-a3a3-5aa2f8b69653,sadrack sdkx,PF,18928838478,exemplo@email.com,00 00000-0000,QNP 13 CONJUNTO N,centro,CEILÂNDIA,00000000,pb,,True
 0011,teste 1807,PF,08922214,thallyelsom@hotmail.com,83981273917,QNP 13 CONJUNTO N,centro,CEILÂNDIA,72241-314,pb,,True
+0012,TESTE INSCE,PF,0892222,adesignsousapb@gmail.com,83 9 9999-9999,EMILIO PIRES,SORRILANDIA,SOUSA,58800207,PB,,True
+0013,TESTE INSCE,PF,0892222,adesignsousapb@gmail.com,83 9 9999-9999,EMILIO PIRES,SORRILANDIA,SOUSA,58800207,PB,,True
+0014,TESTE INSCE,PF,0892222,adesignsousapb@gmail.com,83 9 9999-9999,EMILIO PIRES,SORRILANDIA,SOUSA,58800207,PB,,True
+0015,TESTE INSCE,PF,0892222,adesignsousapb@gmail.com,83 9 9999-9999,EMILIO PIRES,SORRILANDIA,SOUSA,58800207,PB,,True
+0016,Thallyelson Mariano Gomes,PF,08928838479,thallyelsom@gmail.com,83981273917,Rua adfadfadf,centro,SOUSA,58807250,pb,,True
+0017,Thallyelson Mariano Gomes,PF,08928838479,thallyelsom@gmail.com,83981273917,Rua adfadfadf,centro,SOUSA,58807250,pb,,True
+0018,Thallyelson Mariano Gomes,PF,08928838479,thallyelsom@gmail.com,83981273917,Rua adfadfadf,centro,SOUSA,58807250,pb,,True
+0019,Thallyelson Mariano Gomes,PF,08928838479,thallyelsom@gmail.com,83981273917,Rua adfadfadf,centro,SOUSA,58807250,pb,,True
+0020,Thallyelson Mariano Gomes,PF,08928838479,thallyelsom@gmail.com,83981273917,Rua adfadfadf,centro,SOUSA,58807250,pb,,True
+0021,MOREIRA E COSTA IMPRESSAO DE MATERIAL PUBLICITARIO,PF,26,adesignsousapb@gmail.com,83 9 9999-9999,EMILIO,CENTRO,SOUSA,58800207,pb,,True

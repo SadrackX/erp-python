@@ -6,7 +6,7 @@
         <div class="col-md-12">
             <hr>
             <h5>{{ "Editar Pedido" if pedido else "Novo Pedido" }}</h5>
-            <form id="pedido-form" method="post" action="{{ url_for('pedido_editar', pedido_id=pedido['id']) if pedido else url_for('pedidos_novo') }}">
+            <form id="pedido-form" method="post" action="{{ url_for('pedido_editar', pedido_id=pedido['id']) if pedido else url_for('pedidos_novo') }}" autocomplete="off">
 
                 <div class="form-row">
                     <!-- Dados do cliente -->
@@ -80,11 +80,10 @@
                     <div class="form-group col-md-3">
                         <label for="status">Status:</label>
                         <select id="status" name="status" required class="form-control">
-                            <option value="rascunho" {% if pedido and pedido.status == 'rascunho' %}selected{% endif %}>Rascunho</option>
-                            <option value="design" {% if pedido and pedido.status == 'design' %}selected{% endif %}>Design</option>
-                            <option value="producao" {% if pedido and pedido.status == 'producao' %}selected{% endif %}>Produção</option>
-                            <option value="finalizado" {% if pedido and pedido.status == 'finalizado' %}selected{% endif %}>Finalizado</option>
-                            <option value="cancelado" {% if pedido and pedido.status == 'cancelado' %}selected{% endif %}>Cancelado</option>
+                            <option value="Rascunho" {% if pedido and pedido.status == 'Rascunho' %}selected{% endif %}>Rascunho</option>
+                            <option value="Design" {% if pedido and pedido.status == 'Design' %}selected{% endif %}>Design</option>
+                            <option value="Produção" {% if pedido and pedido.status == 'Produção' %}selected{% endif %}>Produção</option>
+                            <option value="Finalizado" {% if pedido and pedido.status == 'Finalizado' %}selected{% endif %}>Finalizado</option>
                         </select>
                     </div>
 
@@ -93,6 +92,18 @@
                         <input type="date" class="form-control" id="data_previsao_entrega" name="data_previsao_entrega"
                                value="{{ pedido['data_previsao_entrega'] if pedido and pedido.get('data_previsao_entrega') else '' }}"
 >
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label for="forma_de_pagamento">Forma de Pagamento:</label>
+                        <select id="forma_de_pagamento" name="forma_de_pagamento" required class="form-control">
+                            <option value="Dinheiro/Pix" {% if pedido and pedido.forma_de_pagamento == 'Dinheiro/Pix' %}selected{% endif %} {% if pedido %}selected{% endif %} >Dinheiro/Pix</option>
+                            <option value="Cartão" {% if pedido and pedido.forma_de_pagamento == 'Cartão' %}selected{% endif %}>Cartão</option>
+                            <option value="Outro" {% if pedido and pedido.forma_de_pagamento == 'Outro' %}selected{% endif %}>Outro</option>
+                        </select>
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label for="valor_pago">Valor Pago:</label>
+                        <input type="number" name="valor_pago" id="valor_pago" class="form-control mb-2" value="{{ pedido['valor_pago'] if pedido else '0' }}">
                     </div>
                 </div>
 

@@ -41,8 +41,16 @@ def login():
 def dashboard():
     if 'usuario_nome' not in session:
         return redirect(url_for('login'))
+    pedidos = PedidoManager().buscar_todos()
+    clientes_dict = {c.id: c.nome for c in ClienteManager().buscar_todos()}
     resumo = Dashboard().obter_resumo() if hasattr(Dashboard(), 'obter_resumo') else None
-    return render_template('dashboard.html', usuario_nome=session['usuario_nome'], usuario_nivel=session['usuario_nivel'], resumo=resumo)
+    return render_template(
+        'dashboard.html', 
+        pedidos=pedidos,
+        clientes=clientes_dict,
+        usuario_nome=session['usuario_nome'], 
+        usuario_nivel=session['usuario_nivel'], 
+        resumo=resumo)
 
 # CLIENTES
 @app.route('/clientes')
@@ -160,101 +168,55 @@ def fornecedores_novo():
 def pedidos():
     if 'usuario_nome' not in session:
         return redirect(url_for('login'))
-    pedidos = PedidoManager().buscar_todos()
-    clientes_dict = {c.id: c.nome for c in ClienteManager().buscar_todos()}
+
+    todos_pedidos = PedidoManager().buscar_todos()
+    clientes = ClienteManager().buscar_todos()
+    clientes_dict = {c.id: c.nome for c in clientes}
+
+    # Filtros recebidos por query string
+    cliente_filtro = request.args.get('cliente', '').lower()
+    status_filtro = request.args.get('status', '')
+    data_inicio_str = request.args.get('data_inicio', '')
+    data_fim_str = request.args.get('data_fim', '')
+
+    # Aplica filtros
+    pedidos_filtrados = []
+    for p in todos_pedidos:
+        nome_cliente = clientes_dict.get(p.id_cliente, '').lower()
+
+        # Filtro por cliente (nome ou id)
+        if cliente_filtro and cliente_filtro not in p.id_cliente.lower() and cliente_filtro not in nome_cliente:
+            continue
+
+        # Filtro por status
+        if status_filtro and p.status.lower() != status_filtro.lower():
+            continue
+
+        # Filtro por data de entrega
+        if p.data_previsao_entrega:
+            if data_inicio_str:
+                data_inicio = datetime.strptime(data_inicio_str, '%Y-%m-%d')
+                if p.data_previsao_entrega < data_inicio:
+                    continue
+            if data_fim_str:
+                data_fim = datetime.strptime(data_fim_str, '%Y-%m-%d')
+                if p.data_previsao_entrega > data_fim:
+                    continue
+
+        pedidos_filtrados.append(p)
+
     return render_template(
         'pedidos_list.html',
         usuario_nome=session['usuario_nome'],
         usuario_nivel=session['usuario_nivel'],
-        pedidos=pedidos,
-        clientes=clientes_dict
+        pedidos=pedidos_filtrados,
+        clientes=clientes_dict,
+        cliente_filtro=cliente_filtro,
+        status_filtro=status_filtro,
+        data_inicio=data_inicio_str,
+        data_fim=data_fim_str
     )
-""" 
-@app.route('/pedidos/novo', methods=['GET', 'POST'])
-def pedidos_novo():
-    if 'usuario_nome' not in session:
-        return redirect(url_for('login'))
 
-    pedido_id = request.form.get('id_pedido') or request.args.get('editar')
-    pedido = PedidoManager().buscar_por_id(pedido_id) if pedido_id else None
-    cliente = None
-
-    if pedido:
-        cliente = ClienteManager().buscar_por_id(pedido.id_cliente)
-
-    if request.method == 'POST':
-        import json
-        produtos_json = request.form.get('produtos_json')
-        itens = []
-
-        if produtos_json:
-            try:
-                produtos = json.loads(produtos_json)
-                for p in produtos:
-                    itens.append(ItemPedido(
-                        id_pedido='',  # será atualizado depois
-                        nome=p.get('nome'),
-                        quantidade=int(p.get('quantidade')),
-                        preco_unitario=float(p.get('preco_unitario'))
-                    ))
-            except Exception as e:
-                print("Erro ao carregar produtos:", e)
-
-        cliente_id = request.form.get('id_cliente')
-        if cliente_id == 'novo':
-            novo_cliente = Cliente(
-                id='',
-                nome=request.form['nome'],
-                tipo=request.form['tipo'],
-                cpf_cnpj=request.form['cpf_cnpj'],
-                email=request.form['email'],
-                celular=request.form['celular'],
-                endereco=request.form['endereco'],
-                bairro=request.form['bairro'],
-                cidade=request.form['cidade'],
-                cep=request.form['cep'],
-                uf=request.form['uf'],
-                observacoes=None,
-                ativo=True
-            )
-            
-            cliente_id = ClienteManager().cadastrar_cliente(novo_cliente)
-
-        data_previsao = request.form.get('data_previsao_entrega')
-
-        novo_pedido = Pedido(
-            id=pedido_id or '',
-            id_cliente=cliente_id,
-            id_forma_pagamento=request.form.get('id_forma_pagamento', ''),
-            data=datetime.now(),
-            status=request.form.get('status', 'rascunho'),
-            itens=itens,
-            observacoes=request.form.get('observacoes'),
-            desconto_total=float(request.form.get('desconto_total', 0)),
-            data_previsao_entrega=datetime.strptime(data_previsao, '%Y-%m-%d') if data_previsao else None
-        )
-
-        if pedido_id:
-            PedidoManager().atualizar_pedido(pedido_id, novo_pedido.to_dict())
-        else:
-            PedidoManager().criar_pedido(novo_pedido)
-
-        logger.log(f"Pedido {novo_pedido.id} {'atualizado' if pedido_id else 'cadastrado'}!", 'info')
-        return redirect(url_for('pedidos'))
-    if pedido_id:
-        pedido = PedidoManager().buscar_por_id(pedido_id)
-        cliente = ClienteManager().buscar_por_id(pedido.id_cliente) if pedido else None
-    else:
-        pedido = None
-        cliente = None
-
-    return render_template('pedidos_form.html',
-                           pedido=pedido,
-                           cliente=cliente,
-                           produtos=pedido.itens,
-                           usuario_nome=session['usuario_nome'],
-                           usuario_nivel=session['usuario_nivel'])
- """
 @app.route('/pedidos/novo', methods=['GET', 'POST'])
 def pedidos_novo():
     if 'usuario_nome' not in session:
@@ -293,13 +255,14 @@ def pedidos_novo():
         novo = Pedido(
             id='',
             id_cliente=cliente_id,
-            id_forma_pagamento=request.form['id_forma_pagamento'] if 'id_forma_pagamento' in request.form else '',
             data=datetime.now(),
             status=request.form['status'],
             itens=itens,
             observacoes=request.form.get('observacoes'),
             desconto_total=float(request.form.get('desconto_total', 0)),
-            data_previsao_entrega=data_str  
+            data_previsao_entrega=data_str,
+            forma_de_pagamento=request.form.get('forma_de_pagamento'),
+            valor_pago=float(request.form.get('valor_pago', 0))
         )
         PedidoManager().criar_pedido(novo)
         flash('Pedido cadastrado!')
@@ -354,7 +317,9 @@ def pedido_editar(pedido_id):
             'observacoes': request.form.get('observacoes'),
             'desconto_total': request.form.get('desconto_total', pedido.get('desconto_total')),
             'id_cliente': request.form.get('id_cliente'),
-            'data_previsao_entrega': data_str
+            'data_previsao_entrega': data_str,
+            'forma_de_pagamento': request.form.get('forma_de_pagamento'),
+            'valor_pago': request.form.get('valor_pago',0)
         }
         PedidoManager().atualizar_itens_pedido(pedido_id, produtos_att)
         PedidoManager().atualizar_pedido(pedido_id, novos_dados)
@@ -392,6 +357,24 @@ def pedido_detalhes(pedido_id):
             'total': item.total
         })
     return render_template('pedido_detalhes.html', pedido=pedido, cliente=cliente, produtos=produtos, usuario_nome=session['usuario_nome'], usuario_nivel=session['usuario_nivel'])
+
+@app.route('/pedidos/status/<status>')
+def pedidos_por_status(status):
+    if 'usuario_nome' not in session:
+        return redirect(url_for('login'))
+
+    pedidos = PedidoManager().buscar_todos()
+    pedidos_filtrados = [p for p in pedidos if p.status.lower() == status.lower()]
+    clientes_dict = {c.id: c.nome for c in ClienteManager().buscar_todos()}
+
+    return render_template(
+        'pedidos_list.html',
+        usuario_nome=session['usuario_nome'],
+        usuario_nivel=session['usuario_nivel'],
+        pedidos=pedidos_filtrados,
+        clientes=clientes_dict,
+        titulo=f"Pedidos - {status}"
+    )
 
 @app.route('/pedidos/<pedido_id>/cancelar')
 def pedido_cancelar(pedido_id):
@@ -441,6 +424,7 @@ def buscar_produtos():
             })
     return jsonify(resultados)
 
+#LOGS
 @app.route('/logs')
 def logs():
     if 'usuario_nome' not in session:

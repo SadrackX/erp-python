@@ -1,28 +1,104 @@
 ﻿{% extends 'base.html' %}
 {% block conteudo %}
-    <h3>Dashboard</h3>
-<div class="container" style="display:flex; align-items:center; justify-content: space-between">
-   <div class="card" style="width: 18rem; margin:7px">
-       <div class="card-body">
-           <h6 class="card-title">Lucro Mensal</h6>
-           <h5 class="card-subtitle mb-2 text-muted">99,00</h5>
-       </div>
-   </div>
-  
-   <div class="card" style="width: 18rem; margin:7px">
-       <div class="card-body">
-           <h6 class="card-title">Lucro Mensal</h6>
-           <h5 class="card-subtitle mb-2 text-muted">99,00</h5>
-       </div>
-   </div>
-  
-   <div class="card" style="width: 18rem; margin:7px">
-       <div class="card-body">
-           <h6 class="card-title">Lucro Mensal</h6>
-           <h5 class="card-subtitle mb-2 text-muted">99,00</h5>
-       </div>
-   </div>
+<br/>
+<h3 class="mb-4">📊 Dashboard de Pedidos</h3>
 
-  
+{% set status_lista = ['Rascunho', 'Design', 'Produção', 'Finalizado'] %}
+{% set status_classes = {
+    'Rascunho': 'secondary',
+    'Design': 'warning',
+    'Produção': 'info',
+    'Finalizado': 'success'
+} %}
+
+{# --- Tabela das Entregas mais próximas --- #}
+<div class="card mb-5 border-danger shadow-sm">
+    <div class="card-header bg-danger text-white">
+        <strong>🕒 Próximas Entregas</strong>
+    </div>
+    <div class="card-body p-0">
+        <table class="table table-hover table-sm mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>Cliente</th>
+                    <th>Entrega</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% set entregas_proximas = pedidos 
+                    | selectattr('data_previsao_entrega') 
+                    | sort(attribute='data_previsao_entrega') 
+                    | list 
+                %}
+                {% for pedido in entregas_proximas[:5] %}
+                <tr onclick="window.location='{{ url_for('pedido_editar', pedido_id=pedido.id) }}'" style="cursor: pointer;">
+                    <td>{{ clientes[pedido.id_cliente] if clientes[pedido.id_cliente] else pedido.id_cliente }}</td>
+                    <td>{{ pedido.data_previsao_entrega.strftime('%d/%m/%Y') if pedido.data_previsao_entrega else '' }}</td>
+                    <td>
+                        <span class="badge bg-{{ status_classes.get(pedido.status, 'dark') }}">{{ pedido.status }}</span>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="3" class="text-center text-muted">Nenhuma entrega futura</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{# --- Cards por status com limite de 5 e botão --- #}
+<div class="row">
+    {% for status in status_lista %}
+    <div class="col-md-6 col-lg-4 mb-4">
+        <div class="card border-{{ status_classes[status] }} shadow-sm h-100">
+            <div class="card-header bg-{{ status_classes[status] }} text-white">
+                <strong>{{ status }}</strong>
+            </div>
+            <div class="card-body p-0">
+                {% set pedidos_filtrados = pedidos 
+                    | selectattr('status', 'equalto', status) 
+                    | sort(attribute='data', reverse=true) 
+                    | list 
+                %}
+                <table class="table table-hover table-sm mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Cliente</th>
+                            <th>Entrega</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if pedidos_filtrados %}
+                            {% for pedido in pedidos_filtrados[:5] %}
+                            <tr onclick="window.location='{{ url_for('pedido_editar', pedido_id=pedido.id) }}'" style="cursor: pointer;">
+                                <td>{{ clientes[pedido.id_cliente] if clientes[pedido.id_cliente] else pedido.id_cliente }}</td>
+                                <td>{{ pedido.data_previsao_entrega.strftime('%d/%m/%Y') if pedido.data_previsao_entrega else '' }}</td>
+                                <td>
+                                    <span class="badge bg-{{ status_classes[status] }} text-white">{{ pedido.status }}</span>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="3" class="text-center text-muted">Nenhum pedido "{{ status }}"</td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+            {% if pedidos_filtrados|length > 5 %}
+            <div class="card-footer text-end">
+                <a href="{{ url_for('pedidos_por_status', status=status) }}" class="btn btn-outline-{{ status_classes[status] }} btn-sm">
+                    Ver todos
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    {% endfor %}
 </div>
 {% endblock %}

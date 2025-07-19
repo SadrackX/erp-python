@@ -14,12 +14,13 @@ class PedidoManager(CSVManager):
         return [
             'id',
             'id_cliente',
-            'id_forma_pagamento',
             'data',
             'status',
             'observacoes',
             'desconto_total',
-            'data_previsao_entrega'
+            'data_previsao_entrega',
+            'forma_de_pagamento',
+            'valor_pago'
         ]
     
     def get_next_id(self) -> str:
@@ -72,7 +73,7 @@ class PedidoManager(CSVManager):
         return True
     
     def cancelar_pedido(self, pedido_id: str) -> bool:
-        return self.update(pedido_id, {'status': 'cancelado'})
+        return self.update(pedido_id, {'status': 'Cancelado','data_previsao_entrega':''})
     
     def buscar_por_periodo_entrega(self, data_inicio: datetime, data_fim: datetime) -> List[Pedido]:
         """Filtra pedidos por período de previsão de entrega"""
