@@ -74,12 +74,13 @@
         <div class="form-group col-md-6">
             <label>Logo</label>
             <input id="logo_path" type="file" name="logo_file" class="form-control">
+            <button class="button" onclick="uploadFile()">Enviar</button>
             
             {% if dados_empresa.get('logo_path') %}
             <small class="form-text text-muted">
                 Logo atual: {{ dados_empresa['logo_path'] }}
             </small>
-            <img src="{{ url_for('static', filename=dados_empresa['logo_path']) }}" width="100" class="mt-2">
+            <img id="logo-delay" width="100" class="mt-2">
             {% endif %}
 <!--             {% if dados_empresa.get('logo_path') %}
             <div class="form-check mt-2">
@@ -98,4 +99,41 @@
   </form>
 </div>
 {% include 'partials/scriptFormCliente.html' %}
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    setTimeout(function () {
+      const logoPath = "{{ url_for('static', filename=dados_empresa['logo_path']) }}";
+      document.getElementById("logo-delay").src = logoPath;
+    }, 500); // tempo
+  });
+  
+  
+function uploadFile() {
+    const fileInput = document.getElementById('logo_path');
+    const file = fileInput.files[0];
+
+    if (!file) {
+        alert('Por favor, selecione um arquivo.');
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    fetch('/upload', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.text())
+    .then(data => {
+        console.log('Resposta do servidor:', data);
+        alert('Upload concluído!');
+    })
+    .catch(error => {
+        console.error('Erro no upload:', error);
+        alert('Erro ao enviar o arquivo.');
+    });
+}
+
+</script>
 {% endblock %}

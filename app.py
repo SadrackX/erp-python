@@ -638,12 +638,12 @@ def produtos_novo():
             # Atualização de produto existente
             ProdutoManager().atualizar_produto(produto_id, produto)
             logger.log(f"Produto {request.form['nome']} atualizado com sucesso!", 'info')
-            return redirecionar_pos_formulario('pedidos')
+            return redirecionar_pos_formulario('produtos')
         else:
             # Cadastro de novo produto
             ProdutoManager().cadastrar_produto(Produto.from_dict(produto))
             logger.log(f"Produto {request.form['nome']} cadastrado!", 'info')
-            return redirecionar_pos_formulario('pedidos')
+            return redirecionar_pos_formulario('produtos')
     return render_template('produtos_list.html', produto=produto, usuario_nome=session['usuario_nome'], usuario_nivel=session['usuario_nivel'])
 
 @app.route('/buscar_produtos')
@@ -835,7 +835,8 @@ def adicionar_rodape(canvas, doc):
     canvas.restoreState()
 
 
-
+import time
+from flask import Flask, send_from_directory, abort
 UPLOAD_FOLDER = 'static/uploads'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 # rotas/admin.py ou dentro do seu app principal
@@ -856,7 +857,7 @@ def admin_empresa():
                 'cnpj': request.form.get('cnpj'),
                 'email': request.form.get('email'),
                 'celular': request.form.get('celular'),
-                'logo_path': request.form.get('logo_path'),
+                'logo_path': request.form.get('logo_path',''),
                 'cep': request.form.get('cep'),
                 'endereco': request.form.get('endereco'),
                 'numero': request.form.get('numero'),
@@ -866,20 +867,28 @@ def admin_empresa():
                 'uf': request.form.get('uf'),                
             }
         
+        
         if 'logo_file' in request.files:
             file = request.files['logo_file']
             if file and file.filename:
                 logo_path = salvar_logo_redimensionada(file)
                 if logo_path:
-                    dados['logo_path'] = logo_path
+                    dados['logo_path'] = logo_path     
 
         if empresa:
-            empresa_manager.atualizar_dados(dados)
+            if dados['logo_path'] == '':           
+                del dados['logo_path']  
+            empresa_manager.atualizar_dados(dados)    
             logger.log(f"Dados da empresa {dados['nome']} atualizados!", 'info')
+            time.sleep(1)
+            redirecionar_pos_formulario('dashboard')
         else:
             empresa_manager.cadastrar_empresa(dados)
+            if dados['logo_path'] == '':            
+                del dados['logo_path']        
             logger.log(f"Dados da empresa {dados['nome']} adicionados!", 'info')
-            return redirect(url_for('admin_empresa'))
+            time.sleep(1)
+            return redirecionar_pos_formulario('dashboard')
         
         dados_empresa = empresa_manager.get_all()
         if dados_empresa:

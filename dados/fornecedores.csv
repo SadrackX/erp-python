@@ -1,4 +1,1 @@
 id,nome,cnpj,telefone,email,produtos_fornecidos,observacoes,ativo
-0001,Thallyelson,123654,83981273917,thallyelsom@gmail.com,"LONA, teste",None,True
-0002,Teste,123654,83981273917,thallyelsom@gmail.com,"Teste1,Teste2",,True
-0003,sadrack,123654,83981273917,thallyelsom@hotmail.com,"Teste1, Teste2",teste,True

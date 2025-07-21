@@ -40,10 +40,10 @@
             <label class="form-label">Entrega até</label>
             <input type="date" name="data_fim" value="{{ data_fim }}" class="form-control">
         </div>
-        <div class="col-md-1 d-grid">
+        <div class="col-md-2 d-grid">
+            <br>
             <button type="submit" class="btn btn-primary">Filtrar</button>
-        </div>
-        <div class="col-md-1 d-grid">
+        
             <a href="{{ url_for('pedidos') }}" class="btn btn-outline-secondary">Limpar</a>
         </div>
     </form>
@@ -54,7 +54,7 @@
         <small><strong>{{ pedidos|length }}</strong> pedido{{ 's' if pedidos|length > 1 else '' }} encontrado{{ 's' if pedidos|length > 1 else '' }} | Total: <strong>R$ {{ '%.2f' % pedidos|sum(attribute='total') }}</strong></small>
     </div>
 {% endif %}
-
+<div class="table-responsive">
 <table class="table table-striped table-hover">
     <thead class="table-dark">
         <tr>
@@ -74,7 +74,7 @@
             <tr>
                 <!-- onclick="window.location='{{ url_for('pedido_editar', pedido_id=pedido.id) }}'" style="cursor: pointer;" -->
                 <th scope="row" onclick="window.location='{{ url_for('pedido_editar', pedido_id=pedido.id) }}'" style="cursor: pointer;">{{ pedido.id }}</th>
-                <td>{{ clientes[pedido.id_cliente] if clientes[pedido.id_cliente] else pedido.id_cliente }}</td>
+                <td class="text-truncate" style="max-width: 250px;">{{ clientes[pedido.id_cliente] if clientes[pedido.id_cliente] else pedido.id_cliente }}</td>
                 <td>{{ pedido.data.strftime('%d/%m/%Y %H:%M') if pedido.data else '' }}</td>
                 <td {% if titulo == 'Orçamento' %}hidden{% endif %}>{{ pedido.data_previsao_entrega.strftime('%d/%m/%Y') if pedido.data_previsao_entrega else '' }}</td>
                 <td><span class="badge bg-{{ status_classes.get(pedido.status, 'dark') }}"  style="color: aliceblue;">{{ pedido.status }}</span></td>
@@ -103,7 +103,7 @@
         {% endfor %}
     </tbody>
 </table>
-
+</div>
 {% if pedidos|length == 0 %}
     <div class="alert alert-info" role="alert">
         Nenhum pedido cadastrado.

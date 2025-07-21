@@ -5,7 +5,7 @@ __pycache__/
 *.swp
 
 # Dados (opcional - você pode versionar os CSV se quiser)
-#dados/*.csv
+dados/*.csv
 
 # Ambiente virtual
 venv/
