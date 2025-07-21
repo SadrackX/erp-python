@@ -84,23 +84,14 @@ def clientes():
 def clientes_novo():
     if 'usuario_nome' not in session:
         return redirect(url_for('login'))
+
     editar_id = request.args.get('editar')
-    cliente = ClienteManager().buscar_por_id(editar_id) if editar_id else None
+    #cliente = ClienteManager().buscar_por_id(editar_id) if editar_id else None
     if request.method == 'POST':
-        cliente = {
-            'nome': request.form['nome'],
-            'tipo': request.form['tipo'],
-            'cpf_cnpj': request.form['cpf_cnpj'],
-            'email': request.form['email'],
-            'celular': request.form['celular'],
-            'endereco': request.form['endereco'],
-            'numero': request.form['numero'],
-            'bairro': request.form['bairro'],
-            'cidade': request.form['cidade'],
-            'cep': request.form['cep'],
-            'uf': request.form['uf'],
-            'ativo': True
-        }       
+        # Pega informações do form cliente
+        form = request.form.to_dict()
+        cliente = form  
+
         if editar_id:        
             # Atualização de cliente existente   
             ClienteManager().atualizar_cliente(editar_id, cliente)
@@ -124,20 +115,7 @@ def buscar_clientes():
             termo in (c.cpf_cnpj or '').lower() or
             termo in (c.email or '').lower()
         ):
-            resultados.append({
-                'id': c.id,
-                'nome': c.nome,
-                'tipo': c.tipo,
-                'cpf_cnpj': c.cpf_cnpj,
-                'email': c.email,
-                'celular': c.celular,
-                'endereco': c.endereco,
-                'numero': c.numero,
-                'bairro': c.bairro,
-                'cidade': c.cidade,
-                'cep': c.cep,
-                'uf': c.uf
-            })
+            resultados.append(Cliente.to_dict(c))
     return jsonify(resultados)
 
 # FORNECEDORES
@@ -153,18 +131,12 @@ def fornecedores_novo():
     if 'usuario_nome' not in session:
         return redirect(url_for('login'))
     fornecedor_id = request.args.get('editar')
-    fornecedor = FornecedorManager().buscar_por_id(fornecedor_id) if fornecedor_id else None
+    #fornecedor = FornecedorManager().buscar_por_id(fornecedor_id) if fornecedor_id else None
     if request.method == 'POST':
-        fornecedor = {
-            'id': fornecedor_id or '',
-            'nome': request.form['nome'],
-            'cnpj': request.form['cnpj'],
-            'email': request.form['email'],
-            'telefone': request.form['telefone'],
-            'produtos_fornecidos': request.form.get('produtos_fornecidos', ''),
-            'observacoes': request.form.get('observacoes', ''),
-            'ativo': request.form.get('ativo', 'on') == 'on'
-        }
+
+        form = request.form.to_dict()
+        fornecedor = form  
+
         if fornecedor_id:
             # Atualização de fornecedor existente
             FornecedorManager().atualizar_fornecedor(fornecedor_id, fornecedor)
@@ -315,55 +287,13 @@ def pedidos_novo():
     if 'usuario_nome' not in session:
         return redirect(url_for('login'))
     if request.method == 'POST':
-        data_str = request.form.get('data_previsao_entrega')
-        produtos_json = request.form.get('produtos_json')
-        itens = []
-        if produtos_json:
-            produtos = json.loads(produtos_json)
-            for p in produtos:
-                itens.append(ItemPedido(
-                    id_pedido='',
-                    nome=p['nome'],
-                    quantidade=p['quantidade'],
-                    preco_unitario=p['preco_unitario']
-                ))
         cliente_id = request.form['id_cliente']
-        raw_valor = request.form.get('valor_pago', '').strip()
-        if cliente_id == 'novo':
-            form = request.form.to_dict()
-            form['ativo'] = 'ativo' in request.form
-            form['observacoes']=None
+        form = request.form.to_dict()
+        if cliente_id == 'novo':            
             novo_cliente = Cliente.from_dict(form)
-            """ novo_cliente = Cliente(
-                id='',
-                nome=request.form['nome'],
-                tipo=request.form['tipo'],
-                cpf_cnpj=request.form['cpf_cnpj'],
-                email=request.form['email'],
-                celular=request.form['celular'],
-                endereco=request.form['endereco'],
-                numero=request.form['numero'],
-                bairro=request.form['bairro'],
-                cidade=request.form['cidade'],
-                cep=request.form['cep'],
-                uf=request.form['uf'],
-                observacoes=None,
-                ativo=True
-            ) """
             logger.log(f"Cliente {request.form['nome']} cadastrado!", 'info')
             cliente_id = ClienteManager().cadastrar_cliente(novo_cliente)
-        novo = Pedido(
-            id='',
-            id_cliente=cliente_id,
-            data=datetime.now(),
-            status=request.form['status'],
-            itens=itens,
-            observacoes=request.form.get('observacoes'),
-            desconto_total=float(request.form.get('desconto_total', 0)),
-            data_previsao_entrega=data_str,
-            forma_de_pagamento=request.form.get('forma_de_pagamento'),
-            valor_pago=float(raw_valor) if raw_valor else 0.0
-        )
+        novo = Pedido.from_dict(form)
         PedidoManager().criar_pedido(novo)
         logger.log(f"Pedido ID: {novo.id} adicionado!", 'info')
         return redirect(url_for('pedidos'))

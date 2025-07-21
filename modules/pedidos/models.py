@@ -111,6 +111,7 @@ class Pedido:
 
     @classmethod
     def from_dict(cls, data: dict, itens: List[ItemPedido] = None):
+        from modules.pedidos.manager import PedidoManager
         # Função auxiliar para converter string para datetime, se necessário
         def parse_data(data_str: Optional[str]) -> Optional[datetime]:
             if data_str is None:
@@ -126,9 +127,9 @@ class Pedido:
                     return None
 
         return cls(
-            id=data['id'],
+            id=data.get('id', PedidoManager().get_next_id()),
             id_cliente=data['id_cliente'],
-            data=datetime.fromisoformat(data['data']),
+            data=datetime.now(),
             status=data['status'],
             itens=itens or [],
             observacoes=data.get('observacoes'),
