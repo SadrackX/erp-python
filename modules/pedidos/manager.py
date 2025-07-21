@@ -24,10 +24,10 @@ class PedidoManager(CSVManager):
         ]
     
     def get_next_id(self) -> str:
-        pedidos = self.get_all()
-        if not pedidos:
+        dados = self.get_all()
+        if not dados:
             return '0001'
-        max_id = max([int(p['id']) for p in pedidos if p['id'].isdigit()], default=0)
+        max_id = max([int(p['id']) for p in dados if p['id'].isdigit()], default=0)
         return str(max_id + 1).zfill(4)
     
     def criar_pedido(self, pedido: Pedido) -> str:

@@ -330,7 +330,11 @@ def pedidos_novo():
         cliente_id = request.form['id_cliente']
         raw_valor = request.form.get('valor_pago', '').strip()
         if cliente_id == 'novo':
-            novo_cliente = Cliente(
+            form = request.form.to_dict()
+            form['ativo'] = 'ativo' in request.form
+            form['observacoes']=None
+            novo_cliente = Cliente.from_dict(form)
+            """ novo_cliente = Cliente(
                 id='',
                 nome=request.form['nome'],
                 tipo=request.form['tipo'],
@@ -345,7 +349,7 @@ def pedidos_novo():
                 uf=request.form['uf'],
                 observacoes=None,
                 ativo=True
-            )
+            ) """
             logger.log(f"Cliente {request.form['nome']} cadastrado!", 'info')
             cliente_id = ClienteManager().cadastrar_cliente(novo_cliente)
         novo = Pedido(

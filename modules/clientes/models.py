@@ -40,10 +40,11 @@ class Cliente:
 
     @classmethod
     def from_dict(cls, data: dict):
+        from modules.clientes.manager import ClienteManager
         """Versão robusta com tratamento de erros"""
         try:
             return cls(
-                id=data.get('id', str(uuid.uuid4())),  # Gera novo ID se não existir
+                id=data.get('id', ClienteManager().get_next_id()),  # Gera novo ID se não existir
                 nome=data.get('nome', ''),
                 tipo=data.get('tipo', 'PF'),
                 cpf_cnpj=data.get('cpf_cnpj', ''),
