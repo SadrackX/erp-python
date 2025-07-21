@@ -55,8 +55,9 @@
                     <div class="form-group col-md-3">
                         <label for="data_previsao_entrega">Data Prevista de Entrega:</label>
                         <input type="date" class="form-control" id="data_previsao_entrega" name="data_previsao_entrega"
-                               value="{{ pedido['data_previsao_entrega'] if pedido and pedido.get('data_previsao_entrega') else '' }}"
->
+                               value="{{ pedido['data_previsao_entrega'] if pedido and pedido.get('data_previsao_entrega') else '' }}">
+                               <small id="data_previsao_entrega_mensagem" class="text-danger" style="display: none;">Data de entrega não disponivel em Rascunho!</small>
+
                     </div>
                     <div class="form-group col-md-3">
                         <label for="forma_de_pagamento">Forma de Pagamento:</label>
