@@ -1,14 +1,16 @@
 ﻿{% extends 'base.html' %}
 {% block conteudo %}
 <br/>
-<h3 class="mb-4">📊 Dashboard de Pedidos</h3>
+<h3 class="mb-4">Dashboard de Pedidos</h3>
 
-{% set status_lista = ['Rascunho', 'Design', 'Produção', 'Finalizado'] %}
+{% set status_lista = ['Design', 'Produção', 'Finalizado', 'Rascunho', 'Orçamento', 'Atrasado'] %}
 {% set status_classes = {
     'Rascunho': 'secondary',
-    'Design': 'warning',
+    'Design': 'primary',
     'Produção': 'info',
-    'Finalizado': 'success'
+    'Finalizado': 'success',
+    'Orçamento': 'warning',
+    'Atrasado': 'danger'
 } %}
 
 {# --- Tabela das Entregas mais próximas --- #}
@@ -21,8 +23,10 @@
             <thead class="table-light">
                 <tr>
                     <th>Cliente</th>
+                    <th>Criado</th>
                     <th>Entrega</th>
                     <th>Status</th>
+                    <th>Valor</th>
                 </tr>
             </thead>
             <tbody>
@@ -34,10 +38,12 @@
                 {% for pedido in entregas_proximas[:5] %}
                 <tr onclick="window.location='{{ url_for('pedido_editar', pedido_id=pedido.id) }}'" style="cursor: pointer;">
                     <td>{{ clientes[pedido.id_cliente] if clientes[pedido.id_cliente] else pedido.id_cliente }}</td>
+                    <td>{{ pedido.data.strftime('%d/%m/%Y %H:%M') if pedido.data else '' }}</td>
                     <td>{{ pedido.data_previsao_entrega.strftime('%d/%m/%Y') if pedido.data_previsao_entrega else '' }}</td>
                     <td>
-                        <span class="badge bg-{{ status_classes.get(pedido.status, 'dark') }}">{{ pedido.status }}</span>
+                        <span class="badge bg-{{ status_classes.get(pedido.status, 'dark') }}" style="color: aliceblue;">{{ pedido.status }}</span>
                     </td>
+                    <td>R$ {{ '%.2f'|format(pedido.total) }}</td>
                 </tr>
                 {% else %}
                 <tr>
@@ -67,19 +73,29 @@
                     <thead class="table-light">
                         <tr>
                             <th>Cliente</th>
-                            <th>Entrega</th>
-                            <th>Status</th>
+                            <th>
+                                {% if status == 'Orçamento' or status == 'Rascunho' %}
+                                    Criado
+                                {% else %}
+                                    Entrega
+                                {% endif %}</th>
+                            <th>Total</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% if pedidos_filtrados %}
                             {% for pedido in pedidos_filtrados[:5] %}
-                            <tr onclick="window.location='{{ url_for('pedido_editar', pedido_id=pedido.id) }}'" style="cursor: pointer;">
+                            <tr onclick="window.location='{{ url_for('orcamentos_editar' if pedido.status == 'Orçamento' else 'pedido_editar', pedido_id=pedido.id) }}'" style="cursor: pointer;">
                                 <td>{{ clientes[pedido.id_cliente] if clientes[pedido.id_cliente] else pedido.id_cliente }}</td>
-                                <td>{{ pedido.data_previsao_entrega.strftime('%d/%m/%Y') if pedido.data_previsao_entrega else '' }}</td>
                                 <td>
-                                    <span class="badge bg-{{ status_classes[status] }} text-white">{{ pedido.status }}</span>
+                                    {% if status == 'Orçamento' or status == 'Rascunho' %}
+                                        {{ pedido.data.strftime('%d/%m/%Y') if pedido.data else '' }}
+                                    {% else %}
+                                        {{ pedido.data_previsao_entrega.strftime('%d/%m/%Y') if pedido.data_previsao_entrega else '' }}
+                                    {% endif %}
+                                    
                                 </td>
+                                <td>R$ {{ '%.2f'|format(pedido.total) }}</td>
                             </tr>
                             {% endfor %}
                         {% else %}

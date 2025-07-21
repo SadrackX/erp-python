@@ -1,0 +1,25 @@
+
+#sugestoes-clientes,
+#sugestoes-produtos {
+    background: #fff;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    position: absolute;
+    z-index: 1000;
+    max-height: 200px;
+    overflow-y: auto;
+    width: 100%;
+}
+
+.sugestao-cliente,
+.sugestao-produto {
+    padding: 8px 12px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.sugestao-cliente:hover,
+.sugestao-produto:hover {
+    background-color: #f0f0f0;
+}

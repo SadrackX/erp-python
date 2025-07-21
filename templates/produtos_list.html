@@ -10,18 +10,18 @@
         <thead class="thead-dark">
             <tr>
                 <th scope="col">Nome</th>
+                <th scope="col" >Observação</th>
                 <th scope="col" style="width: 13%;">Preço de Custo</th>
                 <th scope="col" style="width: 13%;">Preço de Venda</th>
-                <th scope="col" >Observação</th>
                 <th scope="col" style="width: 5%;"></th>
             </tr>
             </thead>
             {% for produto in produtos %}
                 <tr>
                     <td>{{ produto.nome }}</td>
+                    <td>{{ produto.observacao }}</td>
                     <td>R$ {{ '%.2f' % produto.preco_custo }}</td>
                     <td>R$ {{ '%.2f' % produto.preco_venda }}</td>
-                    <td>{{ produto.observacao }}</td>
                     <td>
                         <button type="button" class="btn btn-warning btn-sm" onclick="abrirModalProduto({{ produto.to_dict() }})">Editar</button>
                     </td>

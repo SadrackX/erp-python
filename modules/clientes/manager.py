@@ -30,6 +30,7 @@ class ClienteManager(CSVManager):
             'email',
             'celular',
             'endereco',
+            'numero',
             'bairro',
             'cidade',
             'cep',

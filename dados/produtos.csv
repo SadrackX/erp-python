@@ -1,11 +1,21 @@
 id,nome,preco_custo,preco_venda,observacao,ativo
-0001,ACM,250.00,400.00,M²,True
-0002,LONA,15.00,70.00,M²,True
-0003,ADESIVO,12.00,80.00,M²,True
-0004,BANNER 80X120,20.00,80.00,Com acabamento,True
-0005,Teste,12.00,12.00,,True
-0006,teste2,10.00,11.00,12,True
-,teste 003,12.00,13.00,14,True
-,teste 003,12.00,13.00,15,True
-0007,teste 003,12.00,13.00,17,True
-0008,Teste,30.00,40.00,50,True
+0001,Banner Lona 90x60cm,92.36,134.95,Material resistente,True
+0002,Adesivo Vinil 10x10cm,19.94,34.73,Material resistente,True
+0003,Cartão de Visita 4x5cm,136.76,260.08,Uso interno,True
+0004,Placa ACM 100x50cm,48.99,80.33,Material reciclável,True
+0005,Placa Acrílico 60x40cm,111.27,213.38,Ideal para fachadas,False
+0006,Display PVC 20x30cm,44.02,71.8,Fácil aplicação,True
+0007,Faixa Lona 300x50cm,23.21,40.88,A prova d'água,False
+0008,Placa PVC 100x70cm,67.55,128.66,Alta qualidade,True
+0009,Totem ACM 200x60cm,18.49,33.46,Uso interno,True
+0010,Letreiro Acrílico 120x30cm,36.82,61.69,Uso externo,False
+0011,Chapa ACM Branca,35.69,57.95,Uso interno,False
+0012,Lona Impressa 2x1m,123.12,233.83,Uso interno,True
+0013,Adesivo Recorte 50x50cm,101.3,170.02,Alta qualidade,True
+0014,Impressão Fotográfica A3,139.69,264.59,Uso externo,False
+0015,Banner Retrátil 2x1m,77.99,113.06,Fácil aplicação,True
+0016,Quadro Decorativo Acrílico,33.05,43.01,Fácil aplicação,False
+0017,Adesivo Perfurado 1x1m,139.71,258.41,Impressão UV,False
+0018,Chapa PVC Expandido,107.52,194.76,Material reciclável,False
+0019,Cartaz A3,31.67,47.75,Alta qualidade,True
+0020,Tag de Produto 5x5cm,114.72,153.73,Ideal para fachadas,False

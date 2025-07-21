@@ -4,71 +4,33 @@
 <div class="container">
     <div class="row">
         <div class="col-md-12">
+            <br>
+            <h5>
+                {% if pedido %}
+                    {% if pedido.status == 'Orçamento' %}
+                        Editar Orçamento ID: {{ pedido['id'] }}
+                    {% else %}
+                        Editar Pedido ID: {{ pedido['id'] }}
+                    {% endif %}
+                {% else %}
+                    Novo Pedido
+                {% endif %}
+            </h5>
             <hr>
-            <h5>{{ "Editar Pedido" if pedido else "Novo Pedido" }}</h5>
-            <form id="pedido-form" method="post" action="{{ url_for('pedido_editar', pedido_id=pedido['id']) if pedido else url_for('pedidos_novo') }}" autocomplete="off">
-
-                <div class="form-row">
-                    <!-- Dados do cliente -->
-                    <div class="form-group col-md-7">
-                        <label for="nome">Nome do cliente</label>
-                        <input type="text" class="form-control" id="nome" name="nome"
-                            value="{{ cliente['nome'] if cliente else '' }}" {% if pedido %}readonly disabled{% endif %} required>                    
-                    </div>
-                    <div class="form-group col-md-2">
-                        <label for="tipo">Tipo</label>
-                        <select class="form-control" id="tipo" name="tipo" {% if pedido %}readonly disabled{% endif %} required>
-                            <option value="PF" {% if cliente and cliente.tipo == 'PF' %}selected{% endif %}>PF</option>
-                            <option value="PJ" {% if cliente and cliente.tipo == 'PJ' %}selected{% endif %}>PJ</option>
-                        </select>
-                    </div>
-                    <div class="form-group col-md-3">
-                        <label for="cpf_cnpj">CPF/CNPJ - Pesquisa</label>
-                        <input type="text" class="form-control" id="cpf_cnpj" name="cpf_cnpj" value="{{ cliente['cpf_cnpj'] if cliente else '' }}" {% if pedido %}readonly disabled{% endif %} required>
-                        <div id="sugestoes-clientes" style="background:#fff; border:1px solid #ccc; display:none; position:absolute; z-index:10;"></div>
-                    </div>
-                    <div class="form-group col-md-6">
-                        <label for="email">E-mail</label>
-                        <input type="email" class="form-control" id="email" name="email" value="{{ cliente['email'] if cliente else '' }}" {% if pedido %}readonly disabled{% endif %} required>
-                    </div>
-                    <div class="form-group col-md-6">
-                        <label for="celular">Telefone</label>
-                        <input type="text" class="form-control" id="celular" name="celular" value="{{ cliente['celular'] if cliente else '' }}" {% if pedido %}readonly disabled{% endif %} required>
-                    </div>
-                    <div class="form-group col-md-6">
-                        <label for="endereco">Endereço</label>
-                        <input type="text" class="form-control" id="endereco" name="endereco" value="{{ cliente['endereco'] if cliente else '' }}" {% if pedido %}readonly disabled{% endif %} required>
-                    </div>
-                    <div class="form-group col-md-3">
-                        <label for="bairro">Bairro</label>
-                        <input type="text" class="form-control" id="bairro" name="bairro" value="{{ cliente['bairro'] if cliente else '' }}" {% if pedido %}readonly disabled{% endif %} required>
-                    </div>
-                    <div class="form-group col-md-3">
-                        <label for="cidade">Cidade</label>
-                        <input type="text" class="form-control" id="cidade" name="cidade" value="{{ cliente['cidade'] if cliente else '' }}" {% if pedido %}readonly disabled{% endif %} required>
-                    </div>
-                    <div class="form-group col-md-3">
-                        <label for="cep">CEP</label>
-                        <input type="text" class="form-control" id="cep" name="cep" value="{{ cliente['cep'] if cliente else '' }}" {% if pedido %}readonly disabled{% endif %} required>
-                    </div>
-                    <div class="form-group col-md-3">
-                        <label for="uf">UF</label>
-                        <input type="text" class="form-control" id="uf" name="uf" maxlength="2" value="{{ cliente['uf'] if cliente else '' }}" {% if pedido %}readonly disabled{% endif %} required>
-                    </div>
-                </div>
-
+            <form id="pedido-form" method="post" action="{{ url_for('pedido_editar', pedido_id=pedido['id']) if pedido and pedido['status'] != 'Finalizado' else url_for('pedidos_novo') }}" autocomplete="off">
+                {% include 'partials/form_cliente.html' %}
                 <hr>
                 <div class="form-row">
                     <!-- Produtos do Pedido -->
-                    <button type="button" class="btn btn-primary" id="abrir-modal-produto" data-toggle="modal" data-target="#modal-produto">Adicionar Produto</button>
+                    <button type="button" class="btn btn-primary" id="abrir-modal-produto"  data-toggle="modal" data-target="#modal-produto">Adicionar Produto</button>
                     <table id="tabela-produtos" class="table table-striped" border="1" cellpadding="5" cellspacing="0">
                         <thead>
                             <tr>
-                                <th>Nome</th>
-                                <th>Preço Unitário</th>
-                                <th>Quantidade</th>
-                                <th>Total</th>
-                                <th>Ações</th>
+                                <th scope="col">Nome</th>
+                                <th scope="col" style="width: 15%;">Preço Unitário</th>
+                                <th scope="col" style="width: 10%;">Quantidade</th>
+                                <th scope="col" style="width: 15%;">Total</th>
+                                <th scope="col" style="width: 20px;"></th>
                             </tr>
                         </thead>
                         <tbody></tbody>
@@ -76,14 +38,17 @@
                 </div>
 
                 <!-- Status e valor final -->
-                <div class="form-row">
+                <div class="form-row" >
                     <div class="form-group col-md-3">
                         <label for="status">Status:</label>
                         <select id="status" name="status" required class="form-control">
+                            <option value="Orçamento" hidden>Orçamento</option>  
+                            <option value="Atrasado" hidden>Atrasado</option>  
+                            <option value="Finalizado" hidden>Finalizado</option> 
+                            <option value="Cancelado" hidden>Cancelado</option> 
                             <option value="Rascunho" {% if pedido and pedido.status == 'Rascunho' %}selected{% endif %}>Rascunho</option>
                             <option value="Design" {% if pedido and pedido.status == 'Design' %}selected{% endif %}>Design</option>
                             <option value="Produção" {% if pedido and pedido.status == 'Produção' %}selected{% endif %}>Produção</option>
-                            <option value="Finalizado" {% if pedido and pedido.status == 'Finalizado' %}selected{% endif %}>Finalizado</option>
                         </select>
                     </div>
 
@@ -103,7 +68,7 @@
                     </div>
                     <div class="form-group col-md-3">
                         <label for="valor_pago">Valor Pago:</label>
-                        <input type="number" name="valor_pago" id="valor_pago" class="form-control mb-2" value="{{ pedido['valor_pago'] if pedido else '0' }}">
+                        <input type="number" name="valor_pago" id="valor_pago" class="form-control mb-2" step="0.01" value="{{ pedido['valor_pago'] if pedido else '0' }}">
                     </div>
                 </div>
 
@@ -115,197 +80,48 @@
                 <input type="hidden" name="id_pedido" id="pedido-id" value="{{ pedido['id'] if pedido else '' }}">
                 <input type="hidden" name="produtos_json" id="produtos_json">
                 <input type="hidden" name="id_cliente" id="id_cliente" value="{{ pedido['id_cliente'] if pedido else 'novo' }}">
+                <input type="hidden" name="next" value="{{ request.referrer }}">
 
                 <hr>
                 <div class="container" style="text-align: right;">
+                    <div class="btn-group">
+                        <button class="btn btn-secondary dropdown-toggle" data-toggle="dropdown">
+                            Gerar PDF
+                        </button>
+                        <div class="dropdown-menu">
+                            <a class="dropdown-item" href="{{ url_for('gerar_pdf_pedido', pedido_id=pedido['id'], tipo='orcamento') }}" target="_blank">Orçamento</a>
+                            <a class="dropdown-item" href="{{ url_for('gerar_pdf_pedido', pedido_id=pedido['id'], tipo='ordem_servico') }}" target="_blank">Ordem de Serviço</a>
+                            <a class="dropdown-item" href="{{ url_for('gerar_pdf_pedido', pedido_id=pedido['id'], tipo='recibo') }}" target="_blank">Recibo</a>
+                        </div>
+                    </div>
+                    
+                    <button type="button" class="btn btn-primary" onclick="finalizarPedido()" {% if not pedido or pedido.status not in ['Design', 'Produção', 'Atrasado'] %}hidden{% endif %}>Finalizar</button> 
                     <a href="{{ url_for('pedidos') }}" class="btn btn-secondary">Cancelar</a>
-                    <button type="submit" class="btn btn-primary">Salvar</button>
+                    <button type="submit" class="btn btn-success">
+                        {% if not pedido  or pedido.status == 'Finalizado' %}
+                            Novo Pedido
+                        {% else %}
+                            Salva Pedido
+                        {% endif %}
+                    </button>
                 </div>
             </form>
         </div>
     </div>
 </div>
 
-<!-- Modal Adicionar Produto -->
-<div class="modal fade" id="modal-produto" tabindex="-1" role="dialog" aria-labelledby="modalProdutoLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="modalProdutoLabel">Adicionar Produto</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <label>Buscar Produto:</label>
-                <input type="text" id="busca-produto" placeholder="Nome do produto" autocomplete="off" class="form-control mb-2">
-                <div id="sugestoes-produtos" style="background:#fff; border:1px solid #ccc; display:none; position:absolute; z-index:10;"></div>
-                <label>Preço Unitário:</label>
-                <input type="number" id="preco-produto" class="form-control mb-2">
-                <label>Quantidade:</label>
-                <input type="number" id="quantidade-produto" value="1" min="1" class="form-control">
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-primary" id="adicionar-produto">Adicionar</button>
-            </div>
-        </div>
-    </div>
-</div>
-
+{% include 'partials/modal_produto_pedido.html' %}
+{% include 'partials/scriptFormPedido.html' %}
 <script>
-
-    var pedido = {{ pedido | tojson | safe }} || null;
-    var produtosPedido = pedido && pedido.itens ? pedido.itens : [];
-    var cliente = {{ cliente | tojson | safe }} || null;
-    var produtos = {{ produtos | tojson | safe }} || [];
-    
-
-    function editarPedidoForm() {
-        if (!pedido) return;
-
-        $('#pedido-id').val(pedido.id);
-        $('#status').val(pedido.status);
-        $('#id_cliente').val(pedido.id_cliente);
-
-        if (pedido.data_previsao_entrega) {
-            $('#data_previsao_entrega').val(pedido.data_previsao_entrega.split('T')[0]);
+    document.addEventListener('DOMContentLoaded', function() {
+        var selectStatus = document.getElementById('status');
+        var inputValorPago = document.getElementById('valor_pago');
+        if (selectStatus && ['Orçamento', 'Cancelado','Finalizado'].includes(selectStatus.value)) {
+            selectStatus.value = 'Rascunho';
+            inputValorPago.value = 0.0;            
         }
-
-        // Se cliente estiver embutido no pedido
-        if (pedido.cliente) {
-            $('#nome').val(pedido.cliente.nome);
-            $('#cpf_cnpj').val(pedido.cliente.cpf_cnpj);
-            $('#email').val(pedido.cliente.email);
-            $('#celular').val(pedido.cliente.celular);
-            $('#endereco').val(pedido.cliente.endereco);
-            $('#bairro').val(pedido.cliente.bairro);
-            $('#cidade').val(pedido.cliente.cidade);
-            $('#cep').val(pedido.cliente.cep);
-            $('#uf').val(pedido.cliente.uf);
-            $('#tipo').val(pedido.cliente.tipo);
-        }
-
-        // Atualiza tabela de produtos
-        atualizarTabelaProdutos();
-        produtosPedido = produtos;
-    }
-
-    function atualizarTabelaProdutos() {
-        var html = '';
-        var totalPedido = 0;
-        produtosPedido.forEach(function(p, idx) {
-            var total = p.preco_unitario * p.quantidade;
-            totalPedido += total;
-            html += '<tr>';
-            html += '<td>'+p.nome+'</td>';
-            html += '<td>R$ '+p.preco_unitario.toFixed(2)+'</td>';
-            html += '<td>'+p.quantidade+'</td>';
-            html += '<td>R$ '+total.toFixed(2)+'</td>';
-            html += '<td><button class="btn btn-secondary btn-sm" onclick="removerProduto('+idx+')">Remover</button></td>';
-            html += '</tr>';
-        });
-        $('#tabela-produtos tbody').html(html);
-        $('#valor-final').text('R$ '+totalPedido.toFixed(2));
-        $('#produtos_json').val(JSON.stringify(produtosPedido));
-    }
-
-    function removerProduto(index) {
-        produtosPedido.splice(index, 1);
-        atualizarTabelaProdutos();
-    }
-
-    $(document).ready(function () {
-        atualizarTabelaProdutos();
-
-        // Preenche cliente no formulário (edição)
-       
-
-        // Cliente autocomplete
-        $('#cpf_cnpj').on('input', function () {
-            var termo = $(this).val();
-            if (termo.length < 3) { $('#sugestoes-clientes').hide(); return; }
-            $.getJSON('{{ url_for('buscar_clientes') }}', { q: termo }, function (res) {
-                var html = '';
-                res.forEach(function (c) {
-                    html += '<div class="sugestao-cliente" data-json="'+encodeURIComponent(JSON.stringify(c))+'">' + c.nome + ' (' + c.cpf_cnpj + ')</div>';
-                });
-                $('#sugestoes-clientes').html(html).show();
-            });
-        });
-
-        $('#cpf_cnpj').focusout(function () {
-            setTimeout(function () { $('#sugestoes-clientes').hide(); }, 200);
-        });
-
-        $(document).on('click', '.sugestao-cliente', function () {
-            var c = JSON.parse(decodeURIComponent($(this).data('json')));
-            $('#id_cliente').val(c.id);
-            $('#nome').val(c.nome);
-            $('#tipo').val(c.tipo);
-            $('#cpf_cnpj').val(c.cpf_cnpj);
-            $('#email').val(c.email);
-            $('#celular').val(c.celular);
-            $('#endereco').val(c.endereco);
-            $('#bairro').val(c.bairro);
-            $('#cidade').val(c.cidade);
-            $('#cep').val(c.cep);
-            $('#uf').val(c.uf);
-            $('#sugestoes-clientes').hide();
-        });
-
-        // Produto autocomplete
-        $('#abrir-modal-produto').on('click', function () {
-            $('#busca-produto').val('').focus();
-            $('#preco-produto').val('');
-            $('#quantidade-produto').val(1);
-            $('#sugestoes-produtos').hide();
-        });
-
-        $('#busca-produto').on('input', function () {
-            var termo = $(this).val();
-            if (termo.length < 2) { $('#sugestoes-produtos').hide(); return; }
-            $.getJSON('{{ url_for('buscar_produtos') }}', { q: termo }, function (res) {
-                var html = '';
-                res.forEach(function (p) {
-                    html += '<div class="sugestao-produto" data-json="'+encodeURIComponent(JSON.stringify(p))+'">' + p.nome + ' (R$ ' + p.preco_venda + ')</div>';
-                });
-                $('#sugestoes-produtos').html(html).show();
-            });
-        });
-
-        $('#busca-produto').focusout(function () {
-            setTimeout(function () { $('#sugestoes-produtos').hide(); }, 200);
-        });
-
-        $(document).on('click', '.sugestao-produto', function () {
-            var p = JSON.parse(decodeURIComponent($(this).data('json')));
-            $('#busca-produto').val(p.nome);
-            $('#preco-produto').val(p.preco_venda);
-            $('#sugestoes-produtos').hide();
-        });
-
-        // Adicionar produto
-        $('#adicionar-produto').on('click', function () {
-            var nome = $('#busca-produto').val();
-            var preco = parseFloat($('#preco-produto').val());
-            var qtd = parseInt($('#quantidade-produto').val());
-
-            if (!nome || isNaN(preco) || isNaN(qtd) || qtd < 1) {
-                alert('Preencha todos os campos corretamente!');
-                return;
-            }
-
-            produtosPedido.push({
-                nome: nome,
-                preco_unitario: preco,
-                quantidade: qtd
-            });
-
-            atualizarTabelaProdutos();
-            $('#modal-produto').modal('hide');
-        });
     });
-    editarPedidoForm();
 </script>
+
+
 {% endblock %}

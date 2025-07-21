@@ -1,0 +1,302 @@
+<script>
+    
+  // MASCARA PARA TELEFONE
+function aplicarMascaraTelefone(valor) {
+    valor = valor.replace(/\D/g, '');
+    if (valor.length <= 10) {
+      if (valor.length <= 4) {
+        return valor;
+      }
+        return valor.replace(/(\d{2})(\d{4})(\d{1,4})/, '($1) $2-$3');
+    } else {
+      if (valor.length <= 4) {
+        return valor;
+      }
+        return valor.replace(/(\d{2})(\d{5})(\d{1,4})/, '($1) $2-$3');
+    }
+}
+
+const inputCelular = document.getElementById('celular');
+
+inputCelular.addEventListener('input', function () {
+    let valor = inputCelular.value.replace(/\D/g, '');
+    inputCelular.value = aplicarMascaraTelefone(valor);
+
+    if (valor.length < 10 && valor.length > 0 || valor.length > 11) {
+        inputCelular.classList.add('is-invalid');
+    } else {
+        inputCelular.classList.remove('is-invalid');
+    }
+});
+
+// MASCARA PARA CEP E FUNÇÃO DE PREENCHIMENTO DE ENDERECO AUTOMATICO
+function aplicarMascaraCEP(valor) {
+  valor = valor.replace(/\D/g, '');
+  if (valor.length <= 5) {
+    return valor;
+  }
+  return valor.replace(/^(\d{5})(\d{1,3})/, '$1-$2');
+}
+
+const inputCEP = document.getElementById('cep');
+const feedbackCEP = inputCEP.nextElementSibling;
+
+inputCEP.addEventListener('input', function () {
+  let valor = inputCEP.value.replace(/\D/g, '');
+  inputCEP.value = aplicarMascaraCEP(valor);
+
+  if (valor.length === 8) {
+    inputCEP.classList.remove('is-invalid');
+  }
+});
+
+inputCEP.addEventListener('blur', function () {
+  const cep = inputCEP.value.replace(/\D/g, '');
+
+  if (cep.length < 8 && cep.length > 0) {
+    inputCEP.classList.add('is-invalid');
+    return;
+  }
+
+  fetch(`https://viacep.com.br/ws/${cep}/json/`)
+    .then(res => res.json())
+    .then(data => {
+      if (data.erro) {
+        //inputCEP.classList.add('is-invalid');
+        return;
+      }
+
+      document.getElementById('endereco').value = data.logradouro;
+      document.getElementById('bairro').value = data.bairro;
+      document.getElementById('cidade').value = data.localidade;
+      document.getElementById('uf').value = data.uf;
+      inputCEP.classList.remove('is-invalid');
+    })
+    .catch(() => {
+      if (cep.length < 8 && cep.length > 0) {
+        inputCEP.classList.add('is-invalid');
+      }
+    });
+});
+
+// Máscaras PARA CPF/CNPJ
+function aplicarMascaraCPF(valor) {
+  return valor.replace(/\D/g, '')
+              .replace(/(\d{3})(\d)/, '$1.$2')
+              .replace(/(\d{3})(\d)/, '$1.$2')
+              .replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+}
+
+function aplicarMascaraCNPJ(valor) {
+  return valor.replace(/\D/g, '')
+              .replace(/^(\d{2})(\d)/, '$1.$2')
+              .replace(/^(\d{2})\.(\d{3})(\d)/, '$1.$2.$3')
+              .replace(/\.(\d{3})(\d)/, '.$1/$2')
+              .replace(/(\d{4})(\d)/, '$1-$2');
+}
+
+// Validação real de CPF
+function validarCPF(cpf) {
+  cpf = cpf.replace(/\D/g, '');
+  if (cpf.length !== 11 || /^(\d)\1+$/.test(cpf)) return false;
+
+  let soma = 0;
+  for (let i = 0; i < 9; i++) soma += parseInt(cpf[i]) * (10 - i);
+  let resto = (soma * 10) % 11;
+  if (resto === 10 || resto === 11) resto = 0;
+  if (resto !== parseInt(cpf[9])) return false;
+
+  soma = 0;
+  for (let i = 0; i < 10; i++) soma += parseInt(cpf[i]) * (11 - i);
+  resto = (soma * 10) % 11;
+  if (resto === 10 || resto === 11) resto = 0;
+
+  return resto === parseInt(cpf[10]);
+}
+
+// Validação real de CNPJ
+function validarCNPJ(cnpj) {
+  cnpj = cnpj.replace(/\D/g, '');
+  if (cnpj.length !== 14 || /^(\d)\1+$/.test(cnpj)) return false;
+
+  let tamanho = cnpj.length - 2;
+  let numeros = cnpj.substring(0, tamanho);
+  let digitos = cnpj.substring(tamanho);
+  let soma = 0;
+  let pos = tamanho - 7;
+
+  for (let i = tamanho; i >= 1; i--) {
+    soma += parseInt(numeros.charAt(tamanho - i)) * pos--;
+    if (pos < 2) pos = 9;
+  }
+
+  let resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;
+  if (resultado !== parseInt(digitos.charAt(0))) return false;
+
+  tamanho += 1;
+  numeros = cnpj.substring(0, tamanho);
+  soma = 0;
+  pos = tamanho - 7;
+
+  for (let i = tamanho; i >= 1; i--) {
+    soma += parseInt(numeros.charAt(tamanho - i)) * pos--;
+    if (pos < 2) pos = 9;
+  }
+
+  resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;
+  return resultado === parseInt(digitos.charAt(1));
+}
+
+// BUSCA CNPJ
+function buscarDadosCNPJ(cnpj) {
+  const cnpjLimpo = cnpj.replace(/\D/g, '');
+  if (cnpjLimpo.length !== 14) return;
+
+  fetch(`https://open.cnpja.com/office/${cnpjLimpo}`)
+    .then(res => res.json())
+    .then(data => {
+      if (data.error) {
+        console.error('CNPJ não encontrado ou inválido');
+        return;
+      }
+      document.getElementById('nome').value = data.company?.name || '';
+      document.getElementById('endereco').value = data.address?.street || '';
+      document.getElementById('numero').value = data.address?.number || '';
+      document.getElementById('bairro').value = data.address?.district || '';
+      document.getElementById('cidade').value = data.address?.city || '';
+      document.getElementById('uf').value = data.address?.state || '';
+      if (document.getElementById('email')) {
+        document.getElementById('email').value = data.emails?.[0]?.address || '';
+      }
+      if (document.getElementById('celular')) {
+        const tel = data.phones?.[0];
+        if (tel) {
+          document.getElementById('celular').value = `(${tel.area}) ${tel.number.replace(/^(\d{4,5})(\d{4})$/, '$1-$2')}`;
+        }
+      }
+      if (document.getElementById('cep')) {
+        const cep = data.address?.zip;
+        if (cep) {
+          document.getElementById('cep').value = cep.replace(/^(\d{5})(\d{3})$/, '$1-$2');
+        }
+      }
+    })
+    .catch(err => console.error('Erro ao consultar CNPJ', err));
+}
+
+
+// Referências
+const inputCPF_CNPJ = document.getElementById('cpf_cnpj');
+const tipoSelect = document.getElementById('tipo');
+
+// Atualiza a máscara e valida
+inputCPF_CNPJ.addEventListener('input', function () {
+  let valor = inputCPF_CNPJ.value.replace(/\D/g, '');
+  const tipo = tipoSelect.value;
+
+  if (tipo === 'PF') {
+    inputCPF_CNPJ.value = aplicarMascaraCPF(valor);
+    inputCPF_CNPJ.classList.toggle('is-invalid', !validarCPF(valor));
+    inputCPF_CNPJ.maxLength = 14;
+  } else {
+    const valido = validarCNPJ(valor);
+    inputCPF_CNPJ.value = aplicarMascaraCNPJ(valor);
+    inputCPF_CNPJ.maxLength = 18;
+    buscarDadosCNPJ(valor);
+    inputCPF_CNPJ.classList.toggle('is-invalid', !validarCNPJ(valor));
+  }
+});
+
+// Limpa e redefine o campo ao trocar o tipo
+tipoSelect.addEventListener('change', function () {
+  inputCPF_CNPJ.value = '';
+  inputCPF_CNPJ.classList.remove('is-invalid');
+  inputCPF_CNPJ.placeholder = tipoSelect.value === 'PF' ? '000.000.000-00' : '00.000.000/0000-00';
+});
+
+
+// validação antiga
+function validarCpfCnpj(valor) {
+    valor = valor.replace(/\D/g, '');
+    if (valor.length === 11) {
+        // Validação simples de CPF
+        return /^\d{11}$/.test(valor);
+    } else if (valor.length === 14) {
+        // Validação simples de CNPJ
+        return /^\d{14}$/.test(valor);
+    }
+    return false;
+}
+function validarCep(valor) {
+    return /^\d{5}-?\d{3}$/.test(valor);
+}
+function adicionarValidacaoCliente(form) {
+    form.addEventListener('submit', function(e) {
+        var cpfCnpj = form.querySelector('[name="cpf_cnpj"]').value;
+        var cep = form.querySelector('[name="cep"]').value;
+        var msg = '';
+        if (!validarCpfCnpj(cpfCnpj)) {
+            msg += 'CPF/CNPJ inválido!\n';
+        }
+        if (!validarCep(cep)) {
+            msg += 'CEP inválido!\n';
+        }
+        if (msg) {
+            alert(msg);
+            e.preventDefault();
+        }
+    });
+}
+
+
+// MODAL CLIENTE
+document.addEventListener('DOMContentLoaded', function() {
+    // Modal novo cliente
+    var formNovo = document.querySelector('#clienteModal form');
+    if (formNovo) adicionarValidacaoCliente(formNovo);
+    // Modais de edição
+    document.querySelectorAll('[id^="editarClienteModal"] form').forEach(function(form) {
+        adicionarValidacaoCliente(form);
+    });
+});
+
+function abrirModalCliente(cliente = null) {
+    const modalLabel = document.getElementById('clienteModalLabel');
+    const form = document.getElementById('cliente-form');
+    const idInput = document.getElementById('cliente-id');
+    const nomeInput = document.getElementById('nome');
+    const tipoInput = document.getElementById('tipo');
+    const cpfCnpjInput = document.getElementById('cpf_cnpj');
+    const emailInput = document.getElementById('email');
+    const celularInput = document.getElementById('celular');
+    const enderecoInput = document.getElementById('endereco');
+    const numeroInput = document.getElementById('numero');
+    const bairroInput = document.getElementById('bairro');
+    const cidadeInput = document.getElementById('cidade');
+    const cepInput = document.getElementById('cep');
+    const ufInput = document.getElementById('uf');
+    inputCEP.classList.remove('is-invalid');
+    if (cliente) {
+        modalLabel.textContent = 'Editar Cliente';
+        idInput.value = cliente.id;
+        nomeInput.value = cliente.nome;
+        tipoInput.value = cliente.tipo;
+        cpfCnpjInput.value = cliente.cpf_cnpj;
+        emailInput.value = cliente.email;
+        celularInput.value = cliente.celular;
+        enderecoInput.value = cliente.endereco;
+        numeroInput.value = cliente.numero;
+        bairroInput.value = cliente.bairro;
+        cidadeInput.value = cliente.cidade;
+        cepInput.value = cliente.cep;
+        ufInput.value = cliente.uf;
+        form.action = "{{ url_for('clientes_novo') }}?editar=" + cliente.id;
+    } else {
+        modalLabel.textContent = 'Cadastrar Cliente';
+        form.reset();
+        form.action = "{{ url_for('clientes_novo') }}";
+    }
+
+    $('#clienteModal').modal('show');
+}
+</script>

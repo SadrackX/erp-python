@@ -1,23 +1,55 @@
-id,nome,tipo,cpf_cnpj,email,celular,endereco,bairro,cidade,cep,uf,observacoes,ativo
-0001,Teste as,PF,08928838479,thallyelsom@gmail.com,83981273917,Rua adfadfadf,centro,SOUSA,58807250,pb,,True
-0002,Thallyelson Mariano Gomes,PF,08928838479,thallyelsom@gmail.com,83981273917,Rua adfadfadf,centro,SOUSA,58807250,pb,,True
-0003,MOREIRA E COSTA IMPRESSAO DE MATERIAL PUBLICITARIO,PF,26.116.197/0001-12,adesignsousapb@gmail.com,83 9 9999-9999,EMILIO,CENTRO,SOUSA,58800207,PB,,True
-0004,THALLYELSON MARIANO GOMES,PF,08928838479,thallyelson@hotmail.com,88 8888 8888,EMILIO PIRES,centro,SOUSA,58800207,pb,,True
-0005,Teste log,PF,08928838479,thallyelsom@gmail.com,83981273917,Rua adfadfadf,centro,SOUSA,58807250,rn,,True
-0006,MOREIRA E COSTA IMPRESSAO DE MATERIAL PUBLICITARIO,PF,554,adesignsousapb@gmail.com,45,EMILIO PIRES,CENTRO,SOUSA,58800207,PB,,True
-0007,teste 003,PF,08928838479,adesignsousapb@gmail.com,83 9 9999-9999,EMILIO PIRES,SORRILANDIA,SOUSA,58800207,pb,,True
-0008,TESTE INSCE,PF,0892222,adesignsousapb@gmail.com,83 9 9999-9999,EMILIO PIRES,SORRILANDIA,SOUSA,58800207,PB,,True
-0009,sadrackx,PF,08928838479,thallyelsom@hotmail.com,83981273917,QNP 13 CONJUNTO N,centro,CEILÂNDIA,72241-314,pb,,True
-0010,sadrack hc,PJ,08928838479,thallyelsom@hotmail.com,83981273917,QNP 13 CONJUNTO N,centro,CEILÂNDIA,72241-314,pb,,True
-6b141413-448a-47af-a3a3-5aa2f8b69653,sadrack sdkx,PF,18928838478,exemplo@email.com,00 00000-0000,QNP 13 CONJUNTO N,centro,CEILÂNDIA,00000000,pb,,True
-0011,teste 1807,PF,08922214,thallyelsom@hotmail.com,83981273917,QNP 13 CONJUNTO N,centro,CEILÂNDIA,72241-314,pb,,True
-0012,TESTE INSCE,PF,0892222,adesignsousapb@gmail.com,83 9 9999-9999,EMILIO PIRES,SORRILANDIA,SOUSA,58800207,PB,,True
-0013,TESTE INSCE,PF,0892222,adesignsousapb@gmail.com,83 9 9999-9999,EMILIO PIRES,SORRILANDIA,SOUSA,58800207,PB,,True
-0014,TESTE INSCE,PF,0892222,adesignsousapb@gmail.com,83 9 9999-9999,EMILIO PIRES,SORRILANDIA,SOUSA,58800207,PB,,True
-0015,TESTE INSCE,PF,0892222,adesignsousapb@gmail.com,83 9 9999-9999,EMILIO PIRES,SORRILANDIA,SOUSA,58800207,PB,,True
-0016,Thallyelson Mariano Gomes,PF,08928838479,thallyelsom@gmail.com,83981273917,Rua adfadfadf,centro,SOUSA,58807250,pb,,True
-0017,Thallyelson Mariano Gomes,PF,08928838479,thallyelsom@gmail.com,83981273917,Rua adfadfadf,centro,SOUSA,58807250,pb,,True
-0018,Thallyelson Mariano Gomes,PF,08928838479,thallyelsom@gmail.com,83981273917,Rua adfadfadf,centro,SOUSA,58807250,pb,,True
-0019,Thallyelson Mariano Gomes,PF,08928838479,thallyelsom@gmail.com,83981273917,Rua adfadfadf,centro,SOUSA,58807250,pb,,True
-0020,Thallyelson Mariano Gomes,PF,08928838479,thallyelsom@gmail.com,83981273917,Rua adfadfadf,centro,SOUSA,58807250,pb,,True
-0021,MOREIRA E COSTA IMPRESSAO DE MATERIAL PUBLICITARIO,PF,26,adesignsousapb@gmail.com,83 9 9999-9999,EMILIO,CENTRO,SOUSA,58800207,pb,,True
+id,nome,tipo,cpf_cnpj,email,celular,endereco,numero,bairro,cidade,cep,uf,observacoes,ativo
+0001,Ana Sophia Araújo,PF,438.150.926-98,carvalholeandro@santos.net,71 6379-4026,Ladeira Henrique da Rosa,56,Vila Santo Antônio,Cavalcanti de Minas,15594-077,SP,Parcelamento em análise,True
+0002,João Miguel Cardoso,PF,845.910.623-33,diaseduardo@uol.com.br,+55 84 7525-5341,Rua Coronel Manoel Isidro Rocha,SN,Estação,Sousa,58807-250,PB,Nenhuma observação,True
+0003,Dr. Gabriel Campos,PF,359.876.401-48,pietrateixeira@pereira.br,21 3287 1012,Esplanada de Pereira,,Universitário,Nogueira,97848018,PR,Contato difícil,True
+0004,Vitor Mendes,PF,146.930.258-60,luiza89@da.com,0300-570-1543,Feira Cardoso,,Bonfim,Campos de Teixeira,27824896,SP,Cliente novo,True
+0005,Marcelo da Paz,PF,465.398.072-10,augusto98@das.com,+55 31 1051-8347,Setor Costela,,Vila Nova Paraíso,Farias de Ribeiro,31165667,PR,Cliente novo,False
+0006,Srta. Nicole Castro,PF,065.891.473-10,rda-mata@farias.com,(031) 8108-0132,Residencial Camila da Rosa,,Santa Lúcia,Caldeira da Serra,06474687,ES,Aguardando retorno,False
+0007,Diogo Gonçalves,PF,308.527.461-80,silvadavi-lucca@campos.net,71 1939 9091,Viaduto Isis Silveira,,Lagoa,da Rocha Alegre,46247510,RS,Contato via WhatsApp,True
+0008,Mariane Castro,PJ,18.342.950/0001-60,miguel27@souza.com,81 4124-1182,Lago Kamilly da Rocha,,Vila Nova Gameleira 1ª Seção,da Rocha Paulista,40164005,MG,Reclamações frequentes,True
+0009,Pedro Miguel Ferreira,PF,276.405.893-47,isis82@costela.com,(041) 5053 3158,Vale Rafaela da Costa,,Nova Vista,da Cruz,60256342,RS,Cliente fiel,True
+0010,Srta. Isis Azevedo,PF,738.692.405-47,alanamelo@campos.org,(084) 8685 0142,Jardim de Azevedo,,Campo Alegre,Monteiro Alegre,98169340,ES,Atrasou pagamento,False
+0011,Sra. Agatha Silveira,PJ,83.590.246/0001-98,clarice46@nunes.org,(83) 98156-9659,Rua Coronel Manoel Isidro Rocha,10,Estação,Sousa,58807-250,PB,Reclamações frequentes,True
+0012,Luiz Gustavo Melo,PJ,13.496.508/0001-74,dcardoso@da.br,11 6320-1632,Rua de Rezende,,Baleia,Costa,27889579,PR,Atrasou pagamento,False
+0013,Dra. Lara Vieira,PF,729.381.564-64,ana-laura14@fogaca.com,+55 84 2362 3166,Setor Bianca Peixoto,,Beira Linha,Peixoto,90967054,PR,Reclamações frequentes,False
+0014,Kamilly Teixeira,PF,837.129.406-96,dda-cunha@hotmail.com,0900-806-9901,Praça de Cunha,,Santa Monica,da Mata de Barros,65375564,SC,Atrasou pagamento,True
+0015,Eloah Cardoso,PF,708.219.436-69,da-costalucca@ribeiro.net,(061) 4529-9124,Trecho Araújo,,Coração Eucarístico,Nascimento das Flores,19314919,RS,Reclamações frequentes,True
+0016,João Felipe Teixeira,PF,651.482.079-49,omoreira@da.br,+55 (051) 8498-7769,Largo Luigi Carvalho,,Itatiaia,Farias de Rezende,50752735,RS,Atrasou pagamento,False
+0017,Joaquim Freitas,PJ,94.081.752/0001-78,sduarte@uol.com.br,(084) 7014-3634,Trecho de Moura,,Pousada Santo Antonio,Pereira da Prata,57444313,ES,Atendimento especial,False
+0018,Sr. Vinicius Teixeira,PF,238.579.406-38,thiagoda-luz@yahoo.com.br,+55 (021) 8240 0842,Residencial de Cavalcanti,,Santa Tereza,Gomes,77520471,MG,Cliente fiel,True
+0019,João Rodrigues,PJ,10.294.783/0001-17,xdas-neves@porto.br,(03) 1964-9909,Vereda da Rosa,SN,Heliopolis,da Cruz,28120-670,SC,Cliente antiga,True
+0020,Evelyn Azevedo,PF,348.590.167-93,vianalevi@ig.com.br,+55 (021) 4210-2499,Praia Felipe Rezende,,Vila Madre Gertrudes 1ª Seção,Nunes Paulista,71906594,PR,Parcelamento em análise,True
+0021,Bryan Dias,PF,904.781.326-03,isispinto@ig.com.br,(084) 1756-5512,Pátio Maria Vitória Sales,,Jardim Do Vale,Vieira do Norte,15451680,ES,Contato difícil,False
+0022,Maria Cecília Rezende,PF,603.429.751-61,luiz-otaviovieira@gomes.br,+55 71 0932 4808,Chácara Levi Correia,,Pindura Saia,da Costa,48467737,SC,Cliente fiel,True
+0023,Bianca Nogueira,PF,382.607.914-04,mirella49@da.br,61 7558-8675,Vila Duarte,,Sport Club,Dias das Pedras,57662702,RS,Cliente VIP,False
+0024,Maria Sophia Melo,PJ,17.943.085/0001-44,ribeirostephany@mendes.br,+55 21 5865 7809,Feira Gomes,,Eymard,Pinto,17240050,MG,Atrasou pagamento,True
+0025,João Gabriel Moura,PJ,62.347.910/0001-00,nascimentolavinia@sales.br,+55 61 7407-4821,Morro Joana Jesus,,Vila Cloris,Fernandes dos Dourados,36713695,RJ,Atendimento especial,False
+0026,Evelyn Gonçalves,PJ,06.497.831/0001-05,leonardo39@cunha.com,+55 (061) 4709 5214,Pátio João Felipe da Paz,,Céu Azul,Souza do Galho,24745171,SC,Encomenda em aberto,True
+0027,Vitor Gabriel das Neves,PJ,68.503.927/0001-88,rmoura@nascimento.br,+55 51 3709 8593,Campo de Rezende,,Castelo,Oliveira do Campo,00471138,RJ,Cliente novo,False
+0028,João Pedro Ramos,PJ,58.649.132/0001-29,roliveira@moura.br,(031) 3515-8506,Estrada Felipe Ramos,,Braúnas,Aragão,53293183,PR,Contato difícil,False
+0029,Clara Dias,PF,520.819.673-59,antoniomoraes@martins.org,+55 (071) 2681 1775,Trecho de Cavalcanti,,Pedreira Padro Lopes,Barbosa,70076617,RJ,Boa pagadora,False
+0030,Sra. Ana Julia Cardoso,PF,521.784.963-00,ycastro@ig.com.br,+55 61 8367 3657,Pátio Natália Castro,Juliana,Lopes Paulista,27111161,RS,Cliente VIP,True,
+0031,Dra. Isadora Costela,PF,805.793.241-41,julia45@santos.com,(081) 3158-5149,Praça Araújo,,Ventosa,Araújo da Serra,45502296,SC,Nenhuma observação,False
+0032,Danilo Araújo,PF,183.765.209-03,sophie99@gmail.com,+55 (071) 2290 1476,Trevo Ana Luiza Peixoto,,Independência,Silva,56149784,ES,Contato difícil,False
+0033,Enzo Gabriel Novaes,PJ,90.812.643/0001-22,erick07@ig.com.br,(021) 2268-3885,Passarela Barbosa,,Olhos D'água,Ramos,59696641,PR,Frequente,True
+0034,Alexia Martins,PF,275.036.189-30,vlima@das.br,+55 (041) 1818-8355,Via de da Conceição,,Flavio Marques Lisboa,da Conceição,32921277,SC,Cliente antiga,False
+0035,Sophie Porto,PJ,95.813.076/0001-42,julia05@bol.com.br,+55 11 4770 0541,Chácara de Santos,,Miramar,Vieira de Barbosa,93597820,SP,Reclamações frequentes,False
+0036,Ana Lívia Mendes,PF,182.093.476-40,miguel66@yahoo.com.br,0300-051-5186,Jardim Mirella da Costa,,Lorena,da Conceição,46291486,ES,Cliente VIP,False
+0037,Vitória Melo,PF,281.563.907-68,kevinmendes@uol.com.br,+55 (071) 3221-4188,Rua de Azevedo,,Vila Ecológica,Costela das Flores,22927065,PR,Cliente antiga,True
+0038,Rebeca Duarte,PJ,74.918.625/0001-73,maria-fernanda97@gomes.br,21 8623-9240,Recanto de Moura,,São Vicente,Silveira,41247826,RS,Atendimento especial,True
+0039,Enzo Gabriel Porto,PF,506.834.271-80,levi05@melo.com,+55 (051) 4727 7901,Jardim da Rosa,20,Floresta,Vieira,14341036,MG,,True
+0040,Vitória Ramos,PF,197.460.825-58,nalmeida@yahoo.com.br,+55 41 9621-8518,Rodovia de Santos,,São Vicente,Nogueira,06540515,PR,Cliente fiel,False
+0041,Thomas Cavalcanti,PF,952.074.836-92,zda-mata@hotmail.com,+55 (084) 7043 0305,Rodovia Agatha Viana,,Pousada Santo Antonio,Azevedo do Oeste,50541566,SP,Cliente antiga,False
+0042,Sra. Joana Mendes,PJ,27.894.605/0001-20,pintokamilly@hotmail.com,71 4511-5447,Praça de da Cunha,,Vila Madre Gertrudes 2ª Seção,Monteiro de Porto,59640165,RJ,Cliente VIP,True
+0043,Yasmin da Cruz,PF,027.916.583-86,mazevedo@hotmail.com,(041) 5571-9285,Largo Maitê Freitas,,Graça,Araújo,78681447,SP,Parcelamento em análise,False
+0044,Paulo Gomes,PF,731.908.624-78,maria-cecilia51@jesus.com,+55 (051) 5831-3237,Núcleo Vieira,,Suzana,Rezende da Prata,91146786,RS,Boa pagadora,True
+0045,Maria Julia Cardoso,PF,251.364.908-70,dsantos@silveira.org,+55 (041) 2535-8414,Vereda Vieira,,Ipe,Jesus,82992299,SC,Encomenda em aberto,True
+0046,Sr. Antônio Cardoso,PJ,04.368.791/0001-68,camila36@yahoo.com.br,(051) 1027-6773,Trevo Gustavo Henrique Lopes,,Santa Efigênia,Monteiro das Flores,58815371,PR,Frequente,False
+0047,Levi Farias,PF,210.934.576-43,joao-miguel27@bol.com.br,(061) 7470-1687,Favela Moraes,,Bairro Das Indústrias Ii,Gomes,97480162,PR,Contato via WhatsApp,True
+0048,Thomas Moreira,PJ,65.037.419/0001-63,nogueiraclarice@uol.com.br,81 4991-2165,Sítio Thomas da Conceição,,Distrito Industrial Do Jatoba,Santos do Norte,02578729,ES,Atendimento especial,False
+0049,Beatriz Martins,PJ,95.234.786/0001-18,bruna05@yahoo.com.br,+55 61 6940 9749,Fazenda de Barros,,Tres Marias,da Cunha de Souza,23091307,PR,Encomenda em aberto,True
+0050,Dr. Davi Lucas Oliveira,PF,367.850.124-99,ysouza@yahoo.com.br,(55) 05178-5854,Feira Freitas,SN,Saudade,das Neves da Mata,37575-844,RJ,Atrasou pagamento,True
+0051,Thallyelson Mariano Gomes,PF,089.288.384-79,thallyelsom@gmail.com,(83) 98127-3917,Rua Coronel Manoel Isidro Rocha,157,Estação,Sousa,58807-250,PB,,True
+0052,MOREIRA E COSTA IMPRESSAO DE MATERIAL PUBLICITARIO LTDA,PJ,26.116.197/0001-12,adesignsousapb@gmail.com,(83) 3522-1190,Rua Francisco Pereira Lacerda,10,Areias,Sousa,58801-470,PB,,True
+0053,Teste,PJ,12.342.341/2341-11,gsdfgfg@123,(23) 4453-4,gdfgsf,23,354,23,34123-451,23,,True
+87d25896-26f4-4854-a3bc-bcc43b3720fa,João Pereira Silva,PF,350.944.560-08,joaasilva@email.com,(83) 99514-6163,Rua Soldado-Polícia Militar Django da Silva,100,Caranã,Boa Vista,69313-578,RR,,True

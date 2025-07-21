@@ -1,0 +1,117 @@
+
+<div class="form-row">
+    <!-- Dados do cliente -->
+    <div class="form-group col-md-7">
+        <label for="nome">Nome do cliente</label>
+        <input type="text" class="form-control" id="nome" name="nome"
+            value="{{ cliente['nome'] if cliente else '' }}" {% if pedido %}readonly disabled{% endif %} required>                    
+    </div>
+    <div class="form-group col-md-2">
+        <label for="tipo">Tipo</label>
+        <select class="form-control" id="tipo" name="tipo" {% if pedido %}readonly disabled{% endif %} required>
+            <option value="PF" {% if cliente and cliente.tipo == 'PF' %}selected{% endif %}>PF</option>
+            <option value="PJ" {% if cliente and cliente.tipo == 'PJ' %}selected{% endif %}>PJ</option>
+        </select>
+    </div>
+    <div class="form-group col-md-3">
+        <label for="cpf_cnpj">CPF/CNPJ - Pesquisa</label>
+        <input type="text" class="form-control" id="cpf_cnpj" name="cpf_cnpj" value="{{ cliente['cpf_cnpj'] if cliente else '' }}" {% if pedido %}readonly disabled{% endif %} required>
+        <div id="sugestoes-clientes" class="sugestoes-clientes-container" style="display:none; position:absolute; z-index:10;"></div>
+        <div class="invalid-feedback">
+            Número inválido para o tipo selecionado.
+        </div>
+    </div>
+    <div class="form-group col-md-6">
+        <label for="email">E-mail</label>
+        <input type="email" class="form-control" id="email" name="email" value="{{ cliente['email'] if cliente else '' }}" {% if pedido %}readonly disabled{% endif %} required>
+    </div>
+    <div class="form-group col-md-6">
+        <label for="celular">Telefone</label>
+        <input type="text" class="form-control" id="celular" name="celular" value="{{ cliente['celular'] if cliente else '' }}" {% if pedido %}readonly disabled{% endif %} placeholder="(00) 00000-0000" maxlength="15" required>
+        <div class="invalid-feedback">
+            Número inválido. Insira um numero de Telefone válido.
+        </div>
+    </div>
+    <div class="form-group col-md-5">
+        <label for="endereco">Endereço</label>
+        <input type="text" class="form-control" id="endereco" name="endereco" value="{{ cliente['endereco'] if cliente else '' }}" {% if pedido %}readonly disabled{% endif %} required>
+    </div>
+    <div class="form-group col-md-1">
+        <label for="numero">Nº</label>
+        <input type="text" class="form-control" id="numero" name="numero" value="{{ cliente['numero'] if cliente else '' }}" {% if pedido %}readonly disabled{% endif %} required>
+    </div>
+    <div class="form-group col-md-3">
+        <label for="bairro">Bairro</label>
+        <input type="text" class="form-control" id="bairro" name="bairro" value="{{ cliente['bairro'] if cliente else '' }}" {% if pedido %}readonly disabled{% endif %} required>
+    </div>
+    <div class="form-group col-md-3">
+        <label for="cidade">Cidade</label>
+        <input type="text" class="form-control" id="cidade" name="cidade" value="{{ cliente['cidade'] if cliente else '' }}" {% if pedido %}readonly disabled{% endif %} required>
+    </div>
+    <div class="form-group col-md-3">
+        <label for="cep">CEP</label>
+        <input type="text" class="form-control" id="cep" name="cep" value="{{ cliente['cep'] if cliente else '' }}" {% if pedido %}readonly disabled{% endif %} placeholder="00000-000" maxlength="9" required>
+        <div class="invalid-feedback">
+            CEP inválido. Deve conter exatamente 8 dígitos.
+        </div>
+    </div>
+    <div class="form-group col-md-3">
+        <label for="uf">UF</label>
+        <input type="text" class="form-control" id="uf" name="uf" maxlength="2" value="{{ cliente['uf'] if cliente else '' }}" {% if pedido %}readonly disabled{% endif %} required>
+    </div>
+</div>
+
+<script>
+    
+
+// MODAL CLIENTE
+document.addEventListener('DOMContentLoaded', function() {
+    // Modal novo cliente
+    var formNovo = document.querySelector('#clienteModal form');
+    if (formNovo) adicionarValidacaoCliente(formNovo);
+    // Modais de edição
+    document.querySelectorAll('[id^="editarClienteModal"] form').forEach(function(form) {
+        adicionarValidacaoCliente(form);
+    });
+});
+
+function abrirModalCliente(cliente = null) {
+    const modalLabel = document.getElementById('clienteModalLabel');
+    const form = document.getElementById('cliente-form');
+    const idInput = document.getElementById('cliente-id');
+    const nomeInput = document.getElementById('nome');
+    const tipoInput = document.getElementById('tipo');
+    const cpfCnpjInput = document.getElementById('cpf_cnpj');
+    const emailInput = document.getElementById('email');
+    const celularInput = document.getElementById('celular');
+    const enderecoInput = document.getElementById('endereco');
+    const numeroInput = document.getElementById('numero');
+    const bairroInput = document.getElementById('bairro');
+    const cidadeInput = document.getElementById('cidade');
+    const cepInput = document.getElementById('cep');
+    const ufInput = document.getElementById('uf');
+    inputCEP.classList.remove('is-invalid');
+    if (cliente) {
+        modalLabel.textContent = 'Editar Cliente';
+        idInput.value = cliente.id;
+        nomeInput.value = cliente.nome;
+        tipoInput.value = cliente.tipo;
+        cpfCnpjInput.value = cliente.cpf_cnpj;
+        emailInput.value = cliente.email;
+        celularInput.value = cliente.celular;
+        enderecoInput.value = cliente.endereco;
+        numeroInput.value = cliente.numero;
+        bairroInput.value = cliente.bairro;
+        cidadeInput.value = cliente.cidade;
+        cepInput.value = cliente.cep;
+        ufInput.value = cliente.uf;
+        form.action = "{{ url_for('clientes_novo') }}?editar=" + cliente.id;
+    } else {
+        modalLabel.textContent = 'Cadastrar Cliente';
+        form.reset();
+        form.action = "{{ url_for('clientes_novo') }}";
+    }
+
+    $('#clienteModal').modal('show');
+}
+</script>

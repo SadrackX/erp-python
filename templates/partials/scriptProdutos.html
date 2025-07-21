@@ -1,0 +1,77 @@
+<script>
+    var produtosPedido = [];
+var valorTotal = 0;
+
+function atualizarTabelaProdutos() {
+    var html = '';
+    var totalPedido = 0;
+    produtosPedido.forEach(function(p, idx) {
+        var total = p.preco_unitario * p.quantidade;
+        totalPedido += total;
+        html += '<tr>';
+        html += '<td>' + p.nome + '</td>';
+        html += '<td>R$ ' + p.preco_unitario.toFixed(2) + '</td>';
+        html += '<td>' + p.quantidade + '</td>';
+        html += '<td>R$ ' + total.toFixed(2) + '</td>';
+        html += '<td><button class="btn-outline-danger btn-sm" onclick="removerProduto(' + idx + ')">Remover</button></td>';
+        html += '</tr>';
+    });
+    valorTotal = totalPedido;
+    $('#tabela-produtos tbody').html(html);
+    $('#valor-final').text('R$ ' + totalPedido.toFixed(2));
+    $('#produtos_json').val(JSON.stringify(produtosPedido));
+}
+
+function removerProduto(index) {
+    produtosPedido.splice(index, 1);
+    atualizarTabelaProdutos();
+}
+
+$(document).ready(function () {
+    atualizarTabelaProdutos();
+
+    $('#busca-produto').on('input', function () {
+        var termo = $(this).val();
+        if (termo.length < 2) { $('#sugestoes-produtos').hide(); return; }
+        $.getJSON("/produtos/buscar", { q: termo }, function (res) {
+            var html = '';
+            res.forEach(function (p) {
+                html += '<div class="sugestao-produto" data-json="' + encodeURIComponent(JSON.stringify(p)) + '">' + p.nome + ' (R$ ' + p.preco_venda + ')</div>';
+            });
+            $('#sugestoes-produtos').html(html).show();
+        });
+    });
+
+    $('#busca-produto').focusout(function () {
+        setTimeout(function () { $('#sugestoes-produtos').hide(); }, 200);
+    });
+
+    $(document).on('click', '.sugestao-produto', function () {
+        var p = JSON.parse(decodeURIComponent($(this).data('json')));
+        $('#busca-produto').val(p.nome);
+        $('#preco-produto').val(p.preco_venda);
+        $('#sugestoes-produtos').hide();
+    });
+
+    $('#adicionar-produto').on('click', function () {
+        var nome = $('#busca-produto').val();
+        var preco = parseFloat($('#preco-produto').val());
+        var qtd = parseInt($('#quantidade-produto').val());
+
+        if (!nome || isNaN(preco) || isNaN(qtd) || qtd < 1) {
+            alert('Preencha todos os campos corretamente!');
+            return;
+        }
+
+        produtosPedido.push({
+            nome: nome,
+            preco_unitario: preco,
+            quantidade: qtd
+        });
+
+        atualizarTabelaProdutos();
+        $('#modal-produto').modal('hide');
+    });
+});
+
+</script>

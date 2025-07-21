@@ -53,16 +53,25 @@ class PedidoManager(CSVManager):
     
     def buscar_todos(self) -> List[Pedido]:
         pedidos = []
+        self.verificar_e_atualizar_status_pedidos()  
         for pedido_data in self.get_all():
             itens = self.itens_manager.buscar_itens_por_pedido(pedido_data['id'])
             pedidos.append(Pedido.from_dict(pedido_data, itens))
         return pedidos
     
     def atualizar_pedido(self, pedido_id: str, novos_dados: dict) -> bool:
+        
         if 'data_previsao_entrega' in novos_dados and novos_dados['data_previsao_entrega']:
-            novos_dados['data_previsao_entrega'] = datetime.strptime(novos_dados['data_previsao_entrega'], "%Y-%m-%d")
+            
+            if novos_dados['status'] == 'Finalizado':
+                novos_dados['data_previsao_entrega'] = datetime.now() # ATUALIZA DATA QUANDO ATUALIZAR O PEDIDO
+            else:
+                novos_dados['data_previsao_entrega'] = datetime.strptime(novos_dados['data_previsao_entrega'], "%Y-%m-%d")
         else:
-            novos_dados['data_previsao_entrega'] = None
+            if novos_dados['status'] == 'Finalizado':
+                novos_dados['data_previsao_entrega'] = datetime.now() # ATUALIZA DATA QUANDO ATUALIZAR O PEDIDO
+            else:
+                novos_dados['data_previsao_entrega'] = None
         return self.update(pedido_id, novos_dados)
     
     def atualizar_itens_pedido(self, pedido_id: str, novos_itens: List[ItemPedido]) -> bool:
@@ -71,9 +80,48 @@ class PedidoManager(CSVManager):
             item.id_pedido = pedido_id
             self.itens_manager.adicionar_item(item)
         return True
+
+    def verificar_e_atualizar_status_pedidos(self):
+        """Atualiza automaticamente o status dos pedidos com base na data de entrega"""
+        hoje = datetime.now().date()
+        alteracoes = 0
+
+        for pedido_data in self.get_all():
+            status_atual = pedido_data['status']
+            data_entrega_str = pedido_data.get('data_previsao_entrega', '')
+            data_entrega = None
+
+            # Tenta converter a data
+            if data_entrega_str:
+                try:
+                    data_entrega = datetime.fromisoformat(data_entrega_str).date()
+                except ValueError:
+                    continue  # ignora formatos inválidos
+
+            atualizou = False
+
+            # Regra 1: status != Finalizado e data de entrega passada → Atrasado
+            if status_atual not in ['Finalizado', 'Cancelado'] and data_entrega and data_entrega < hoje:
+                pedido_data['status'] = 'Atrasado'
+                atualizou = True
+
+            # Regra 2: se status for Finalizado ou Rascunho → limpa data de entrega
+            if status_atual in ['Orçamento', 'Rascunho'] and data_entrega_str:
+                pedido_data['data_previsao_entrega'] = ''
+                atualizou = True
+
+            if atualizou:
+                self.update(pedido_data['id'], pedido_data)
+                alteracoes += 1
+
+        return alteracoes  # para log ou teste
+
     
     def cancelar_pedido(self, pedido_id: str) -> bool:
         return self.update(pedido_id, {'status': 'Cancelado','data_previsao_entrega':''})
+    
+    def gerar_pedido(self, pedido_id: str) -> bool:
+        return self.update(pedido_id, {'status': 'Rascunho','data_previsao_entrega':''})
     
     def buscar_por_periodo_entrega(self, data_inicio: datetime, data_fim: datetime) -> List[Pedido]:
         """Filtra pedidos por período de previsão de entrega"""

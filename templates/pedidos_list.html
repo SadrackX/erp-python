@@ -2,39 +2,52 @@
 {% block conteudo %}
 <div class="d-flex justify-content-between align-items-center py-3">
     <h3>{{ titulo if titulo else "Pedidos" }}</h3>
-    <a href="{{ url_for('pedidos_novo') }}" class="btn btn-success">Novo Pedido</a>
+    {% if titulo == 'Orçamento' %}
+        <a href="{{ url_for('orcamentos_novo') }}" class="btn btn-success">Novo Orçamento</a>
+    {% else %}
+        <a href="{{ url_for('pedidos_novo') }}" class="btn btn-success">Novo Pedido</a>
+    {% endif %}
+    
+    
 </div>
+{% set status_classes = {
+    'Rascunho': 'secondary',
+    'Design': 'primary',
+    'Produção': 'info',
+    'Finalizado': 'success'
+} %}
 <hr>
-
-<form method="get" class="row g-3 align-items-end mb-4">
-    <div class="col-md-3">
-        <label class="form-label">Cliente</label>
-        <input type="text" name="cliente" value="{{ cliente_filtro }}" class="form-control" placeholder="Nome ou ID do cliente">
-    </div>
-    <div class="col-md-3">
-        <label class="form-label">Status</label>
-        <select name="status" class="form-select">
-            <option value="">Todos os Status</option>
-            {% for status in ['Rascunho', 'Design', 'Produção', 'Finalizado'] %}
-                <option value="{{ status }}" {% if status == status_filtro %}selected{% endif %}>{{ status }}</option>
-            {% endfor %}
-        </select>
-    </div>
-    <div class="col-md-2">
-        <label class="form-label">Entrega de</label>
-        <input type="date" name="data_inicio" value="{{ data_inicio }}" class="form-control">
-    </div>
-    <div class="col-md-2">
-        <label class="form-label">Entrega até</label>
-        <input type="date" name="data_fim" value="{{ data_fim }}" class="form-control">
-    </div>
-    <div class="col-md-1 d-grid">
-        <button type="submit" class="btn btn-primary">Filtrar</button>
-    </div>
-    <div class="col-md-1 d-grid">
-        <a href="{{ url_for('pedidos') }}" class="btn btn-outline-secondary">Limpar</a>
-    </div>
-</form>
+<div  {% if titulo == 'Orçamento' %}hidden{% endif %}>
+    <form method="get" class="row g-3 align-items-end mb-4">
+        <div class="col-md-3">
+            <label class="form-label">Cliente</label>
+            <input type="text" name="cliente" value="{{ cliente_filtro }}" class="form-control" placeholder="Nome ou ID do cliente">
+        </div>
+        <div class="col-md-3">
+            <label class="form-label">Status</label>
+            <select name="status" class="form-select">
+                <option value="">Todos os Status</option>
+                {% for status in ['Rascunho', 'Design', 'Produção', 'Finalizado', 'Atrasado'] %}
+                    <option value="{{ status }}" {% if status == status_filtro %}selected{% endif %}>{{ status }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-2">
+            <label class="form-label">Entrega de</label>
+            <input type="date" name="data_inicio" value="{{ data_inicio }}" class="form-control">
+        </div>
+        <div class="col-md-2">
+            <label class="form-label">Entrega até</label>
+            <input type="date" name="data_fim" value="{{ data_fim }}" class="form-control">
+        </div>
+        <div class="col-md-1 d-grid">
+            <button type="submit" class="btn btn-primary">Filtrar</button>
+        </div>
+        <div class="col-md-1 d-grid">
+            <a href="{{ url_for('pedidos') }}" class="btn btn-outline-secondary">Limpar</a>
+        </div>
+    </form>
+</div>
 
 {% if pedidos|length > 0 %}
     <div class="mb-2 text-end text-muted">
@@ -47,29 +60,46 @@
         <tr>
             <th scope="col" style="width: 5%;">ID</th>
             <th scope="col">Cliente</th>
-            <th scope="col" style="width: 13%;">Data/Hora</th>
-            <th scope="col" style="width: 9%;">Entrega</th>
+            <th scope="col" style="width: 13%;">Criado</th>
+            <th scope="col" style="width: 9%;" {% if titulo == 'Orçamento' %}hidden{% endif %}>Entrega</th>
             <th scope="col" style="width: 10%;">Status</th>
             <th scope="col" style="width: 10%;">Total</th>
+            <th scope="col" style="width: 10%;" {% if titulo == 'Orçamento' %}hidden{% endif %}>Pago</th>
+            <th scope="col" style="width: 10%;" {% if titulo == 'Orçamento' %}hidden{% endif %}>Restante</th>
             <th scope="col" style="width: 15%;">Ações</th>
         </tr>
     </thead>
     <tbody>
-        {% for pedido in pedidos %}
-        <tr>
-            <th scope="row">{{ pedido.id }}</th>
-            <td>{{ clientes[pedido.id_cliente] if clientes[pedido.id_cliente] else pedido.id_cliente }}</td>
-            <td>{{ pedido.data.strftime('%d/%m/%Y %H:%M') if pedido.data else '' }}</td>
-            <td>{{ pedido.data_previsao_entrega.strftime('%d/%m/%Y') if pedido.data_previsao_entrega else '' }}</td>
-            <td><span class="badge bg-secondary">{{ pedido.status }}</span></td>
-            <td>R$ {{ '%.2f' % pedido.total }}</td>
-            <td>
-                <a href="{{ url_for('pedido_editar', pedido_id=pedido.id) }}" class="btn btn-warning btn-sm">Editar</a>
-                {% if pedido.status != 'Cancelado' %}
-                <a href="{{ url_for('pedido_cancelar', pedido_id=pedido.id) }}" class="btn btn-danger btn-sm" onclick="return confirm('Cancelar este pedido?');">Cancelar</a>
-                {% endif %}
-            </td>
-        </tr>
+        {% for pedido in pedidos %}      
+            <tr>
+                <!-- onclick="window.location='{{ url_for('pedido_editar', pedido_id=pedido.id) }}'" style="cursor: pointer;" -->
+                <th scope="row" onclick="window.location='{{ url_for('pedido_editar', pedido_id=pedido.id) }}'" style="cursor: pointer;">{{ pedido.id }}</th>
+                <td>{{ clientes[pedido.id_cliente] if clientes[pedido.id_cliente] else pedido.id_cliente }}</td>
+                <td>{{ pedido.data.strftime('%d/%m/%Y %H:%M') if pedido.data else '' }}</td>
+                <td {% if titulo == 'Orçamento' %}hidden{% endif %}>{{ pedido.data_previsao_entrega.strftime('%d/%m/%Y') if pedido.data_previsao_entrega else '' }}</td>
+                <td><span class="badge bg-{{ status_classes.get(pedido.status, 'dark') }}"  style="color: aliceblue;">{{ pedido.status }}</span></td>
+                <td>R$ {{ '%.2f' % pedido.total }}</td>
+                <td {% if titulo == 'Orçamento' %}hidden{% endif %}>R$ {{ '%.2f' % pedido.valor_pago }}</td>
+                <td {% if titulo == 'Orçamento' %}hidden{% endif %}>R$ {{ '%.2f' % pedido.falta_pagar }}</td>
+                <td>
+                    {% if titulo == 'Orçamento' %}
+                        <a href="{{ url_for('orcamentos_editar', pedido_id=pedido.id) }}" class="btn btn-warning btn-sm">Editar</a>
+                        {% if pedido.status != 'Cancelado' %}
+                            <a href="{{ url_for('gerar_pedido', pedido_id=pedido.id) }}" class="btn btn-info btn-sm" onclick="return confirm('Gerar pedido?');">Gerar Pedido</a>
+                        {% endif %}
+                    {% else %}
+                            {% if pedido.status in ['Cancelado', 'Finalizado'] %}
+                                <a href="{{ url_for('pedido_editar', pedido_id=pedido.id) }}" class="btn btn-info btn-sm" onclick="return confirm('Gerar NOVO pedido?');">Gerar Novo Pedido</a>
+                            {% else %}
+                            <a href="{{ url_for('pedido_editar', pedido_id=pedido.id) }}" class="btn btn-warning btn-sm">Editar</a>
+                            {% endif %}
+                        {% if pedido.status not in ['Cancelado', 'Finalizado'] %}
+                            <a href="{{ url_for('pedido_cancelar', pedido_id=pedido.id) }}" class="btn btn-danger btn-sm" onclick="return confirm('Cancelar este pedido?');">Cancelar</a>
+                        {% endif %}
+                    {% endif %}
+                    
+                </td>
+            </tr>
         {% endfor %}
     </tbody>
 </table>
@@ -80,4 +110,34 @@
     </div>
 {% endif %}
 
+{% if total_paginas > 1 %}
+<nav aria-label="Paginação de pedidos">
+  <ul class="pagination justify-content-center mt-4">
+
+    <li class="page-item {% if pagina_atual == 1 %}disabled{% endif %}">
+      <a class="page-link" href="{{ url_for('pedidos', 
+          cliente=cliente_filtro, status=titulo, 
+          data_inicio=data_inicio, data_fim=data_fim, 
+          pagina=pagina_atual - 1) }}">Anterior</a>
+    </li>
+
+    {% for p in range(1, total_paginas + 1) %}
+      <li class="page-item {% if p == pagina_atual %}active{% endif %}">
+        <a class="page-link" href="{{ url_for('pedidos', 
+            cliente=cliente_filtro, status=titulo, 
+            data_inicio=data_inicio, data_fim=data_fim, 
+            pagina=p) }}">{{ p }}</a>
+      </li>
+    {% endfor %}
+
+    <li class="page-item {% if pagina_atual == total_paginas %}disabled{% endif %}">
+      <a class="page-link" href="{{ url_for('pedidos', 
+          cliente=cliente_filtro, status=titulo, 
+          data_inicio=data_inicio, data_fim=data_fim, 
+          pagina=pagina_atual + 1) }}">Próximo</a>
+    </li>
+
+  </ul>
+</nav>
+{% endif %}
 {% endblock %}

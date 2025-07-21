@@ -15,10 +15,11 @@ class EmpresaManager(CSVManager):
             'logo_path',
             'cep',
             'endereco',
+            'numero',
             'bairro',
             'complemento',
             'cidade',
-            'estado'
+            'uf'
         ]
     
     def cadastrar_empresa(self, dados: Dict) -> bool:
