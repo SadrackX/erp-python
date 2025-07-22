@@ -85,19 +85,24 @@
 
                 <hr>
                 <div class="container" style="text-align: right;">
-                    <div class="btn-group">
-                        <button class="btn btn-warning dropdown-toggle" data-toggle="dropdown">
-                            Imprimir
-                        </button>
-                        <div class="dropdown-menu">
-                            <a class="dropdown-item" href="{{ url_for('gerar_pdf_pedido', pedido_id=pedido['id'], tipo='orcamento') }}" target="_blank">Orçamento</a>
-                            <a class="dropdown-item" href="{{ url_for('gerar_pdf_pedido', pedido_id=pedido['id'], tipo='ordem_servico') }}" target="_blank">Ordem de Serviço</a>
-                            <a class="dropdown-item" href="{{ url_for('gerar_pdf_pedido', pedido_id=pedido['id'], tipo='recibo') }}" target="_blank">Recibo</a>
+                    {% if pedido %}
+                        <div class="btn-group">
+                            <button class="btn btn-warning dropdown-toggle" data-toggle="dropdown">
+                                Imprimir
+                            </button>
+                            <div class="dropdown-menu">
+                                <a class="dropdown-item" href="{{ url_for('gerar_pdf_pedido', pedido_id=pedido['id'], tipo='orcamento') }}" target="_blank">Orçamento</a>
+                                <a class="dropdown-item" href="{{ url_for('gerar_pdf_pedido', pedido_id=pedido['id'], tipo='ordem_servico') }}" target="_blank">Ordem de Serviço</a>
+                                <a class="dropdown-item" href="{{ url_for('gerar_pdf_pedido', pedido_id=pedido['id'], tipo='recibo') }}" target="_blank">Recibo</a>
+                            </div>
                         </div>
-                    </div>
-                    
+                    {% endif %}
                     <button type="button" class="btn btn-primary" onclick="finalizarPedido()" {% if not pedido or pedido.status not in ['Design', 'Produção', 'Atrasado'] %}hidden{% endif %}>Finalizar</button> 
-                    <a href="{{ url_for('pedidos') }}" class="btn btn-secondary">Cancelar</a>
+                    {% if pedido %}                    
+                        <a href="{{ url_for('pedido_cancelar', pedido_id=pedido.id) }}" class="btn btn-secondary" onclick="return confirm('Cancelar este pedido?');">Cancelar</a>
+                    {% else %}
+                        <a href="{{ url_for('pedidos') }}" class="btn btn-secondary">Cancelar</a>
+                    {% endif %}
                     <button type="submit" class="btn btn-success">
                         {% if not pedido  or pedido.status == 'Finalizado' %}
                             Novo Pedido

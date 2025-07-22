@@ -1,4 +1,0 @@
-id,id_cliente,data,status,observacoes,desconto_total,data_previsao_entrega,forma_de_pagamento,valor_pago
-0001,7c95cb68-84c1-4314-a065-79e1b35e070b,2025-07-21T10:27:45.457538,Atrasado,,0.0,2025-07-18 00:00:00,Outro,100.0
-0002,0001,2025-07-21T10:28:38.778001,Produção,,0.0,2025-07-22 00:00:00,Dinheiro/Pix,0.0
-0003,0001,2025-07-21T10:30:41.877658,Design,,0.0,,Dinheiro/Pix,0.0
