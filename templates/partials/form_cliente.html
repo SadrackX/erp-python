@@ -15,7 +15,7 @@
     </div>
     <div class="form-group col-md-3">
         <label for="cpf_cnpj">CPF/CNPJ - Pesquisa</label>
-        <input type="text" class="form-control" id="cpf_cnpj" name="cpf_cnpj" value="{{ cliente['cpf_cnpj'] if cliente else '' }}" {% if pedido %}readonly disabled{% endif %} required>
+        <input type="text" class="form-control" id="cpf_cnpj" name="cpf_cnpj" value="{{ cliente['cpf_cnpj'] if cliente else '' }}" {% if pedido %}readonly disabled{% endif %}>
         <div id="sugestoes-clientes" class="sugestoes-clientes-container" style="display:none; position:absolute; z-index:10;"></div>
         <div class="invalid-feedback">
             Número inválido para o tipo selecionado.
@@ -23,7 +23,7 @@
     </div>
     <div class="form-group col-md-6">
         <label for="email">E-mail</label>
-        <input type="email" class="form-control" id="email" name="email" value="{{ cliente['email'] if cliente else '' }}" {% if pedido %}readonly disabled{% endif %} required>
+        <input type="email" class="form-control" id="email" name="email" value="{{ cliente['email'] if cliente else '' }}" {% if pedido %}readonly disabled{% endif %}>
     </div>
     <div class="form-group col-md-6">
         <label for="celular">Telefone</label>
@@ -34,30 +34,30 @@
     </div>
     <div class="form-group col-md-5">
         <label for="endereco">Endereço</label>
-        <input type="text" class="form-control" id="endereco" name="endereco" value="{{ cliente['endereco'] if cliente else '' }}" {% if pedido %}readonly disabled{% endif %} required>
+        <input type="text" class="form-control" id="endereco" name="endereco" value="{{ cliente['endereco'] if cliente else '' }}" {% if pedido %}readonly disabled{% endif %} >
     </div>
     <div class="form-group col-md-1">
         <label for="numero">Nº</label>
-        <input type="text" class="form-control" id="numero" name="numero" value="{{ cliente['numero'] if cliente else '' }}" {% if pedido %}readonly disabled{% endif %} required>
+        <input type="text" class="form-control" id="numero" name="numero" value="{{ cliente['numero'] if cliente else '' }}" {% if pedido %}readonly disabled{% endif %} >
     </div>
     <div class="form-group col-md-3">
         <label for="bairro">Bairro</label>
-        <input type="text" class="form-control" id="bairro" name="bairro" value="{{ cliente['bairro'] if cliente else '' }}" {% if pedido %}readonly disabled{% endif %} required>
+        <input type="text" class="form-control" id="bairro" name="bairro" value="{{ cliente['bairro'] if cliente else '' }}" {% if pedido %}readonly disabled{% endif %} >
     </div>
     <div class="form-group col-md-3">
         <label for="cidade">Cidade</label>
-        <input type="text" class="form-control" id="cidade" name="cidade" value="{{ cliente['cidade'] if cliente else '' }}" {% if pedido %}readonly disabled{% endif %} required>
+        <input type="text" class="form-control" id="cidade" name="cidade" value="{{ cliente['cidade'] if cliente else '' }}" {% if pedido %}readonly disabled{% endif %} >
     </div>
     <div class="form-group col-md-3">
         <label for="cep">CEP</label>
-        <input type="text" class="form-control" id="cep" name="cep" value="{{ cliente['cep'] if cliente else '' }}" {% if pedido %}readonly disabled{% endif %} placeholder="00000-000" maxlength="9" required>
+        <input type="text" class="form-control" id="cep" name="cep" value="{{ cliente['cep'] if cliente else '' }}" {% if pedido %}readonly disabled{% endif %} placeholder="00000-000" maxlength="9" >
         <div class="invalid-feedback">
             CEP inválido. Deve conter exatamente 8 dígitos.
         </div>
     </div>
     <div class="form-group col-md-3">
         <label for="uf">UF</label>
-        <input type="text" class="form-control" id="uf" name="uf" maxlength="2" value="{{ cliente['uf'] if cliente else '' }}" {% if pedido %}readonly disabled{% endif %} required>
+        <input type="text" class="form-control" id="uf" name="uf" maxlength="2" value="{{ cliente['uf'] if cliente else '' }}" {% if pedido %}readonly disabled{% endif %} >
     </div>
 </div>
 

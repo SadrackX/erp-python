@@ -50,6 +50,36 @@ inputCEP.addEventListener('input', function () {
   }
 });
 
+inputCEP.addEventListener('input', function () {
+  const cep = inputCEP.value.replace(/\D/g, '');
+
+  if (cep.length < 8 && cep.length > 0) {
+    inputCEP.classList.add('is-invalid');
+    return;
+  }else{
+
+  fetch(`https://viacep.com.br/ws/${cep}/json/`)
+    .then(res => res.json())
+    .then(data => {
+      if (data.erro) {
+        //inputCEP.classList.add('is-invalid');
+        return;
+      }
+
+      document.getElementById('endereco').value = data.logradouro;
+      document.getElementById('bairro').value = data.bairro;
+      document.getElementById('cidade').value = data.localidade;
+      document.getElementById('uf').value = data.uf;
+      inputCEP.classList.remove('is-invalid');
+    })
+    .catch(() => {
+      if (cep.length < 8 && cep.length > 0) {
+        inputCEP.classList.add('is-invalid');
+      }
+    });}
+});
+
+/* 
 inputCEP.addEventListener('blur', function () {
   const cep = inputCEP.value.replace(/\D/g, '');
 
@@ -77,7 +107,7 @@ inputCEP.addEventListener('blur', function () {
         inputCEP.classList.add('is-invalid');
       }
     });
-});
+}); */
 
 // Máscaras PARA CPF/CNPJ
 function aplicarMascaraCPF(valor) {
@@ -201,9 +231,9 @@ inputCPF_CNPJ.addEventListener('input', function () {
   } else {
     const valido = validarCNPJ(valor);
     inputCPF_CNPJ.value = aplicarMascaraCNPJ(valor);
-    inputCPF_CNPJ.maxLength = 18;
-    buscarDadosCNPJ(valor);
+    inputCPF_CNPJ.maxLength = 18;    
     inputCPF_CNPJ.classList.toggle('is-invalid', !validarCNPJ(valor));
+    if (valido) { buscarDadosCNPJ(valor); }
   }
 });
 
@@ -214,7 +244,7 @@ tipoSelect.addEventListener('change', function () {
   inputCPF_CNPJ.placeholder = tipoSelect.value === 'PF' ? '000.000.000-00' : '00.000.000/0000-00';
 });
 
-
+/* 
 // validação antiga
 function validarCpfCnpj(valor) {
     valor = valor.replace(/\D/g, '');
@@ -246,7 +276,7 @@ function adicionarValidacaoCliente(form) {
             e.preventDefault();
         }
     });
-}
+} */
 
 
 // MODAL CLIENTE
