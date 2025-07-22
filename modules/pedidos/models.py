@@ -127,7 +127,7 @@ class Pedido:
                     return None
 
         return cls(
-            id=data.get('id', PedidoManager().get_next_id()),
+            id = data.get('id') or PedidoManager().get_next_id(),
             id_cliente=data['id_cliente'],
             data=datetime.now(),
             status=data['status'],
