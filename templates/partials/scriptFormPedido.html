@@ -39,6 +39,26 @@
         produtosPedido = produtos;
     }
 
+    document.getElementById('status').addEventListener('change', function() {
+        const valorSelecionado = this.value;
+        const inputContainer = document.getElementById('data_previsao_entrega');
+        const mensagem = document.getElementById('data_previsao_entrega_mensagem');
+
+        if (valorSelecionado === 'Rascunho') {
+        inputContainer.disabled = true;
+        mensagem.style.display = 'block';
+        } else {
+        inputContainer.disabled = false;
+        mensagem.style.display = 'none';
+        }
+    });
+
+    // Executa no carregamento da página também (opcional)
+    window.addEventListener('DOMContentLoaded', function () {
+        document.getElementById('status').dispatchEvent(new Event('change'));
+    });
+
+
     $(document).ready(function () {
         atualizarTabelaProdutos();
         // Preenche cliente no formulário (edição)

@@ -7,6 +7,7 @@ from modules import empresa
 from modules.auth.manager import UsuarioManager
 from modules.auth.models import NivelAcesso
 from modules.empresa.manager import EmpresaManager
+from modules.pedidos import itens_manager
 from modules.relatorios.dashboard import Dashboard
 from modules.clientes.manager import ClienteManager
 from modules.clientes.models import Cliente
@@ -89,9 +90,7 @@ def clientes_novo():
     #cliente = ClienteManager().buscar_por_id(editar_id) if editar_id else None
     if request.method == 'POST':
         # Pega informações do form cliente
-        form = request.form.to_dict()
-        cliente = form  
-
+        cliente = request.form.to_dict()
         if editar_id:        
             # Atualização de cliente existente   
             ClienteManager().atualizar_cliente(editar_id, cliente)
@@ -287,18 +286,47 @@ def pedidos_novo():
     if 'usuario_nome' not in session:
         return redirect(url_for('login'))
     if request.method == 'POST':
+        data_str = request.form.get('data_previsao_entrega')
+        produtos_json = request.form.get('produtos_json')
+        itens = []
+        if produtos_json:
+            produtos = json.loads(produtos_json)
+            for p in produtos:
+                itens.append(ItemPedido(
+                    id_pedido='',
+                    nome=p['nome'],
+                    quantidade=p['quantidade'],
+                    preco_unitario=p['preco_unitario']
+                ))
         cliente_id = request.form['id_cliente']
+        raw_valor = request.form.get('valor_pago', '').strip()
         form = request.form.to_dict()
+        novo_cliente = Cliente.from_dict(form)
         if cliente_id == 'novo':            
-            novo_cliente = Cliente.from_dict(form)
+            form['ativo'] = 'ativo' in request.form
+            form['observacoes']=None            
             logger.log(f"Cliente {request.form['nome']} cadastrado!", 'info')
             cliente_id = ClienteManager().cadastrar_cliente(novo_cliente)
-        novo = Pedido.from_dict(form)
+        else:
+            logger.log(f"Cliente {request.form['nome']} atualizado!", 'info')
+            ClienteManager().atualizar_cliente(cliente_id,form)
+
+        novo = Pedido(
+            id='',
+            id_cliente=cliente_id,
+            data=datetime.now(),
+            status=request.form['status'],
+            itens=itens,
+            observacoes=request.form.get('observacoes'),
+            desconto_total=float(request.form.get('desconto_total', 0)),
+            data_previsao_entrega=data_str,
+            forma_de_pagamento=request.form.get('forma_de_pagamento'),
+            valor_pago=float(raw_valor) if raw_valor else 0.0
+        )
         PedidoManager().criar_pedido(novo)
         logger.log(f"Pedido ID: {novo.id} adicionado!", 'info')
         return redirect(url_for('pedidos'))
     return render_template('pedidos_form.html', pedido=None,cliente=None, produtos=None, usuario_nome=session['usuario_nome'], usuario_nivel=session['usuario_nivel'])
-
 
 @app.route('/pedidos/<pedido_id>/editar', methods=['GET', 'POST'])
 def pedido_editar(pedido_id):
