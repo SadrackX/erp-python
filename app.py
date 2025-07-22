@@ -305,10 +305,10 @@ def pedidos_novo():
         if cliente_id == 'novo':            
             form['ativo'] = 'ativo' in request.form
             form['observacoes']=None            
-            logger.log(f"Cliente {request.form['nome']} cadastrado!", 'info')
+            logger.log(f"Cliente {novo_cliente.nome} cadastrado!", 'info')
             cliente_id = ClienteManager().cadastrar_cliente(novo_cliente)
         else:
-            logger.log(f"Cliente {request.form['nome']} atualizado!", 'info')
+            logger.log(f"Cliente {novo_cliente.nome} atualizado!")
             ClienteManager().atualizar_cliente(cliente_id,form)
 
         novo = Pedido(
