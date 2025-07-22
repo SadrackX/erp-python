@@ -640,10 +640,19 @@ def logs():
 
 from reportlab.platypus import Paragraph
 #PDF
-@app.route('/pedido/<pedido_id>/pdf')
+@app.route('/pedido/<pedido_id>/pdf', methods=['GET', 'POST'])
 def gerar_pdf_pedido(pedido_id):
     if 'usuario_nome' not in session:
         return redirect(url_for('login'))
+    
+    """ pedido_id = pedido_id or request.args.get('pdf')
+    
+    form = request.form.to_dict()
+    c = form
+    p = form
+    itens = []
+    for iten in form['produtos_json']:
+        itens.append([iten]) """
     
     p = PedidoManager().buscar_por_id(pedido_id)
     pedido = p.to_dict()
@@ -767,6 +776,7 @@ def gerar_pdf_pedido(pedido_id):
         as_attachment=False,
         download_name='pedido.pdf',
         mimetype='application/pdf'
+        #pedido=pedido, cliente=cliente, produtos=produtos
     )
 
 def adicionar_rodape(canvas, doc):

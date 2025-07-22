@@ -129,7 +129,7 @@ class Pedido:
         return cls(
             id = data.get('id') or PedidoManager().get_next_id(),
             id_cliente=data['id_cliente'],
-            data=datetime.now(),
+            data=parse_data(data.get('data')) or datetime.now(),
             status=data['status'],
             itens=itens or [],
             observacoes=data.get('observacoes'),
