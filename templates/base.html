@@ -2,201 +2,29 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <!-- <meta name="viewport" content="width=device-width, initial-scale=1.0"> -->
-     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>{{ titulo if titulo else 'ERP Python' }}</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/cssFormPedido.css') }}">
-
-
-    <style>
-        :root {
-            --sidebar-width: 220px;
-            --sidebar-collapsed-width: 60px;
-        }
-
-        body {
-            margin: 0;
-            font-family: "Segoe UI", Roboto, sans-serif;
-            background: #00000018;
-            color: #000000;
-        }
-
-        .header {
-            background: #1f1f1f;
-            color: #fff;
-            padding: 16px 24px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            height: 60px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
-            z-index: 1000;
-        }
-
-        .sidebar {
-            width: var(--sidebar-width);
-            background: #212121;
-            color: #ccc;
-            position: fixed;
-            top: 60px;
-            left: 0;
-            bottom: 0;
-            padding-top: 24px;
-            overflow-x: hidden;
-            transition: width 0.2s ease;
-        }
-
-        .sidebar.collapsed {
-            width: var(--sidebar-collapsed-width);
-        }
-
-        .sidebar .nav-link {
-            display: flex;
-            align-items: center;
-            color: #bbb;
-            padding: 12px 20px;
-            font-size: 15px;
-            transition: all 0.2s;
-            white-space: nowrap;
-        }
-
-        .sidebar .nav-link:hover {
-            background-color: #333;
-            color: #fff;
-        }
-
-        .sidebar .material-icons {
-            margin-right: 12px;
-            font-size: 20px;
-        }
-
-        .sidebar.collapsed .nav-link span.label {
-            display: none;
-        }
-
-
-        .main {
-            margin-left: var(--sidebar-width);
-            padding: 32px 24px;
-            transition: margin-left 0.2s ease;
-        }
-
-        .main.collapsed {
-            margin-left: var(--sidebar-collapsed-width);
-        }
-
-        .btn-toggle-sidebar {
-            background: none;
-            border: none;
-            color: #fff;
-            font-size: 20px;
-            cursor: pointer;
-            margin-right: 10px;
-        }
-
-        
-
-        input[type=number]::-webkit-inner-spin-button,
-        input[type=number]::-webkit-outer-spin-button {
-            -webkit-appearance: none;
-            margin: 0;
-        }
-
-        input[type=number] {
-            -moz-appearance: textfield;
-        }
-    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
 </head>
 <body>
     <!-- jQuery e Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.5.1.min.js "></script>
-    <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js"></script> -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
-
-    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>    
 
     <!-- Header -->
-    <div class="header fixed-top">
-        <div>
-            <button id="toggle-sidebar" class="btn btn-sm btn-outline-light m-2"><span class="material-icons">menu</span></button>
-            <span class="font-weight-bold">ERP Python Gráfica</span>
-        </div>
-        <div style="font-size: 0.95em;">
-            <span class="font-weight-bold" id="datetime-header"></span> | {{ usuario_nome }} ({{ usuario_nivel }})
-        </div>
-    </div>
+    {% include 'partials/header.html' %}
 
     <!-- Sidebar -->
-    <div class="sidebar" id="sidebar">
-        <ul class="nav flex-column">
-            <li class="nav-item">
-                <a href="{{ url_for('dashboard') }}" class="nav-link">
-                    <span class="material-icons">assessment</span> 
-                  <span class="label">Dashboard</span>  
-                </a>
-            </li>
-            <li class="nav-item">
-                <a href="{{ url_for('pedidos') }}" class="nav-link">
-                    <span class="material-icons">local_offer</span> 
-                 <span class="label">Pedidos</span>   
-                </a>
-            </li>
-            <li class="nav-item">
-                <a href="{{ url_for('pedidos_por_status', status='Orçamento') }}" class="nav-link">
-                    <span class="material-icons">library_books</span> 
-                 <span class="label">Orçamentos</span>   
-                </a>
-            </li>
-            <li class="nav-item">
-                <a href="{{ url_for('clientes') }}" class="nav-link">
-                    <span class="material-icons">person</span> 
-                  <span class="label">Clientes</span>  
-                </a>
-            </li>
-            <li class="nav-item">
-                <a href="{{ url_for('produtos') }}" class="nav-link">
-                    <span class="material-icons">new_label</span> 
-                  <span class="label">Produtos</span>  
-                </a>
-            </li>
-            <li class="nav-item">
-                <a href="{{ url_for('fornecedores') }}" class="nav-link">
-                    <span class="material-icons">store</span> 
-                  <span class="label">Fornecedores</span>  
-                </a>
-            </li>
-            {% if usuario_nivel == "admin" %}
-            <li class="nav-item">
-                <a href="{{ url_for('logs') }}" class="nav-link"><span class="material-icons">app_registration</span> 
-                   <span class="label">Logs</span> 
-                </a>
-            </li>
-            <li class="nav-item">
-                <a href="#" class="nav-link"><span class="material-icons">restore_page</span> 
-                 <span class="label">Backup</span>   
-                </a>
-            </li>
-            <li class="nav-item">
-                <a href="{{ url_for('admin_empresa') }}" class="nav-link"><span class="material-icons">manage_accounts</span> 
-                 <span class="label">Administração</span>   
-                </a>
-            </li>
-            {% endif %}
-            <li class="nav-item">
-                <a href="{{ url_for('logout') }}" class="nav-link"><span class="material-icons">logout</span> 
-                  <span class="label">Sair</span>  
-                </a>
-            </li>
-        </ul>
-    </div>
+    {% include 'partials/sidebar.html' %}
 
     <!-- Conteúdo -->
-    <div class="main" id="main-content">
+    <main class="main" id="main-content">
         {% block conteudo %}{% endblock %}
-    </div>
+    </main>
 
     <!-- Scripts -->
     <script>
@@ -237,5 +65,6 @@
         setInterval(atualizarDataHora, 1000);
         atualizarDataHora();
     </script>
+    {% include 'partials/footer.html' %}
 </body>
 </html>

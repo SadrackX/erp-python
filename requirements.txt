@@ -6,3 +6,16 @@ flask==2.3.2
 reportlab
 pillow
 
+# No PowerShell, na pasta do projeto:
+#git init
+#git add .
+#git commit -m "Versão inicial do ERP Python"
+
+# Crie um repositório no GitHub (https://github.com/new)
+# Siga as instruções para vincular seu repositório local
+#git remote add origin https://github.com/seu-usuario/erp-python.git
+#git branch -M main
+#git push -u origin main
+
+# Para download do projeto
+#git pull

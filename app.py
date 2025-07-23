@@ -57,6 +57,23 @@ def logout():
     session.clear()
     return redirect(url_for('login'))
 
+@app.context_processor
+def inject_empresa():
+    try:
+        empresa = EmpresaManager().get_all()[0]
+    except Exception:
+        empresa = {
+            "nome": "Empresa não cadastrada",
+            "cnpj": "00.000.000/0000-00",
+            "endereco": "Endereço não cadastrado",
+            "numero": "SN",
+            "bairro": '',
+            "cidade": '',
+            "uf": '',
+            "celular": "(00) 0000-0000"
+        }
+    return dict(empresa=empresa)
+
 # DASHBOAR/RESUMO
 @app.route('/dashboard')
 def dashboard():
@@ -79,7 +96,42 @@ def clientes():
     if 'usuario_nome' not in session:
         return redirect(url_for('login'))
     clientes = ClienteManager().buscar_todos()
-    return render_template('clientes_list.html', usuario_nome=session['usuario_nome'], usuario_nivel=session['usuario_nivel'], clientes=clientes)
+    clientes_dict = {c.id: c.nome for c in ClienteManager().buscar_todos()}
+
+    # Filtros recebidos por query string
+    cliente_filtro = request.args.get('cliente', '').lower()
+    pagina = int(request.args.get('pagina', 1))
+    clientes_por_pagina = 10
+
+    # Aplica filtros
+    clientes_filtrados = []
+    for p in clientes:
+        nome_cliente = clientes_dict.get(p.id, '').lower()
+
+        # Filtro por cliente (nome ou id)
+        if cliente_filtro and cliente_filtro not in p.id.lower() and cliente_filtro not in nome_cliente:
+            continue
+
+        clientes_filtrados.append(p)
+        clientes_filtrados.sort(key=lambda p: p.id, reverse=True)
+
+    # Paginação
+    total_clientes = len(clientes_filtrados)
+    total_paginas = (total_clientes + clientes_por_pagina - 1) // clientes_por_pagina
+    inicio = (pagina - 1) * clientes_por_pagina
+    fim = inicio + clientes_por_pagina
+    clientes_paginados = clientes_filtrados[inicio:fim]
+
+    return render_template(
+        'clientes_list.html',
+        usuario_nome=session['usuario_nome'],
+        usuario_nivel=session['usuario_nivel'],
+        clientes=clientes_paginados,
+        clientes_dict=clientes_dict,
+        cliente_filtro=cliente_filtro,
+        pagina_atual=pagina,
+        total_paginas=total_paginas
+    )
 
 @app.route('/clientes/novo', methods=['GET', 'POST'])
 def clientes_novo():
@@ -426,8 +478,54 @@ def pedido_cancelar(pedido_id):
     logger.log(f"Pedido ID: {pedido_id} cancelado!", 'info')
     return redirecionar_pos_formulario('pedidos')
 
+# PEDIDOS
+@app.route('/orcamentos')
+def orcamentos():
+    if 'usuario_nome' not in session:
+        return redirect(url_for('login'))
 
-# ORÇAMENTOS
+    todos_pedidos = PedidoManager().buscar_todos()
+    clientes = ClienteManager().buscar_todos()
+    clientes_dict = {c.id: c.nome for c in clientes}
+
+    # Filtros recebidos por query string
+    cliente_filtro = request.args.get('cliente', '').lower()
+    pagina = int(request.args.get('pagina', 1))
+    pedidos_por_pagina = 10
+
+    # Aplica filtros
+    pedidos_filtrados = []
+    for p in todos_pedidos:
+        if p.status == 'Orçamento':
+            p.falta_pagar = max(0, p.total - (p.valor_pago or 0))
+            nome_cliente = clientes_dict.get(p.id_cliente, '').lower()
+
+            # Filtro por cliente (nome ou id)
+            if cliente_filtro and cliente_filtro not in p.id_cliente.lower() and cliente_filtro not in nome_cliente:
+                continue
+
+            pedidos_filtrados.append(p)
+            pedidos_filtrados.sort(key=lambda p: p.data or datetime.min, reverse=True)
+
+    # Paginação
+    total_pedidos = len(pedidos_filtrados)
+    total_paginas = (total_pedidos + pedidos_por_pagina - 1) // pedidos_por_pagina
+    inicio = (pagina - 1) * pedidos_por_pagina
+    fim = inicio + pedidos_por_pagina
+    pedidos_paginados = pedidos_filtrados[inicio:fim]
+
+    return render_template(
+        'orcamentos_list.html',
+        usuario_nome=session['usuario_nome'],
+        usuario_nivel=session['usuario_nivel'],
+        pedidos=pedidos_paginados,
+        clientes=clientes_dict,
+        cliente_filtro=cliente_filtro,
+        status_filtro='Orçamento',
+        pagina_atual=pagina,
+        total_paginas=total_paginas
+    )
+
 @app.route('/pedidos/orcamentos', methods=['GET', 'POST'])
 def orcamentos_novo():
     if 'usuario_nome' not in session:
@@ -645,14 +743,24 @@ def gerar_pdf_pedido(pedido_id):
     if 'usuario_nome' not in session:
         return redirect(url_for('login'))
     
-    """ pedido_id = pedido_id or request.args.get('pdf')
-    
-    form = request.form.to_dict()
-    c = form
-    p = form
+    """pedido_id = pedido_id or request.args.get('pdf')
+    produtos_json = request.form.get('produtos_json')
     itens = []
-    for iten in form['produtos_json']:
-        itens.append([iten]) """
+    if produtos_json:
+        produtos = json.loads(produtos_json)
+        for p in produtos:
+            itens.append(ItemPedido(
+                id_pedido='',
+                nome=p['nome'],
+                quantidade=p['quantidade'],
+                preco_unitario=p['preco_unitario']
+            ))
+    
+    cliente = request.form.to_dict()
+    
+    data_str = request.form.get('data_previsao_entrega')
+    pedido = request.form.to_dict()
+    pedido['id'] = pedido_id """
     
     p = PedidoManager().buscar_por_id(pedido_id)
     pedido = p.to_dict()

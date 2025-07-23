@@ -7,6 +7,7 @@ from modules.clientes.manager import ClienteManager
 from modules.fornecedores.manager import FornecedorManager
 from modules.pedidos.manager import PedidoManager
 from modules.pedidos.itens_manager import ItensPedidoManager
+from modules.empresa.manager import EmpresaManager
 
 def inicializar_todos_arquivos():
     # Garante que a pasta dados existe
@@ -18,7 +19,9 @@ def inicializar_todos_arquivos():
         ClienteManager(),
         FornecedorManager(),
         PedidoManager(),
-        ItensPedidoManager()
+        ItensPedidoManager(),
+        ProdutoManager(),
+        EmpresaManager()
     ]
     print("Arquivos CSV inicializados com sucesso!")
     # Exibe os cabeçalhos de cada arquivo criado

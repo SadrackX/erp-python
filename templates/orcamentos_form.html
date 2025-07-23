@@ -40,7 +40,9 @@
 
                 <hr>
                 <div class="text-right">
+                    <!-- <a class="btn btn-warning" onclick="gerarPDFviaFetch()" target="_blank">Imprimir</a> -->
                     <a class="btn btn-warning" href="{{ url_for('gerar_pdf_pedido', pedido_id=pedido['id'], tipo='orcamento') }}" target="_blank">Imprimir</a>
+
                     <button type="button" class="btn btn-info" onclick="gerarOrcamento()" {% if not pedido %}hidden{% endif %}>Gerar Pedido</button>
                     <a href="{{ url_for('pedidos_por_status', status='Orçamento') }}" class="btn btn-secondary">Cancelar</a>
                     <button type="submit" class="btn btn-success">Salvar Orçamento</button>
@@ -50,6 +52,22 @@
     </div>
 </div>
 
+<!-- <script>
+function gerarPDFviaFetch() {
+    const form = document.getElementById("orcamento-form");
+    const dados = new FormData(form);
+
+    fetch("{{ url_for('gerar_pdf_pedido', pedido_id=pedido['id'], tipo='orcamento') }}", {
+        method: "POST",
+        body: dados
+    })
+    .then(response => response.blob())
+    .then(blob => {
+        const url = window.URL.createObjectURL(blob);
+        window.open(url);  // Abre o PDF numa nova aba
+    });
+}
+</script> -->
 
 {% include 'partials/modal_produto_pedido.html' %}
 {% include 'partials/scriptFormPedido.html' %}
