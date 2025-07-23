@@ -35,7 +35,7 @@
             <td class="text-truncate" style="max-width: 200px;">{{ cliente.endereco }}, {{ cliente.numero }}, {{ cliente.bairro }}, {{ cliente.cidade }}-{{ cliente.uf }}</td>
             <td>{{ cliente.cep }}</td>
             <td>
-                <button type="button" class="btn btn-sm btn-warning" onclick="abrirModalCliente({{ cliente.to_dict() }})">Editar</button>
+                <button type="button" class="btn btn-sm btn-outline-primary" onclick="abrirModalCliente({{ cliente.to_dict() }})"><span class="material-icons">edit</span></button>
             </td>
         </tr>
         {% endfor %}

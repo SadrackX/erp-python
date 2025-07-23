@@ -14,14 +14,14 @@
                 <hr>
                 <div class="form-row">
                     <button type="button" class="btn btn-primary" id="abrir-modal-produto" data-toggle="modal" data-target="#modal-produto">Adicionar Produto</button>
-                    <table id="tabela-produtos" class="table table-striped" border="1" cellpadding="5" cellspacing="0">
+                    <table id="tabela-produtos" class="table table-sm table-striped" border="1" cellpadding="5" cellspacing="0">
                         <thead>
                             <tr>
                                 <th>Nome</th>
-                                <th>Preço Unitário</th>
-                                <th>Quantidade</th>
-                                <th>Total</th>
-                                <th></th>
+                                <th style="width: 10%;">Preço Unt.</th>
+                                <th style="width: 7%;">Qtd</th>
+                                <th style="width: 15%;">Subtotal</th>
+                                <th style="width: 15%;"></th>
                             </tr>
                         </thead>
                         <tbody></tbody>
@@ -41,10 +41,10 @@
                 <hr>
                 <div class="text-right">
                     <!-- <a class="btn btn-warning" onclick="gerarPDFviaFetch()" target="_blank">Imprimir</a> -->
-                    <a class="btn btn-warning" href="{{ url_for('gerar_pdf_pedido', pedido_id=pedido['id'], tipo='orcamento') }}" target="_blank">Imprimir</a>
+                    <a class="btn btn-outline-dark" href="{{ url_for('gerar_pdf_pedido', pedido_id=pedido['id'], tipo='orcamento') }}" target="_blank"><span class="material-icons">local_printshop</span></a>
 
                     <button type="button" class="btn btn-info" onclick="gerarOrcamento()" {% if not pedido %}hidden{% endif %}>Gerar Pedido</button>
-                    <a href="{{ url_for('pedidos_por_status', status='Orçamento') }}" class="btn btn-secondary">Cancelar</a>
+                    <a href="{{ url_for('orcamentos') }}" class="btn btn-secondary">Cancelar</a>
                     <button type="submit" class="btn btn-success">Salvar Orçamento</button>
                 </div>
             </form>

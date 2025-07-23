@@ -25,7 +25,7 @@
                 <th scope="col" style="width: 190px;">Criado</th>
                 <th scope="col" style="width: 10%;">Status</th>
                 <th scope="col" style="width: 10%;">Total</th>
-                <th scope="col" style="width: 190px;">Ações</th>
+                <th scope="col" style="width: 230px;">Ações</th>
             </tr>
         </thead>
         <tbody>
@@ -38,8 +38,9 @@
                     <td><span class="badge bg-dark"  style="color: aliceblue;">{{ pedido.status }}</span></td>
                     <td>R$ {{ '%.2f' % pedido.total }}</td>
                     <td>
-                        <a href="{{ url_for('orcamentos_editar', pedido_id=pedido.id) }}" class="btn btn-warning btn-sm">Editar</a>
-                        <a href="{{ url_for('gerar_pedido', pedido_id=pedido.id) }}" class="btn btn-info btn-sm" onclick="return confirm('Gerar pedido?');">Gerar Pedido</a>
+                        <a href="{{ url_for('orcamentos_editar', pedido_id=pedido.id) }}" class="btn btn-outline-primary btn-sm"><span class="material-icons">edit</span></a>
+                        <a href="{{ url_for('gerar_pedido', pedido_id=pedido.id) }}" class="btn btn-outline-info btn-sm" onclick="return confirm('Gerar pedido?');"><span class="material-icons">sell</span></a>
+                        <a class="btn btn-outline-dark btn-sm" style="width: 70px; height: 35px;"  href="{{ url_for('gerar_pdf_pedido', pedido_id=pedido.id, tipo='orcamento') }}" target="_blank"><span style="font-size: 25px;" class="material-icons">local_printshop</span></a>
                     </td>
                 </tr>
             {% endfor %}

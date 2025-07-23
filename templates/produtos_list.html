@@ -23,7 +23,7 @@
                     <td>R$ {{ '%.2f' % produto.preco_custo }}</td>
                     <td>R$ {{ '%.2f' % produto.preco_venda }}</td>
                     <td>
-                        <button type="button" class="btn btn-warning btn-sm" onclick="abrirModalProduto({{ produto.to_dict() }})">Editar</button>
+                        <button type="button" class="btn btn-outline-primary btn-sm" onclick="abrirModalProduto({{ produto.to_dict() }})"><span class="material-icons">edit</span></button>
                     </td>
                 </tr>
             {% endfor %}

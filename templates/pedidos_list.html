@@ -58,7 +58,7 @@
             <th scope="col" style="width: 10%;">Total</th>
             <th scope="col" style="width: 10%;">Pago</th>
             <th scope="col" style="width: 10%;">Restante</th>
-            <th scope="col" style="width: 190px;">Ações</th>
+            <th scope="col" style="width: 230px;">Ações</th>
         </tr>
     </thead>
     <tbody>
@@ -75,14 +75,26 @@
                 <td>R$ {{ '%.2f' % pedido.falta_pagar }}</td>
                 <td>
                     {% if pedido.status in ['Cancelado', 'Finalizado'] %}
-                        <a href="{{ url_for('pedido_editar', pedido_id=pedido.id) }}" class="btn btn-info btn-sm" onclick="return confirm('Gerar NOVO pedido?');">Gerar Novo Pedido</a>
+                        <a href="{{ url_for('pedido_editar', pedido_id=pedido.id) }}" class="btn btn-outline-info btn-sm" onclick="return confirm('Gerar NOVO pedido?');">Gerar Novo Pedido</a>
                     {% else %}
-                        <a href="{{ url_for('pedido_editar', pedido_id=pedido.id) }}" class="btn btn-warning btn-sm">Editar</a>
+                        <a href="{{ url_for('pedido_editar', pedido_id=pedido.id) }}" class="btn btn-outline-primary btn-sm"><span class="material-icons">edit</span></a>
                     {% endif %}
 
                     {% if pedido.status not in ['Cancelado', 'Finalizado'] %}
-                        <a href="{{ url_for('pedido_cancelar', pedido_id=pedido.id) }}" class="btn btn-danger btn-sm" onclick="return confirm('Cancelar este pedido?');">Cancelar</a>
+                        <a href="{{ url_for('pedido_cancelar', pedido_id=pedido.id) }}" class="btn btn-outline-danger btn-sm" onclick="return confirm('Cancelar este pedido?');"><span class="material-icons">cancel</span></a>
                     {% endif %}
+                    {% if pedido.status != 'Cancelado' %}
+                    <div class="btn-group">
+                            <button class="btn btn-outline-dark dropdown-toggle btn-sm" style="width: 70px; height: 35px;" data-toggle="dropdown">
+                                <span style="font-size: 25px;" class="material-icons">local_printshop</span>
+                            </button>
+                            <div class="dropdown-menu">
+                                <a class="dropdown-item" href="{{ url_for('gerar_pdf_pedido', pedido_id=pedido.id, tipo='orcamento') }}" target="_blank">Orçamento</a>
+                                <a class="dropdown-item" href="{{ url_for('gerar_pdf_pedido', pedido_id=pedido.id, tipo='ordem_servico') }}" target="_blank">Ordem de Serviço</a>
+                                <a class="dropdown-item" href="{{ url_for('gerar_pdf_pedido', pedido_id=pedido.id, tipo='recibo') }}" target="_blank">Recibo</a>
+                            </div>
+                        </div>
+                        {%endif%}
                 </td>
             </tr>
         {% endfor %}

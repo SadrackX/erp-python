@@ -26,11 +26,11 @@
                     <table id="tabela-produtos" class="table table-striped" border="1" cellpadding="5" cellspacing="0">
                         <thead>
                             <tr>
-                                <th scope="col">Nome</th>
-                                <th scope="col" style="width: 15%;">Preço Unitário</th>
-                                <th scope="col" style="width: 10%;">Quantidade</th>
-                                <th scope="col" style="width: 15%;">Total</th>
-                                <th scope="col" style="width: 20px;"></th>
+                                <th>Nome</th>
+                                <th style="width: 10%;">Preço Unt.</th>
+                                <th style="width: 7%;">Qtd</th>
+                                <th style="width: 15%;">Subtotal</th>
+                                <th style="width: 15%;"></th>
                             </tr>
                         </thead>
                         <tbody></tbody>
@@ -87,8 +87,8 @@
                 <div class="container" style="text-align: right;">
                     {% if pedido %}
                         <div class="btn-group">
-                            <button class="btn btn-warning dropdown-toggle" data-toggle="dropdown">
-                                Imprimir
+                            <button class="btn btn-outline-dark dropdown-toggle btn-sm" data-toggle="dropdown">
+                                <span class="material-icons">local_printshop</span>
                             </button>
                             <div class="dropdown-menu">
                                 <a class="dropdown-item" href="{{ url_for('gerar_pdf_pedido', pedido_id=pedido['id'], tipo='orcamento') }}" target="_blank">Orçamento</a>

@@ -9,13 +9,13 @@
     'Design': 'primary',
     'Produção': 'info',
     'Finalizado': 'success',
-    'Orçamento': 'warning',
+    'Orçamento': 'dark',
     'Atrasado': 'danger'
 } %}
 
 {# --- Tabela das Entregas mais próximas --- #}
-<div class="card mb-5 border-danger shadow-sm">
-    <div class="card-header bg-danger text-white">
+<div class="card mb-5 shadow-sm">
+    <div class="card-header bg-warning text-white">
         <strong>🕒 Próximas Entregas</strong>
     </div>
     <div class="card-body p-0 table-responsive">
@@ -59,7 +59,7 @@
 <div class="row">
     {% for status in status_lista %}
     <div class="col-md-6 col-lg-4 mb-4">
-        <div class="card border-{{ status_classes[status] }} shadow-sm h-100">
+        <div class="card shadow-sm h-100">
             <div class="card-header bg-{{ status_classes[status] }} text-white">
                 <strong>{{ status }}</strong>
             </div>
