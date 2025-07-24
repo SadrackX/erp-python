@@ -44,7 +44,7 @@
                     <a class="btn btn-outline-dark" href="{{ url_for('gerar_pdf_pedido', pedido_id=pedido['id'], tipo='orcamento') }}" target="_blank"><span class="material-icons">local_printshop</span></a>
 
                     <button type="button" class="btn btn-info" onclick="gerarOrcamento()" {% if not pedido %}hidden{% endif %}>Gerar Pedido</button>
-                    <a href="{{ url_for('orcamentos') }}" class="btn btn-secondary">Cancelar</a>
+                    <a href="{{ url_for('orcamentos') }}" class="btn btn-secondary">Voltar</a>
                     <button type="submit" class="btn btn-success">Salvar Orçamento</button>
                 </div>
             </form>

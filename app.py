@@ -645,7 +645,7 @@ def orcamentos_editar(pedido_id):
             PedidoManager().atualizar_itens_pedido(pedido_id, produtos_att)
             PedidoManager().atualizar_pedido(pedido_id, novos_dados)
             logger.log(f"Orçamento ID: {pedido_id} atualizado!", 'info')
-            return redirect(url_for('pedidos_por_status', status='Orçamento'))
+            return redirecionar_pos_formulario('dashboard')
         else:
             novos_dados['data'] = datetime.now().isoformat()
             PedidoManager().atualizar_pedido(pedido_id, novos_dados)
