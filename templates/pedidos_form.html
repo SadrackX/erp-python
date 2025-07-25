@@ -97,12 +97,10 @@
                             </div>
                         </div>
                     {% endif %}
-                    <button type="button" class="btn btn-primary" onclick="finalizarPedido()" {% if not pedido or pedido.status not in ['Design', 'Produção', 'Atrasado'] %}hidden{% endif %}>Finalizar</button> 
-                    {% if pedido %}                    
-                        <a href="{{ url_for('pedido_cancelar', pedido_id=pedido.id) }}" class="btn btn-secondary" onclick="return confirm('Cancelar este pedido?');">Cancelar</a>
-                    {% else %}
-                        <a href="{{ url_for('pedidos') }}" class="btn btn-secondary">Cancelar</a>
-                    {% endif %}
+                    <button type="button" class="btn btn-primary" onclick="finalizarPedido()" {% if not pedido or pedido.status not in ['Design', 'Produção', 'Atrasado'] %}hidden{% endif %}>Finalizar Pedido</button> 
+                    
+                    <a href="{{ url_for('pedidos') }}" class="btn btn-secondary">Cancelar</a>
+                    
                     <button type="submit" class="btn btn-success">
                         {% if not pedido  or pedido.status == 'Finalizado' %}
                             Novo Pedido

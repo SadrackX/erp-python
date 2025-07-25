@@ -30,12 +30,12 @@
                 </tr>
             </thead>
             <tbody>
-                {% set entregas_proximas = pedidos 
+                {% set entregas_proximas = pedidos
                     | selectattr('data_previsao_entrega') 
                     | sort(attribute='data_previsao_entrega') 
                     | list 
                 %}
-                {% for pedido in entregas_proximas[:5] %}
+                {% for pedido in entregas_proximas[:5] if pedido.status != 'Finalizado' %}
                 <tr onclick="window.location='{{ url_for('pedido_editar', pedido_id=pedido.id) }}'" style="cursor: pointer;">
                     <td class="text-truncate" style="max-width: 400px;">{{ clientes[pedido.id_cliente] if clientes[pedido.id_cliente] else pedido.id_cliente }}</td>
                     <td>{{ pedido.data.strftime('%d/%m/%Y %H:%M') if pedido.data else '' }}</td>
