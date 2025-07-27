@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+{% block conteudo %}
+<div class=" mt-5">
+    <div class="card shadow-sm border-0">
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h4 class="mb-0">Backups do Sistema</h4>
+                <a href="{{ url_for('backups.criar') }}" class="btn btn-primary btn-sm">
+                    <i class="material-icons align-middle">backup</i> Criar Backup Manual
+                </a>
+            </div>
+
+            {% with mensagens = get_flashed_messages(with_categories=true) %}
+              {% if mensagens %}
+                {% for categoria, msg in mensagens %}
+                  <div class="alert alert-{{ categoria }} alert-dismissible fade show" role="alert">
+                      {{ msg }}
+                      <button type="button" class="close" data-dismiss="alert" aria-label="Fechar">
+                          <span aria-hidden="true">&times;</span>
+                      </button>
+                  </div>
+                {% endfor %}
+              {% endif %}
+            {% endwith %}
+
+            {% if backups %}
+            <div class="table-responsive">
+                <table class="table table-hover table-bordered rounded">
+                    <thead class="thead-light">
+                        <tr>
+                            <th scope="col">Nome do Arquivo</th>
+                            <th scope="col">Data</th>
+                            <th scope="col" style="width: 160px;">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for b in backups %}
+                        <tr>
+                            <td class="align-middle">{{ b }}</td>
+                            <td class="align-middle">
+                                {{ b.replace('.zip','').replace('_', ' ').replace('-', ' ').title() }}
+                            </td>
+                            <td class="align-middle">
+                                <div class="btn-group" role="group">
+                                    <a href="{{ url_for('backups.restaurar', nome=b) }}" 
+                                       class="btn btn-sm btn-warning"
+                                       title="Restaurar este backup">
+                                        <i class="material-icons">restore</i>
+                                    </a>
+                                    <a href="{{ url_for('backups.excluir', nome=b) }}" 
+                                       class="btn btn-sm btn-danger"
+                                       onclick="return confirm('Tem certeza que deseja excluir este backup?')"
+                                       title="Excluir este backup">
+                                        <i class="material-icons">delete</i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="text-muted">Nenhum backup encontrado.</div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

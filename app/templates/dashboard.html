@@ -1,0 +1,250 @@
+﻿{% extends 'base.html' %}
+{% block conteudo %}
+<br/>
+<h3 class="mb-4">Dashboard de Pedidos</h3>
+
+{% set status_lista = ['Design', 'Produção', 'Finalizado'] %}
+{% set status_classes = {
+    'Rascunho': 'secondary',
+    'Design': 'primary',
+    'Produção': 'info',
+    'Finalizado': 'success',
+    'Orçamento': 'dark',
+    'Atrasado': 'danger'
+} %}
+
+{# --- Tabela das Entregas mais próximas --- #}
+<div class="card mb-5 shadow-sm">
+    <div class="card-header bg-warning text-white">
+        <strong>🕒 Próximas Entregas</strong>
+    </div>
+    <div class="card-body p-0 table-responsive">
+        <table class="table table-hover table-sm mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>Cliente</th>
+                    <th>Criado</th>
+                    <th>Entrega</th>
+                    <th>Status</th>
+                    <th>Valor</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% set entregas_proximas = pedidos
+                    | selectattr('data_previsao_entrega') 
+                    | sort(attribute='data_previsao_entrega') 
+                    | list 
+                %}
+                {% for pedido in entregas_proximas[:5] if pedido.status != 'Finalizado' %}
+                <tr onclick="window.location='{{ url_for('pedidos.editar', pedido_id=pedido.id) }}'" style="cursor: pointer;">
+                    <td class="text-truncate" style="max-width: 400px;">{{ clientes[pedido.id_cliente] if clientes[pedido.id_cliente] else pedido.id_cliente }}</td>
+                    <td>{{ pedido.data.strftime('%d/%m/%Y %H:%M') if pedido.data else '' }}</td>
+                    <td>{{ pedido.data_previsao_entrega.strftime('%d/%m/%Y') if pedido.data_previsao_entrega else '' }}</td>
+                    <td>
+                        <span class="badge bg-{{ status_classes.get(pedido.status, 'dark') }}" style="color: aliceblue;">{{ pedido.status }}</span>
+                    </td>
+                    <td>R$ {{ '%.2f'|format(pedido.total) }}</td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="5" class="text-center text-muted">Nenhuma entrega futura</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<hr>         <!-- ------------------------------------------------------------- -->
+<div class="row">
+    {% for status in status_lista %}
+    <div class="col-md-6 col-lg-4 mb-4">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-{{ status_classes[status] }} text-white">
+                <strong>{{ status }}</strong>
+            </div>
+            <div class="card-body p-0 table-responsive">
+                {% set pedidos_filtrados = pedidos 
+                    | selectattr('status', 'equalto', status) 
+                    | sort(attribute='data', reverse=true) 
+                    | list 
+                %}
+                <table class="table table-hover table-sm mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Cliente</th>
+                            <th>Entrega</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody id="status-{{ status }}">
+                        {% if pedidos_filtrados %}
+                            {% for pedido in pedidos_filtrados[:5] %}
+                            <tr data-id="{{ pedido.id }}" style="cursor: grab;" onclick="window.location='{{ url_for('pedidos.editar', pedido_id=pedido.id) }}'">
+                                <td class="text-truncate" style="max-width: 200px;">
+                                    {{ clientes[pedido.id_cliente] if clientes[pedido.id_cliente] else pedido.id_cliente }}
+                                </td>
+                                <td>{{ pedido.data_previsao_entrega.strftime('%d/%m/%Y') if pedido.data_previsao_entrega else '' }}</td>
+                                <td>R$ {{ '%.2f'|format(pedido.total) }}</td>
+                            </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="3" class="text-center text-muted">Nenhum pedido "{{ status }}"</td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+            {% if pedidos_filtrados|length > 5 %}
+            <div class="card-footer text-end">
+                <a href="{{ url_for('pedidos.por_status', status=status) }}" class="btn btn-outline-{{ status_classes[status] }} btn-sm">
+                    Ver todos
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    {% endfor %}
+</div>
+<hr>         <!-- ------------------------------------------------------------- -->
+
+{# --- Cards por status com limite de 5 e botão --- #}
+<div class="row">
+    {% for status in ['Orçamento','Rascunho','Atrasado'] %}
+    <div class="col-md-6 col-lg-4 mb-4">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-{{ status_classes[status] }} text-white">
+                <strong>{{ status }}</strong>
+            </div>
+            <div class="card-body p-0 table-responsive">
+                {% set pedidos_filtrados = pedidos 
+                    | selectattr('status', 'equalto', status) 
+                    | sort(attribute='data', reverse=true) 
+                    | list 
+                %}
+                <table class="table table-hover table-sm mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Cliente</th>
+                            <th>
+                                {% if status == 'Orçamento' or status == 'Rascunho' %}
+                                    Criado
+                                {% else %}
+                                    Entrega
+                                {% endif %}</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if pedidos_filtrados %}
+                            {% for pedido in pedidos_filtrados[:5] %}
+                            <tr onclick="window.location='{{ url_for('orcamentos.editar' if pedido.status == 'Orçamento' else 'pedidos.editar', pedido_id=pedido.id) }}'" style="cursor: pointer;">
+                                <td class="text-truncate" style="max-width: 200px;">{{ clientes[pedido.id_cliente] if clientes[pedido.id_cliente] else pedido.id_cliente }}</td>
+                                <td>
+                                    {% if status == 'Orçamento' or status == 'Rascunho' %}
+                                        {{ pedido.data.strftime('%d/%m/%Y') if pedido.data else '' }}
+                                    {% else %}
+                                        {{ pedido.data_previsao_entrega.strftime('%d/%m/%Y') if pedido.data_previsao_entrega else '' }}
+                                    {% endif %}
+                                    
+                                </td>
+                                <td>R$ {{ '%.2f'|format(pedido.total) }}</td>
+                            </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="3" class="text-center text-muted">Nenhum pedido "{{ status }}"</td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+            {% if pedidos_filtrados|length > 5 %}
+            <div class="card-footer text-end">
+                <a href="{{ url_for('pedidos.por_status', status=status) }}" class="btn btn-outline-{{ status_classes[status] }} btn-sm">
+                    Ver todos
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    {% endfor %}
+</div>
+<hr>         <!-- ------------------------------------------------------------- -->
+<style>
+    tr.dragging {
+        background-color: #f8f9fa;
+        opacity: 0.6;
+    }
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+<script>
+    const statusListas = {{ status_lista | tojson }};
+    statusListas.forEach(status => {
+        const el = document.getElementById("status-" + status);
+        if (!el) return;
+
+        new Sortable(el, {
+            group: "pedidos",
+            animation: 150,
+            onStart: function (evt) {
+                evt.item.classList.add("dragging");
+            },
+            onEnd: function (evt) {
+                evt.item.classList.remove("dragging");
+            },
+            onAdd: function (evt) {
+                const pedidoId = evt.item.dataset.id;
+                const novoStatus = evt.to.id.replace("status-", "");
+
+                fetch("/api/atualizar_status", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ id: pedidoId, novo_status: novoStatus })
+                })
+                .then(res => res.json())
+                .then(() => {
+                    // Atualiza todas as tabelas
+                    statusListas.forEach(status => atualizarTabela(status));
+                })
+                .catch(err => {
+                    alert("Erro ao atualizar status: " + err.message);
+                    location.reload(); // fallback
+                });
+            }
+
+        });
+        function atualizarTabela(status) {
+    const tbody = document.getElementById("status-" + status);
+    if (!tbody) return;
+
+    fetch("/api/pedidos_status/" + status)
+        .then(res => res.json())
+        .then(pedidos => {
+            tbody.innerHTML = "";
+
+            if (pedidos.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="3" class="text-center text-muted">Nenhum pedido "${status}"</td></tr>`;
+                return;
+            }
+
+            pedidos.forEach(p => {
+                const row = document.createElement("tr");
+                row.dataset.id = p.id;
+                row.style.cursor = "grab";
+                row.onclick = () => window.location = "/pedidos/editar/" + p.id + "/editar";
+                row.innerHTML = `
+                    <td class="text-truncate" style="max-width: 200px;">${p.cliente}</td>
+                    <td>${p.data}</td>
+                    <td>${p.total}</td>
+                `;
+                tbody.appendChild(row);
+            });
+        });
+}
+
+    });
+</script>
+{% endblock %}

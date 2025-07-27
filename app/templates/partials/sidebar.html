@@ -1,0 +1,62 @@
+<div class="sidebar" id="sidebar">
+    <ul class="nav flex-column">
+        <li class="nav-item">
+            <a href="{{ url_for('dashboard.dashboard') }}" class="nav-link">
+                <span class="material-icons">assessment</span> 
+                <span class="label">Dashboard</span>  
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="{{ url_for('pedidos.listar') }}" class="nav-link">
+                <span class="material-icons">local_offer</span> 
+                <span class="label">Pedidos</span>   
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="{{ url_for('orcamentos.listar') }}" class="nav-link">
+                <span class="material-icons">library_books</span> 
+                <span class="label">Orçamentos</span>   
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="{{ url_for('clientes.listar') }}" class="nav-link">
+                <span class="material-icons">person</span> 
+                <span class="label">Clientes</span>  
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="{{ url_for('produtos.listar') }}" class="nav-link">
+                <span class="material-icons">new_label</span> 
+                <span class="label">Produtos</span>  
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="{{ url_for('fornecedores.listar') }}" class="nav-link">
+                <span class="material-icons">store</span> 
+                <span class="label">Fornecedores</span>  
+            </a>
+        </li>
+        {% if usuario_nivel == "admin" %}
+        <li class="nav-item">
+            <a href="{{ url_for('logs.listar') }}" class="nav-link"><span class="material-icons">app_registration</span> 
+                <span class="label">Logs</span> 
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="{{ url_for('backups.listar') }}" class="nav-link"><span class="material-icons">restore_page</span> 
+                <span class="label">Backup</span>   
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="{{ url_for('admin.empresa') }}" class="nav-link"><span class="material-icons">manage_accounts</span> 
+                <span class="label">Administração</span>   
+            </a>
+        </li>
+        {% endif %}
+        <li class="nav-item">
+            <a href="{{ url_for('auth.logout') }}" class="nav-link"><span class="material-icons">logout</span> 
+                <span class="label">Sair</span>  
+            </a>
+        </li>
+    </ul>
+</div>

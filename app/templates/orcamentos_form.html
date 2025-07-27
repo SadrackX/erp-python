@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% block conteudo %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <br>
+            <br>
+            <h5>Novo Orçamento</h5>
+            <hr>
+            <form id="orcamento-form" method="post" action="{{ url_for('orcamentos.editar', pedido_id=pedido['id']) if pedido else url_for('orcamentos.novo') }}" autocomplete="off">
+
+                {% include 'partials/form_cliente.html' %}
+
+                <hr>
+                <div class="form-row">
+                    <button type="button" class="btn btn-primary" id="abrir-modal-produto" data-toggle="modal" data-target="#modal-produto">Adicionar Produto</button>
+                    <table id="tabela-produtos" class="table table-sm table-striped" border="1" cellpadding="5" cellspacing="0">
+                        <thead>
+                            <tr>
+                                <th>Nome</th>
+                                <th style="width: 10%;">Preço Unt.</th>
+                                <th style="width: 7%;">Qtd</th>
+                                <th style="width: 15%;">Subtotal</th>
+                                <th style="width: 15%;"></th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+
+                <div class="form-group">
+                    <label>Valor Total do Orçamento:</label>
+                    <span id="valor-final">R$ 0,00</span>
+                </div>
+
+                <input type="hidden" name="produtos_json" id="produtos_json">
+                <input type="hidden" name="id_cliente" id="id_cliente" value="novo">
+                <input type="hidden" name="status" id="status" value="{{ pedido.status if pedido else 'Orçamento' }}">
+                <input type="hidden" name="next" value="{{ request.referrer }}">
+
+                <hr>
+                <div class="text-right">
+                    <!-- <a class="btn btn-outline-dark" href="{{ url_for('gerar_pdf.gerar', pedido_id=pedido['id'], tipo='orcamento') }}" target="_blank"><span class="material-icons">local_printshop</span></a> -->
+
+                    <button type="button" class="btn btn-info" onclick="gerarOrcamento()" {% if not pedido %}hidden{% endif %}>Gerar Pedido</button>
+                    <a href="{{ url_for('orcamentos.listar') }}" class="btn btn-secondary">Voltar</a>
+                    <button type="submit" class="btn btn-success">Salvar Orçamento</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% include 'partials/modal_produto_pedido.html' %}
+{% include 'partials/scriptFormPedido.html' %}
+{% include 'partials/scriptFormCliente.html' %}
+{% endblock %}

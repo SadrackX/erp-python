@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ titulo }}</title>
+    <style>
+        body { font-family: Arial, sans-serif; font-size: 14px; }
+        .cabecalho { text-align: center; margin-bottom: 20px; }
+        .dados-cliente, .dados-pedido { margin-bottom: 20px; }
+        .tabela-itens { width: 100%; border-collapse: collapse; }
+        .tabela-itens th, .tabela-itens td { border: 1px solid #000; padding: 6px; text-align: left; }
+        .rodape { margin-top: 40px; font-size: 12px; text-align: center; }
+    </style>
+</head>
+<body>
+
+    <div class="cabecalho">
+        <h2>{{ titulo }}</h2>
+        <p><strong>Pedido #{{ pedido.id }}</strong> - {{ pedido.data }}</p>
+    </div>
+
+    <div class="dados-cliente">
+        <strong>Cliente:</strong> {{ cliente.nome }}<br>
+        <strong>CPF/CNPJ:</strong> {{ cliente.cpf_cnpj }}<br>
+        <strong>Contato:</strong> {{ cliente.email }} - {{ cliente.celular }}<br>
+    </div>
+
+    <div class="dados-pedido">
+        <strong>Status:</strong> {{ pedido.status }}<br>
+        <strong>Entrega prevista:</strong> {{ pedido.data_previsao_entrega }}<br>
+        <strong>Forma de pagamento:</strong> {{ pedido.forma_de_pagamento }}
+    </div>
+
+    <table class="tabela-itens">
+        <thead>
+            <tr>
+                <th>Produto</th>
+                <th>Quantidade</th>
+                <th>Preço</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in itens %}
+            <tr>
+                <td>{{ item.nome }}</td>
+                <td>{{ item.quantidade }}</td>
+                <td>R$ {{ item.preco }}</td>
+                <td>R$ {{ item.total }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="rodape">
+        <p>Documento gerado em {{ data_geracao }}.</p>
+    </div>
+
+</body>
+</html>

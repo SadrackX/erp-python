@@ -1,0 +1,140 @@
+{% extends 'base.html' %}
+{% block conteudo %}
+<br><br>
+<div class="container">
+  <h3>Empresa</h3>
+  <hr>
+  <form method="POST" enctype="multipart/form-data">
+    <div class="form-row">
+      <div class="form-group col-md-8">
+        <label>Nome</label>
+        <input id="nome" type="text" name="nome" class="form-control" placeholder="Nome" value="{{ dados_empresa.get('nome', '') }}">
+      </div>
+      <div class="form-group col-md-4">
+        <label>CNPJ</label>
+        <input id="cpf_cnpj" type="text" name="cnpj" class="form-control" placeholder="CNPJ" value="{{ dados_empresa.get('cnpj', '') }}">
+        <div class="invalid-feedback">
+            Número inválido para o tipo selecionado.
+        </div>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group col-md-6">
+        <label>Email</label>
+        <input id="email" type="email" name="email" class="form-control" placeholder="Email" value="{{ dados_empresa.get('email', '') }}">
+      </div>
+      <div class="form-group col-md-6">
+        <label>Telefone</label>
+        <input id="celular" type="text" name="celular" class="form-control" placeholder="Celular" value="{{ dados_empresa.get('celular', '') }}">
+        <div class="invalid-feedback">
+            Número inválido. Insira um numero de Telefone válido.
+        </div>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group col-md-3">
+        <label>CEP</label>
+        <input id="cep" type="text" name="cep" class="form-control" placeholder="CEP" value="{{ dados_empresa.get('cep', '') }}">
+        <div class="invalid-feedback">
+            CEP inválido. Deve conter exatamente 8 dígitos.
+        </div>
+      </div>
+      <div class="form-group col-md-5">
+        <label>Rua</label>
+        <input id="endereco" type="text" name="endereco" class="form-control" placeholder="Endereço" value="{{ dados_empresa.get('endereco', '') }}">
+      </div>
+      <div class="form-group col-md-1">
+        <label>Nº</label>
+        <input id="numero" type="text" name="numero" class="form-control" placeholder="SN" value="{{ dados_empresa.get('numero', '') }}">
+      </div>
+      <div class="form-group col-md-3">
+        <label>Bairro</label>
+        <input id="bairro" type="text" name="bairro" class="form-control" placeholder="Bairro" value="{{ dados_empresa.get('bairro', '') }}">
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group col-md-6">
+        <label>Complemento</label>
+        <input type="text" name="complemento" class="form-control" placeholder="Complemento" value="{{ dados_empresa.get('complemento', '') }}">
+      </div>
+      <div class="form-group col-md-4">
+        <label>Cidade</label>
+        <input id="cidade" type="text" name="cidade" class="form-control" placeholder="Cidade" value="{{ dados_empresa.get('cidade', '') }}">
+      </div>
+      <div class="form-group col-md-2">
+        <label>UF</label>
+        <input id="uf" type="text" name="uf" class="form-control" placeholder="uf" value="{{ dados_empresa.get('uf', '') }}">
+      </div>
+    </div>
+
+     <div class="form-row" style="align-items: baseline;">
+      <div class="form-group col-md-2">
+        {% if dados_empresa.get('logo_path') %}
+          <img style="background-color: white;" id="logo-delay" width="150" class="mt-2">
+          <small class="form-text text-muted">
+              Logo atual: {{ dados_empresa['logo_path'] }}
+          </small>          
+        {% endif %}
+      </div>
+
+      <div class="input-group form-group col-md-4" style="height: 2em;">        
+        <div class="custom-file">
+          <input type="file" class="custom-file-input" id="logo_path" name="logo_file">
+          <label class="custom-file-label" for="logo_path" data-browse="Buscar"></label>
+        </div>
+        <div class="input-group-prepend">
+          <span class="input-group-text" id="inputGroupFileAddon04" onclick="uploadFile()">Enviar</span>
+        </div>
+      </div>      
+    </div>
+    
+
+    <select hidden id="tipo">
+        <option hidden id="PJ" value="PJ"></option>
+    </select>
+
+    <button type="submit" class="btn btn-primary mt-3">Salvar</button>
+  </form>
+</div>
+{% include 'partials/scriptFormCliente.html' %}
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    setTimeout(function () {
+      const logoPath = "{{ url_for('static', filename=dados_empresa['logo_path']) }}";
+      document.getElementById("logo-delay").src = logoPath;
+    }, 500); // tempo
+  });
+  
+  
+function uploadFile() {
+    const fileInput = document.getElementById('logo_path');
+    const file = fileInput.files[0];
+
+    if (!file) {
+        alert('Por favor, selecione um arquivo.');
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    fetch('/upload', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.text())
+    .then(data => {
+        console.log('Resposta do servidor:', data);
+        alert('Upload concluído!');
+    })
+    .catch(error => {
+        console.error('Erro no upload:', error);
+        alert('Erro ao enviar o arquivo.');
+    });
+  }
+
+</script>
+{% endblock %}
