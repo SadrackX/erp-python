@@ -97,8 +97,9 @@
                             </div>
                         </div>
                     {% endif %} -->
-                    <button id="buttonFinalizar" type="button" class="btn btn-primary" onclick="finalizarPedido()">Finalizar Pedido</button> 
-                    
+                    {% if pedido or pedido.status not in ['Finalizado', 'Cancelado'] %}
+                        <button id="buttonFinalizar" type="button" class="btn btn-primary" onclick="finalizarPedido()">Finalizar Pedido</button> 
+                    {% endif %}
                     <a href="{{ url_for('pedidos.listar') }}" class="btn btn-secondary">Cancelar</a>
                     
                     <button type="submit" class="btn btn-success">
