@@ -26,7 +26,7 @@ def verificar_e_atualizar_status_pedidos() -> int:
             pedido_data['status'] = 'Atrasado'
             atualizou = True
 
-        if status_atual in ['Orçamento', 'Rascunho'] and data_entrega_str:
+        if status_atual in ['Orçamento', 'Rascunho', 'Cancelado'] and data_entrega_str:
             pedido_data['data_previsao_entrega'] = ''
             atualizou = True
 

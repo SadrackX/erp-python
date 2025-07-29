@@ -33,9 +33,12 @@ def listar():
     # Aplica filtros
     pedidos_filtrados = []
     for p in todos_pedidos:
-        if p.status != 'Orçamento':
+        if p.status:
             p.falta_pagar = max(0, p.total - (p.valor_pago or 0))
             nome_cliente = clientes_dict.get(p.id_cliente, '').lower()
+
+            if not status_filtro and p.status.lower() in ['cancelado', 'finalizado', 'orçamento']:
+                continue
 
             # Filtro por cliente (nome ou id)
             if cliente_filtro and cliente_filtro not in p.id_cliente.lower() and cliente_filtro not in nome_cliente:
