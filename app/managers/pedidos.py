@@ -31,10 +31,11 @@ class PedidoManager(CSVManager):
         return str(max_id + 1).zfill(4)
     
     def criar_pedido(self, pedido: Pedido) -> str:
+        from app.services.pedidos import calcular_previsao_entrega
         pedido.id = self.get_next_id()
         pedido.data = datetime.now()
-        """ if pedido.data_previsao_entrega is None and pedido.status != 'rascunho':
-            pedido.calcular_previsao_entcaega() """
+        """ if pedido.data_previsao_entrega is None and pedido.status not in ['Rascunho', 'Cancelado', 'Orçamento', 'Finalizado']:
+            calcular_previsao_entrega(pedido.data_previsao_entrega) """
         self.save(pedido.to_dict())
 
         for item in pedido.itens:
@@ -57,6 +58,11 @@ class PedidoManager(CSVManager):
         return pedidos
     
     def atualizar_pedido(self, pedido_id: str, novos_dados: dict) -> bool:
+        """ if novos_dados['status'] not in ['Rascunho', 'Cancelado', 'Orçamento', 'Finalizado']:
+            from app.services.pedidos import definir_prazo_entrega
+            pedido_ = PedidoManager().buscar_por_id(pedido_id)
+            definir_prazo_entrega(pedido_,pedido_id) """
+            
         if 'data_previsao_entrega' in novos_dados and novos_dados['data_previsao_entrega']:
             if novos_dados.get('status') == 'Finalizado':
                 novos_dados['data_previsao_entrega'] = datetime.now()
@@ -67,6 +73,7 @@ class PedidoManager(CSVManager):
                 novos_dados['data_previsao_entrega'] = datetime.now()
             else:
                 novos_dados['data_previsao_entrega'] = None
+        
         return self.update(pedido_id, novos_dados)
     
     def atualizar_itens_pedido(self, pedido_id: str, novos_itens: List[ItemPedido]) -> bool:

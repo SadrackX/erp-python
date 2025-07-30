@@ -16,7 +16,7 @@ class ItemPedido:
     def from_dict(cls, data: dict) -> "ItemPedido":
         return cls(
             id_pedido=data["id_pedido"],
-            nome=data["nome"],
+            nome=data.get("nome",'').upper(),
             quantidade=int(data["quantidade"]),
             preco_unitario=float(data["preco_unitario"]),
         )

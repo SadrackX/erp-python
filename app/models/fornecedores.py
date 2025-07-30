@@ -28,11 +28,11 @@ class Fornecedor:
     def from_dict(cls, data: dict):
         return cls(
             id=data['id'],
-            nome=data['nome'],
+            nome=data.get('nome','').upper(),
             cnpj=data['cnpj'],
             telefone=data['telefone'],
-            email=data['email'] or None,
-            produtos_fornecidos=data['produtos_fornecidos'] or None,
-            observacoes=data['observacoes'] or None,
+            email=data.get('email','').upper() or None,
+            produtos_fornecidos=data.get('produtos_fornecidos','').upper() or None,
+            observacoes=data.get('observacoes','').upper() or None,
             ativo=str(data.get('ativo', 'True')).lower() == 'true'
         )

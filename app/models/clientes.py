@@ -44,18 +44,18 @@ class Cliente:
         try:
             return cls(
                 id=data.get('id', ClienteManager().get_next_id()),  # Gera novo ID se não existir
-                nome=data.get('nome', ''),
+                nome=data.get('nome', '').upper(),
                 tipo=data.get('tipo', 'PF'),
                 cpf_cnpj=data.get('cpf_cnpj', ''),
-                email=data.get('email'),
-                celular=data.get('celular'),
-                endereco=data.get('endereco'),
-                numero=data.get('numero'),
-                bairro=data.get('bairro'),
-                cidade=data.get('cidade'),
-                cep=data.get('cep'),
-                uf=data.get('uf'),
-                observacoes=data.get('observacoes'),
+                email=data.get('email','').upper(),
+                celular=data.get('celular',''),
+                endereco=data.get('endereco','').upper(),
+                numero=data.get('numero','').upper(),
+                bairro=data.get('bairro','').upper(),
+                cidade=data.get('cidade','').upper(),
+                cep=data.get('cep',''),
+                uf=data.get('uf','').upper(),
+                observacoes=data.get('observacoes','').upper(),
                 ativo=str(data.get('ativo', 'True')).lower() == 'true'
             )
         except Exception as e:

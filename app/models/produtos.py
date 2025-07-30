@@ -24,9 +24,9 @@ class Produto:
     def from_dict(cls, data: dict):
         return cls(
             id=data['id'],
-            nome=data['nome'],
+            nome=data.get('nome','').upper(),
             preco_custo=float(data['preco_custo']),
             preco_venda=float(data['preco_venda']),
-            observacao=data.get('observacao') or None,
+            observacao=data.get('observacao','').upper() or None,
             ativo=str(data.get('ativo', 'True')).lower() == 'true'
         )

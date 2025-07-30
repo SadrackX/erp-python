@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Optional
 from app.managers.pedidos import PedidoManager
 
@@ -61,3 +61,34 @@ def parse_data(data_str: Optional[str]) -> Optional[datetime]:
                     return datetime.strptime(data_str, "%Y-%m-%d")
                 except ValueError:
                     return None
+                
+def definir_prazo_entrega(self, pedido_id: str, dias_uteis: int = None, data_manual: datetime = None) -> bool:
+        """Define a previsão de entrega por dias úteis ou data fixa"""
+        pedido = pedido_manager.buscar_por_id(pedido_id)
+        if not pedido:
+            return False
+    
+        if data_manual:
+            pedido.data_previsao_entrega = data_manual
+        elif dias_uteis:
+            calcular_previsao_entrega(self,dias_uteis)
+        else:
+            calcular_previsao_entrega(self)  # Usa o padrão (5 dias)
+    
+        return PedidoManager.atualizar_pedido(self,pedido_id=pedido_id, novos_dados=self)
+
+def calcular_previsao_entrega(self, dias_uteis: int = 5):
+        """
+        Calcula a data de previsão de entrega somando dias úteis à data do pedido.
+        Por padrão, considera 5 dias úteis.
+        """
+        def adicionar_dias_uteis(data_inicial, qtd_dias):
+            data = data_inicial
+            dias_adicionados = 0
+            while dias_adicionados < qtd_dias:
+                data += timedelta(days=1)
+                if data.weekday() < 5:  # Segunda (0) a sexta (4)
+                    dias_adicionados += 1
+            return data
+
+        self.data_previsao_entrega = adicionar_dias_uteis(self.data, dias_uteis)
