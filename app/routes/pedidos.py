@@ -249,7 +249,7 @@ def editar(pedido_id):
         PedidoManager().atualizar_itens_pedido(pedido_id, produtos_att)
         PedidoManager().atualizar_pedido(pedido_id, novos_dados)
         logger.log(f"Pedido ID: {pedido_id} atualizado!", 'info')
-        return redirecionar_pos_formulario('dashboard.dashboard')
+        return redirect(url_for('dashboard.dashboard'))
     
     if isinstance(pedido.get("data_previsao_entrega"), datetime):
         pedido["data_previsao_entrega"] = pedido["data_previsao_entrega"].strftime("%Y-%m-%d")

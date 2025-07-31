@@ -87,7 +87,11 @@
                                     {{ clientes[pedido.id_cliente] if clientes[pedido.id_cliente] else pedido.id_cliente }}
                                 </td>
                                 <td>    
-                                        {{ pedido.data_previsao_entrega.strftime('%d/%m/%Y') if pedido.status not in ['Orçamento','Rascunho'] else pedido.data.strftime('%d/%m/%Y') }}
+                                    {% if pedido.status not in ['Orçamento','Rascunho'] %}
+                                        {{ pedido.data_previsao_entrega.strftime('%d/%m/%Y') if pedido.data_previsao_entrega else '' }}
+                                    {% else %}
+                                        {{ pedido.data.strftime('%d/%m/%Y') if pedido.data else '' }}
+                                    {% endif %}
                                     
                                 </td>
                                 <td>R$ {{ '%.2f'|format(pedido.total) }}</td>
@@ -149,6 +153,7 @@
                 .then(() => {
                     // Atualiza todas as tabelas
                     statusListas.forEach(status => atualizarTabela(status));
+                    atualizarProximasEntregas();
                 })
                 .catch(err => {
                     alert("Erro ao atualizar status: " + err.message);
@@ -187,5 +192,36 @@
 }
 
     });
+
+    function atualizarProximasEntregas() {
+    const tbody = document.querySelector("table tbody");
+    if (!tbody) return;
+
+    fetch("/api/proximas_entregas")
+        .then(res => res.json())
+        .then(pedidos => {
+            tbody.innerHTML = "";
+
+            if (pedidos.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="text-center text-muted">Nenhuma entrega futura</td></tr>`;
+                return;
+            }
+
+            pedidos.forEach(p => {
+                const row = document.createElement("tr");
+                row.style.cursor = "pointer";
+                row.onclick = () => window.location = `/pedidos/editar/${p.id}/editar`;
+                row.innerHTML = `
+                    <td class="text-truncate" style="max-width: 400px;">${p.cliente}</td>
+                    <td>${p.criado}</td>
+                    <td>${p.entrega}</td>
+                    <td><span class="badge bg-${p.status_class}" style="color: aliceblue;">${p.status}</span></td>
+                    <td>${p.total}</td>
+                `;
+                tbody.appendChild(row);
+            });
+        });
+    }
+
 </script>
 {% endblock %}

@@ -48,8 +48,8 @@ def pedidos_por_status(status):
 from app.managers import pedidos, clientes
 @api_bp.route("/api/proximas_entregas")
 def api_proximas_entregas():
-    pedidos = PedidoManager.buscar_todos()
-    clientes_ = ClienteManager.buscar_todos()  # ou como você monta o dicionário de clientes
+    pedidos = PedidoManager().buscar_todos()
+    clientes = {c.id: c.nome for c in ClienteManager().buscar_todos()} 
     entregas_proximas = sorted(
         [p for p in pedidos if p.data_previsao_entrega and p.status != 'Finalizado'],
         key=lambda p: p.data_previsao_entrega

@@ -62,7 +62,7 @@ def parse_data(data_str: Optional[str]) -> Optional[datetime]:
                 except ValueError:
                     return None
                 
-def atualizar_previsao_entrega(pedido_id: str, novos_dados: dict, status_old: str):
+def atualizar_previsao_entrega(novos_dados: dict, status_old: str = None):
     status = novos_dados.get('status')
     
     # Se finalizado, define data atual
@@ -91,7 +91,7 @@ def atualizar_previsao_entrega(pedido_id: str, novos_dados: dict, status_old: st
 
     # Caso contrário, limpa a data
     else:
-        novos_dados['data_previsao_entrega'] = None
+        novos_dados['data_previsao_entrega'] = ''
 
     return novos_dados
 
