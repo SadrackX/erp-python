@@ -1,7 +1,14 @@
 ﻿{% extends 'base.html' %}
 {% block conteudo %}
 <br/>
-<h3 class="mb-4">Dashboard de Pedidos</h3>
+
+<div class="d-flex justify-content-between align-items-center py-3">
+    <h3 class="mb-4">Dashboard de Pedidos</h3>
+    <div>
+        <a href="{{ url_for('orcamentos.novo') }}" class="btn btn-outline-dark">Novo Orçamento</a>
+        <a href="{{ url_for('pedidos.novo') }}" class="btn btn-outline-primary">Novo Pedido</a>
+    </div>
+</div>
 
 {% set status_lista = ['Design', 'Produção', 'Finalizado', 'Orçamento', 'Rascunho', 'Atrasado'] %}
 {% set status_classes = {
