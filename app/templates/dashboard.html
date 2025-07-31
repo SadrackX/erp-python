@@ -42,7 +42,7 @@
                     | sort(attribute='data_previsao_entrega') 
                     | list 
                 %}
-                {% for pedido in entregas_proximas[:5] if pedido.status != 'Finalizado' %}
+                {% for pedido in entregas_proximas if pedido.status != 'Finalizado' %}
                 <tr onclick="window.location='{{ url_for('pedidos.editar', pedido_id=pedido.id) }}'" style="cursor: pointer;">
                     <td class="text-truncate" style="max-width: 400px;">{{ clientes[pedido.id_cliente] if clientes[pedido.id_cliente] else pedido.id_cliente }}</td>
                     <td>{{ pedido.data.strftime('%d/%m/%Y %H:%M') if pedido.data else '' }}</td>
