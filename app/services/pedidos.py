@@ -62,33 +62,47 @@ def parse_data(data_str: Optional[str]) -> Optional[datetime]:
                 except ValueError:
                     return None
                 
-def definir_prazo_entrega(self, pedido_id: str, dias_uteis: int = None, data_manual: datetime = None) -> bool:
-        """Define a previsão de entrega por dias úteis ou data fixa"""
-        pedido = pedido_manager.buscar_por_id(pedido_id)
-        if not pedido:
-            return False
+def atualizar_previsao_entrega(pedido_id: str, novos_dados: dict, status_old: str):
+    status = novos_dados.get('status')
     
-        if data_manual:
-            pedido.data_previsao_entrega = data_manual
-        elif dias_uteis:
-            calcular_previsao_entrega(self,dias_uteis)
-        else:
-            calcular_previsao_entrega(self)  # Usa o padrão (5 dias)
+    # Se finalizado, define data atual
+    if status == 'Finalizado':
+        novos_dados['data_previsao_entrega'] = datetime.now()
+        return novos_dados
+
+    #pedido_old = pedido_manager.buscar_por_id(pedido_id).status
     
-        return PedidoManager.atualizar_pedido(self,pedido_id=pedido_id, novos_dados=self)
+    # Se estava atrasado e mudou para status ativo
+    if status_old == 'Atrasado' and status not in ['Rascunho', 'Orçamento']:
+        return calcular_previsao_entrega(novos_dados, 2)
 
-def calcular_previsao_entrega(self, dias_uteis: int = 5):
-        """
-        Calcula a data de previsão de entrega somando dias úteis à data do pedido.
-        Por padrão, considera 5 dias úteis.
-        """
-        def adicionar_dias_uteis(data_inicial, qtd_dias):
-            data = data_inicial
-            dias_adicionados = 0
-            while dias_adicionados < qtd_dias:
-                data += timedelta(days=1)
-                if data.weekday() < 5:  # Segunda (0) a sexta (4)
-                    dias_adicionados += 1
-            return data
+    # Se ficou atrasado
+    if status == 'Atrasado':
+        return calcular_previsao_entrega(novos_dados, -1)
 
-        self.data_previsao_entrega = adicionar_dias_uteis(self.data, dias_uteis)
+    # Se forneceu data e está em um status que usa data de entrega
+    if novos_dados['data_previsao_entrega'] and status in ['Design', 'Produção','Atrasado']:
+        novos_dados['data_previsao_entrega'] = parse_data(novos_dados['data_previsao_entrega'])      
+
+    # Se está em um status que exige data, mas sem data informada
+    elif status in ['Design', 'Produção']:      
+        return calcular_previsao_entrega(novos_dados)
+        
+
+    # Caso contrário, limpa a data
+    else:
+        novos_dados['data_previsao_entrega'] = None
+
+    return novos_dados
+
+def calcular_previsao_entrega(novos_dados, dias_uteis: int = 5):
+    data = datetime.now()
+    dias_adicionados = 0
+
+    while dias_adicionados < abs(dias_uteis):
+        data += timedelta(days=1 if dias_uteis > 0 else -1)
+        if data.weekday() < 5:
+            dias_adicionados += 1
+
+    novos_dados['data_previsao_entrega'] = data.strftime("%Y-%m-%d")
+    return novos_dados

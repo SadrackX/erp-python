@@ -36,7 +36,7 @@ def pedidos_por_status(status):
             pedidos_filtrados.append({
                 "id": p.id,
                 "cliente": cliente.nome if cliente else p.id_cliente,
-                "data": p.data_previsao_entrega.strftime("%d/%m/%Y") if p.data_previsao_entrega else "",
+                "data": p.data_previsao_entrega.strftime("%d/%m/%Y") if p.status not in ['Orçamento', 'Rascunho'] else p.data.strftime("%d/%m/%Y"),
                 "total": f"R$ {p.total:.2f}",
                 "data_criacao": p.data if p.data else ""
             })

@@ -58,22 +58,9 @@ class PedidoManager(CSVManager):
         return pedidos
     
     def atualizar_pedido(self, pedido_id: str, novos_dados: dict) -> bool:
-        """ if novos_dados['status'] not in ['Rascunho', 'Cancelado', 'Orçamento', 'Finalizado']:
-            from app.services.pedidos import definir_prazo_entrega
-            pedido_ = PedidoManager().buscar_por_id(pedido_id)
-            definir_prazo_entrega(pedido_,pedido_id) """
-            
-        if 'data_previsao_entrega' in novos_dados and novos_dados['data_previsao_entrega']:
-            if novos_dados.get('status') == 'Finalizado':
-                novos_dados['data_previsao_entrega'] = datetime.now()
-            else:
-                novos_dados['data_previsao_entrega'] = datetime.strptime(novos_dados['data_previsao_entrega'], "%Y-%m-%d")
-        else:
-            if novos_dados.get('status') == 'Finalizado':
-                novos_dados['data_previsao_entrega'] = datetime.now()
-            else:
-                novos_dados['data_previsao_entrega'] = None
-        
+        from app.services.pedidos import atualizar_previsao_entrega
+        status_old = self.buscar_por_id(pedido_id).status
+        atualizar_previsao_entrega(pedido_id, novos_dados, status_old)              
         return self.update(pedido_id, novos_dados)
     
     def atualizar_itens_pedido(self, pedido_id: str, novos_itens: List[ItemPedido]) -> bool:
