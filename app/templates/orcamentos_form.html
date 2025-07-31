@@ -28,6 +28,12 @@
                     </table>
                 </div>
 
+                <div class="form-group col-md-6">
+                    <label for="observacoes">Observações:</label>
+                    <textarea class="form-control" id="observacoes" name="observacoes" rows="6" placeholder="Observações do Pedido">{{ pedido.observacoes if pedido else '' }}</textarea>
+                    <small id="observacaoHelp" class="form-text text-muted">Observações adicionais sobre o pedido.</small>
+                </div>
+
                 <div class="form-group">
                     <label>Valor Total do Orçamento:</label>
                     <span id="valor-final">R$ 0,00</span>

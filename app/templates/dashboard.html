@@ -74,11 +74,7 @@
                         <tr>
                             <th>Cliente</th>
                             <th>
-                                {% if status not in ['Orçamento', 'Rascunho'] %}
-                                    Entrega
-                                {% else %}
-                                    Criado
-                                {% endif %}
+                                {{ 'Entrega' if status not in ['Orçamento', 'Rascunho'] else 'Criado'}}
                             </th>
                             <th>Total</th>
                         </tr>
@@ -86,12 +82,12 @@
                     <tbody id="status-{{ status }}">
                         {% if pedidos_filtrados %}
                             {% for pedido in pedidos_filtrados[:5] %}
-                            <tr data-id="{{ pedido.id }}" style="cursor: grab;" onclick="window.location='{{ url_for('pedidos.editar', pedido_id=pedido.id) }}'">
+                            <tr data-id="{{ pedido.id }}" style="cursor: grab;" onclick="window.location='{{ url_for('pedidos.editar', pedido_id=pedido.id) if status != 'Orçamento' else url_for('orcamentos.editar', pedido_id=pedido.id)}}'">
                                 <td class="text-truncate" style="max-width: 200px;">
                                     {{ clientes[pedido.id_cliente] if clientes[pedido.id_cliente] else pedido.id_cliente }}
                                 </td>
-                                <td>
-                                        {{ pedido.data_previsao_entrega.strftime('%d/%m/%Y') if pedido.data_previsao_entrega else '' }}
+                                <td>    
+                                        {{ pedido.data_previsao_entrega.strftime('%d/%m/%Y') if pedido.status not in ['Orçamento','Rascunho'] else pedido.data.strftime('%d/%m/%Y') }}
                                     
                                 </td>
                                 <td>R$ {{ '%.2f'|format(pedido.total) }}</td>

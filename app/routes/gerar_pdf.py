@@ -21,25 +21,6 @@ def gerar(pedido_id):
     if 'usuario_nome' not in session:
         return redirect(url_for('auth.login'))
     
-    """pedido_id = pedido_id or request.args.get('pdf')
-    produtos_json = request.form.get('produtos_json')
-    itens = []
-    if produtos_json:
-        produtos = json.loads(produtos_json)
-        for p in produtos:
-            itens.append(ItemPedido(
-                id_pedido='',
-                nome=p['nome'],
-                quantidade=p['quantidade'],
-                preco_unitario=p['preco_unitario']
-            ))
-    
-    cliente = request.form.to_dict()
-    
-    data_str = request.form.get('data_previsao_entrega')
-    pedido = request.form.to_dict()
-    pedido['id'] = pedido_id """
-    
     p = PedidoManager().buscar_por_id(pedido_id)
     pedido = p.to_dict()
     c = ClienteManager().buscar_por_id(pedido['id_cliente'])
@@ -151,6 +132,12 @@ def gerar(pedido_id):
     ]))
 
     elementos.append(tabela)
+    
+    if pedido['observacoes']:
+        from xml.sax.saxutils import escape
+        observacoes = pedido.get('observacoes', '')
+        texto_escapado = escape(observacoes).replace('\n', '<br/>')  # mostra tudo como texto
+        elementos.append(Paragraph(f"<br/><b>OBS:</b> <br/>{texto_escapado}", styles["Normal"]))
 
     doc.build(elementos, onFirstPage=adicionar_rodape, onLaterPages=adicionar_rodape)
 

@@ -38,40 +38,56 @@
                 </div>
 
                 <!-- Status e valor final -->
-                <div class="form-row" >
-                    <div class="form-group col-md-3">
-                        <label for="status">Status:</label>
-                        <select id="status" name="status" required class="form-control">
-                            <option value="Orçamento" hidden>Orçamento</option>  
-                            <option value="Atrasado" hidden>Atrasado</option>  
-                            <option value="Finalizado" hidden>Finalizado</option> 
-                            <option value="Cancelado" hidden>Cancelado</option> 
-                            <option value="Rascunho" {% if pedido and pedido.status == 'Rascunho' %}selected{% endif %}>Rascunho</option>
-                            <option value="Design" {% if pedido and pedido.status == 'Design' %}selected{% endif %}>Design</option>
-                            <option value="Produção" {% if pedido and pedido.status == 'Produção' %}selected{% endif %}>Produção</option>
-                        </select>
-                    </div>
+<div class="form-row">
+    <!-- Coluna esquerda: Observações -->
+    <div class="form-group col-md-6">
+        <label for="observacoes">Observações:</label>
+        <textarea class="form-control" id="observacoes" name="observacoes" rows="6" placeholder="Observações do Pedido">{{ pedido.observacoes if pedido else '' }}</textarea>
+        <small id="observacaoHelp" class="form-text text-muted">Observações adicionais sobre o pedido.</small>
+    </div>
 
-                    <div class="form-group col-md-3">
-                        <label for="data_previsao_entrega">Data Prevista de Entrega:</label>
-                        <input type="date" class="form-control" id="data_previsao_entrega" name="data_previsao_entrega"
-                               value="{{ pedido['data_previsao_entrega'] if pedido and pedido.get('data_previsao_entrega') else '' }}">
-                               <small id="data_previsao_entrega_mensagem" class="text-danger" style="display: none;">Data de entrega não disponivel em Rascunho!</small>
+    <!-- Coluna direita: Status, Data, Pagamento, Valor -->
+    <div class="col-md-6">
+        <div class="form-row">
+            <div class="form-group col-md-6">
+                <label for="status">Status:</label>
+                <select id="status" name="status" class="form-control" required>
+                    {% set status_opcoes = ['Orçamento', 'Atrasado', 'Finalizado', 'Cancelado', 'Rascunho', 'Design', 'Produção'] %}
+                    {% for status in status_opcoes %}
+                        <option value="{{ status }}"
+                            {% if pedido and pedido.status == status %}selected{% endif %}
+                            {% if status in ['Orçamento', 'Atrasado', 'Finalizado', 'Cancelado'] %}hidden{% endif %}>
+                            {{ status }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group col-md-6">
+                <label for="data_previsao_entrega">Data Prevista de Entrega:</label>
+                <input type="date" class="form-control" id="data_previsao_entrega" name="data_previsao_entrega"
+                    value="{{ pedido.data_previsao_entrega if pedido and pedido.data_previsao_entrega else '' }}">
+                <small id="data_previsao_entrega_mensagem" class="text-danger" style="display: none;">Não disponível em Rascunho!</small>
+            </div>
+        </div>
 
-                    </div>
-                    <div class="form-group col-md-3">
-                        <label for="forma_de_pagamento">Forma de Pagamento:</label>
-                        <select id="forma_de_pagamento" name="forma_de_pagamento" required class="form-control">
-                            <option value="Dinheiro/Pix" {% if pedido and pedido.forma_de_pagamento == 'Dinheiro/Pix' %}selected{% endif %} {% if pedido %}selected{% endif %} >Dinheiro/Pix</option>
-                            <option value="Cartão" {% if pedido and pedido.forma_de_pagamento == 'Cartão' %}selected{% endif %}>Cartão</option>
-                            <option value="Outro" {% if pedido and pedido.forma_de_pagamento == 'Outro' %}selected{% endif %}>Outro</option>
-                        </select>
-                    </div>
-                    <div class="form-group col-md-3">
-                        <label for="valor_pago">Valor Pago:</label>
-                        <input type="number" name="valor_pago" id="valor_pago" class="form-control mb-2" step="0.01" value="{{ pedido['valor_pago'] if pedido else '0' }}">
-                    </div>
-                </div>
+        <div class="form-row">
+            <div class="form-group col-md-6">
+                <label for="forma_de_pagamento">Forma de Pagamento:</label>
+                <select id="forma_de_pagamento" name="forma_de_pagamento" class="form-control" required>
+                    <option value="Dinheiro/Pix" {% if pedido and pedido.forma_de_pagamento == 'Dinheiro/Pix' %}selected{% endif %}>Dinheiro/Pix</option>
+                    <option value="Cartão" {% if pedido and pedido.forma_de_pagamento == 'Cartão' %}selected{% endif %}>Cartão</option>
+                    <option value="Outro" {% if pedido and pedido.forma_de_pagamento == 'Outro' %}selected{% endif %}>Outro</option>
+                </select>
+            </div>
+            <div class="form-group col-md-6">
+                <label for="valor_pago">Valor Pago:</label>
+                <input type="number" name="valor_pago" id="valor_pago" class="form-control" step="0.01"
+                    value="{{ pedido.valor_pago if pedido else '0' }}">
+            </div>
+        </div>
+    </div>
+</div>
+
 
                 <div class="form-group">
                     <label>Valor Final do Pedido:</label>

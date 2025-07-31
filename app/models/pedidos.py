@@ -30,7 +30,7 @@ class Pedido:
             data_previsao_entrega=parse_data(data.get('data_previsao_entrega')),
             status=data["status"],
             itens=itens or [],
-            observacoes=data.get("observacoes", ""),
+            observacoes=data.get("observacoes", "").upper(),
             forma_de_pagamento=data.get("forma_de_pagamento", ""),
             valor_pago=float(data.get('valor_pago','0.0'))
         )

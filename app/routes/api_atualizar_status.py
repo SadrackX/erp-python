@@ -45,3 +45,32 @@ def pedidos_por_status(status):
             reverse=True)
     return jsonify(pedidos_filtrados[:5])  # LIMITA A 5
 
+from app.managers import pedidos, clientes
+@api_bp.route("/api/proximas_entregas")
+def api_proximas_entregas():
+    pedidos = PedidoManager.buscar_todos()
+    clientes_ = ClienteManager.buscar_todos()  # ou como você monta o dicionário de clientes
+    entregas_proximas = sorted(
+        [p for p in pedidos if p.data_previsao_entrega and p.status != 'Finalizado'],
+        key=lambda p: p.data_previsao_entrega
+    )[:5]
+
+    return jsonify([
+        {
+            "id": p.id,
+            "cliente": clientes.get(p.id_cliente, p.id_cliente),
+            "criado": p.data.strftime('%d/%m/%Y %H:%M') if p.data else '',
+            "entrega": p.data_previsao_entrega.strftime('%d/%m/%Y') if p.data_previsao_entrega else '',
+            "status": p.status,
+            "status_class": {
+                'Rascunho': 'secondary',
+                'Design': 'primary',
+                'Produção': 'info',
+                'Finalizado': 'success',
+                'Orçamento': 'dark',
+                'Atrasado': 'danger'
+            }.get(p.status, 'dark'),
+            "total": f"R$ {p.total:.2f}"
+        }
+        for p in entregas_proximas
+    ])
