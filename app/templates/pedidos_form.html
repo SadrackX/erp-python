@@ -101,18 +101,6 @@
 
                 <hr>
                 <div class="container" style="text-align: right;">
-                    <!-- {% if pedido %}
-                        <div class="btn-group">
-                            <button class="btn btn-outline-dark dropdown-toggle btn-sm" data-toggle="dropdown">
-                                <span class="material-icons">local_printshop</span>
-                            </button>
-                            <div class="dropdown-menu">
-                                <a class="dropdown-item" href="{{ url_for('gerar_pdf.gerar', pedido_id=pedido['id'], tipo='orcamento') }}" target="_blank">Orçamento</a>
-                                <a class="dropdown-item" href="{{ url_for('gerar_pdf.gerar', pedido_id=pedido['id'], tipo='ordem_servico') }}" target="_blank">Ordem de Serviço</a>
-                                <a class="dropdown-item" href="{{ url_for('gerar_pdf.gerar', pedido_id=pedido['id'], tipo='recibo') }}" target="_blank">Recibo</a>
-                            </div>
-                        </div>
-                    {% endif %} -->
                     {% if pedido and pedido.status not in ['Finalizado', 'Cancelado'] %}
                         <button id="buttonFinalizar" type="button" class="btn btn-primary" onclick="finalizarPedido()">Finalizar Pedido</button> 
                     {% endif %}

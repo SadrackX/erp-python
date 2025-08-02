@@ -1,5 +1,6 @@
-
+﻿
 #sugestoes-clientes,
+#sugestoes-clientes_nome,
 #sugestoes-produtos {
     background: #fff;
     border: 1px solid #ccc;
@@ -13,6 +14,7 @@
 }
 
 .sugestao-cliente,
+.sugestao-cliente_nome,
 .sugestao-produto {
     padding: 8px 12px;
     cursor: pointer;
@@ -20,6 +22,7 @@
 }
 
 .sugestao-cliente:hover,
+.sugestao-cliente_nome:hover,
 .sugestao-produto:hover {
     background-color: #f0f0f0;
 }

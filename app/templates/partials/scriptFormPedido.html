@@ -1,4 +1,4 @@
-
+﻿
 
 <script>
     var pedido = {{ pedido | tojson | safe }} || null;
@@ -62,7 +62,8 @@
     $(document).ready(function () {
         atualizarTabelaProdutos();
         // Preenche cliente no formulário (edição)
-        // Cliente autocomplete
+
+        // Cliente autocomplete CNPJ
         $('#cpf_cnpj').on('input', function () {
             var termo = $(this).val();
             if (termo.length < 3) { $('#sugestoes-clientes').hide(); return; }
@@ -98,6 +99,47 @@
             $('#cep').val(c.cep);
             $('#uf').val(c.uf);
             $('#sugestoes-clientes').hide();
+            inputCEP.classList.remove('is-invalid');
+            inputCelular.classList.remove('is-invalid');
+            inputCPF_CNPJ.classList.remove('is-invalid');
+        });
+
+        // Cliente autocomplete NOME
+        $('#nome').on('input', function () {
+            var termo = $(this).val();
+            if (termo.length < 3) { $('#sugestoes-clientes_nome').hide(); return; }
+            $.getJSON("{{ url_for('clientes.buscar') }}", { q: termo }, function (res) {
+                var html = '';
+                res.forEach(function (c) {
+                    html += '<div class="sugestao-cliente" data-json="' + encodeURIComponent(JSON.stringify(c)) + '">' +
+                        '<strong>' + c.nome + '</strong><br>' +
+                        '<small class="text-muted">' + c.cpf_cnpj + '</small>' +
+                        '</div>';
+                });
+                $('#sugestoes-clientes_nome').html(html).show();
+            });
+        });
+
+        $('#nome').focusout(function () {
+            setTimeout(function () { $('#sugestoes-clientes_nome').hide(); }, 200);
+        });
+
+        $(document).on('click', '.sugestoes-clientes_nome', function () {
+            const inputCPF_CNPJ = document.getElementById('cpf_cnpj');
+            var c = JSON.parse(decodeURIComponent($(this).data('json')));
+            $('#id_cliente').val(c.id);
+            $('#nome').val(c.nome);
+            $('#tipo').val(c.tipo);
+            $('#cpf_cnpj').val(c.cpf_cnpj);
+            $('#email').val(c.email);
+            $('#celular').val(c.celular);
+            $('#endereco').val(c.endereco);
+            $('#numero').val(c.numero);
+            $('#bairro').val(c.bairro);
+            $('#cidade').val(c.cidade);
+            $('#cep').val(c.cep);
+            $('#uf').val(c.uf);
+            $('#sugestoes-clientes_nome').hide();
             inputCEP.classList.remove('is-invalid');
             inputCelular.classList.remove('is-invalid');
             inputCPF_CNPJ.classList.remove('is-invalid');

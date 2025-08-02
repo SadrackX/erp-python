@@ -1,4 +1,4 @@
-import os
+﻿import os
 import time
 from flask import Blueprint, redirect, render_template, request, session, url_for
 
@@ -7,7 +7,7 @@ from app.core.utils import redirecionar_pos_formulario
 from app.managers.empresa import EmpresaManager
 from PIL import Image
 from werkzeug.utils import secure_filename
-UPLOAD_FOLDER = 'static/uploads'
+UPLOAD_FOLDER = 'app/static/uploads'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 # rotas/admin.py ou dentro do seu app principal
 

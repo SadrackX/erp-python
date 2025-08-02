@@ -1,4 +1,4 @@
-import time
+﻿import time
 import schedule
 from app.managers.backup import BackupManager
 from app.services.pedidos import verificar_e_atualizar_status_pedidos
@@ -17,7 +17,7 @@ def agendar_verificacao_pedidos():
     def executar_verificacao():
         #logger.log('Verificando e atualizando status dos pedidos.', 'info')
         verificar_e_atualizar_status_pedidos()
-        #logger.log('Verificação concluída.', 'info')
+        logger.log('Verificação concluída.', 'info')
     
     schedule.every(5).minutes.do(executar_verificacao)
 
