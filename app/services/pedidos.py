@@ -66,7 +66,7 @@ def atualizar_previsao_entrega(novos_dados: dict, status_old: str = None):
     status = novos_dados.get('status')
     
     # Se finalizado, define data atual
-    if status == 'Finalizado':
+    if status in ['Finalizado', 'Pronto']:
         novos_dados['data_previsao_entrega'] = datetime.now()
         return novos_dados
 
@@ -81,7 +81,7 @@ def atualizar_previsao_entrega(novos_dados: dict, status_old: str = None):
         return calcular_previsao_entrega(novos_dados, -1)
 
     # Se forneceu data e está em um status que usa data de entrega
-    if novos_dados['data_previsao_entrega'] and status in ['Design', 'Produção','Atrasado']:
+    if novos_dados['data_previsao_entrega'] and status in ['Design', 'Produção','Atrasado','Pronto']:
         novos_dados['data_previsao_entrega'] = parse_data(novos_dados['data_previsao_entrega'])      
 
     # Se está em um status que exige data, mas sem data informada

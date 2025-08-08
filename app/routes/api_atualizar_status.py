@@ -68,7 +68,8 @@ def api_proximas_entregas():
                 'Produção': 'info',
                 'Finalizado': 'success',
                 'Orçamento': 'dark',
-                'Atrasado': 'danger'
+                'Atrasado': 'danger',
+                'Pronto': 'success'
             }.get(p.status, 'dark'),
             "total": f"R$ {p.total:.2f}"
         }

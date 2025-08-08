@@ -52,7 +52,7 @@
             <div class="form-group col-md-6">
                 <label for="status">Status:</label>
                 <select id="status" name="status" class="form-control" required>
-                    {% set status_opcoes = ['Orçamento', 'Atrasado', 'Finalizado', 'Cancelado', 'Rascunho', 'Design', 'Produção'] %}
+                    {% set status_opcoes = ['Orçamento', 'Atrasado', 'Finalizado', 'Cancelado', 'Rascunho', 'Design', 'Produção', 'Pronto'] %}
                     {% for status in status_opcoes %}
                         <option value="{{ status }}"
                             {% if pedido and pedido.status == status %}selected{% endif %}
@@ -135,7 +135,7 @@
         }
     });
     selectStatus.addEventListener('change', function(){            
-        if (selectStatus && ['Produção','Design','Atrasado'].includes(selectStatus.value)){
+        if (selectStatus && ['Produção','Design','Atrasado','Pronto'].includes(selectStatus.value)){
             buttonFinalizar_.removeAttribute('hidden');
         } else {
             buttonFinalizar_.setAttribute('hidden', true);
