@@ -1,0 +1,193 @@
+﻿<style>
+    tr.dragging {
+        background-color: #f8f9fa;
+        opacity: 0.6;
+    }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+<script>
+    const statusListas = {{ status_lista | tojson }};
+
+    // Atualiza todas as tabelas ao carregar a página
+    document.addEventListener('DOMContentLoaded', function () {
+        statusListas.forEach(status => atualizarTabela(status));
+        atualizarProximasEntregas();
+    });
+
+    statusListas.forEach(status => {
+        const el = document.getElementById("status-" + status);
+        if (!el) return;
+
+        new Sortable(el, {
+            group: "pedidos",
+            animation: 150,
+            emptyInsertThreshold: 5,
+            onStart: function (evt) {
+                evt.item.classList.add("dragging");
+            },
+            onEnd: function (evt) {
+                evt.item.classList.remove("dragging");
+            },
+            onAdd: function (evt) {
+                const pedidoId = evt.item.dataset.id;
+                const novoStatus = evt.to.id.replace("status-", "");
+
+                fetch("/api/atualizar_status", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ id: pedidoId, novo_status: novoStatus })
+                })
+                .then(res => res.json())
+                .then(() => {
+                    // Atualiza todas as tabelas
+                    statusListas.forEach(status => atualizarTabela(status));
+                    atualizarProximasEntregas();
+                })
+                .catch(err => {
+                    alert("Erro ao atualizar status: " + err.message);
+                    location.reload(); // fallback
+                });
+            }
+
+        });
+        atualizarTabela(status);
+    });
+
+    function atualizarTabela(status) {
+        const tbody = document.getElementById("status-" + status);
+        const thead = document.getElementById("h-status-" + status);
+        if (!tbody) return;
+
+        fetch("/api/pedidos_status/" + status)
+            .then(res => res.json())
+            .then(pedidos => {
+                
+                thead.innerHTML = `<th>Cliente</th><th>${["Orçamento", "Rascunho"].includes(status) ? 'Criado' : 'Entrega'}</th><th>Total</th>`; 
+                tbody.innerHTML = "";                                       
+
+                if (pedidos.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="3" class="text-center text-muted">Nenhum pedido "${status}"</td></tr>`;
+                    return;
+                    }
+                
+
+                const baseFinalizarUrl = "{{ __PEDIDO__ | safe}}";
+                const baseEditarUrl = "{{ url_for('pedidos.editar', pedido_id='__ID__') }}";
+
+                pedidos.forEach(p => {
+                    const row = document.createElement("tr");
+                    row.dataset.id = p.id;
+                    row.style.cursor = "grab";
+
+                    row.innerHTML = `
+                        <td class="text-truncate" style="max-width: 150px;" onclick="window.location='${baseEditarUrl.replace('__ID__', p.id)}'">${p.cliente}</td>
+                        <td onclick="window.location='${baseEditarUrl.replace('__ID__', p.id)}'">${p.data}</td>
+                        <td onclick="window.location='${baseEditarUrl.replace('__ID__', p.id)}'">${formatarMoeda(p.total)}</td>
+                        ${status === 'Pronto'
+                        ? `<td>
+                                <a
+                                    class="btn btn-sm btn-primary"
+                                    style="height: 21px; padding-top: 0.5px;color: azure;"
+                                    onclick='abrirModalFinalizarPedido(${JSON.stringify(p)})'
+                                >
+                                    <b>Finalizar</b>              
+                                </a>
+                            </td>`
+                        : ''}
+                    `;
+
+                    tbody.appendChild(row);
+                });
+        });
+    }
+
+    function atualizarProximasEntregas() {
+        const tbody = document.querySelector("table tbody");
+
+        if (!tbody) return;
+
+        fetch("/api/proximas_entregas")
+        .then(res => res.json())
+        .then(pedidos => {
+            tbody.innerHTML = "";
+
+            if (pedidos.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="text-center text-muted">Nenhuma entrega futura</td></tr>`;
+                return;
+            }
+
+            pedidos.forEach(p => {
+                const row = document.createElement("tr");
+                row.style.cursor = "pointer";
+                row.onclick = () => window.location = `/pedidos/editar/${p.id}/editar`;
+                row.innerHTML = `
+                    <td class="text-truncate" style="max-width: 400px;">${p.cliente}</td>
+                    <td>${p.criado}</td>
+                    <td>${p.entrega}</td>
+                    <td><span class="badge bg-${p.status_class}" style="color: aliceblue;">${p.status}</span></td>
+                    <td>${formatarMoeda(p.total)}</td>
+                `;
+                tbody.appendChild(row);
+            });
+        });
+    }                 
+
+    document.getElementById('confirmar-finalizar-pedido').addEventListener('click', function() {
+        var pedidoId = document.getElementById('pedido-id-modal').value;
+        var pedidoTotal = parseFloat(document.getElementById('pedido-total-modal').value);
+        var valorPago = parseFloat(document.getElementById('pedido-valor-pago').value);
+
+        if (!valorPago && pedidoTotal != 0) {
+            alert('Por favor, informe o valor pago.');
+            return;
+        } else if (isNaN(valorPago) || valorPago < 0 && pedidoTotal === 0) {
+            alert('Por favor, informe um valor pago válido.');
+            return;
+        } else if (valorPago < pedidoTotal) {
+            alert('O valor pago deve ser maior ou igual ao total do pedido.');
+            return;
+        } else if (valorPago > pedidoTotal) {
+            alert('O valor pago não pode ser maior que o total do pedido.');
+            return;
+        }
+
+        fetch(`/pedidos/finalizar`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ pedido_id: pedidoId, valor_pago: valorPago })
+        })
+        .then(res => {
+            if (res.ok) {
+                location.reload();
+            } else {
+                alert('Erro ao finalizar o pedido.');
+            }
+        })
+        .catch(err => alert('Erro na requisição: ' + err.message));
+    });
+
+    function abrirModalFinalizarPedido(pedido) {
+        document.getElementById('pedido-id-modal').value = pedido.id;
+        document.getElementById('pedido-total-modal').value = pedido.total;
+        document.getElementById('pedido-valor-pago').value = pedido.valor_pago || 0;
+
+        $('#modal-finalizar-pedido').modal('show');
+    }
+
+    document.getElementById('pedido-valor-pago').addEventListener('input', function () {
+        var pedidoTotal = parseFloat(document.getElementById('pedido-total-modal').value);
+        var valorPago = parseFloat(document.getElementById('pedido-valor-pago').value);
+        if (valorPago > pedidoTotal) {
+            document.getElementById('pedido-valor-pago').value = pedidoTotal || 0;
+        } else if (valorPago < 0) {
+            document.getElementById('pedido-valor-pago').value = 0;
+        }
+    });
+
+    function formatarMoeda(valor) {
+        return new Intl.NumberFormat('pt-BR', {
+            style: 'currency',
+            currency: 'BRL'
+        }).format(valor);
+    }
+</script>

@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+﻿from datetime import datetime, timedelta
 from typing import Optional
 from app.managers.pedidos import PedidoManager
 
@@ -22,7 +22,7 @@ def verificar_e_atualizar_status_pedidos() -> int:
 
         atualizou = False
 
-        if status_atual not in ['Finalizado', 'Cancelado'] and data_entrega and data_entrega < hoje:
+        if status_atual not in ['Finalizado', 'Cancelado','Pronto'] and data_entrega and data_entrega < hoje:
             pedido_data['status'] = 'Atrasado'
             atualizou = True
 
@@ -66,7 +66,7 @@ def atualizar_previsao_entrega(novos_dados: dict, status_old: str = None):
     status = novos_dados.get('status')
     
     # Se finalizado, define data atual
-    if status in ['Finalizado', 'Pronto']:
+    if status in ['Finalizado']:
         novos_dados['data_previsao_entrega'] = datetime.now()
         return novos_dados
 
@@ -85,7 +85,7 @@ def atualizar_previsao_entrega(novos_dados: dict, status_old: str = None):
         novos_dados['data_previsao_entrega'] = parse_data(novos_dados['data_previsao_entrega'])      
 
     # Se está em um status que exige data, mas sem data informada
-    elif status in ['Design', 'Produção']:      
+    elif status in ['Design', 'Produção','Pronto']:      
         return calcular_previsao_entrega(novos_dados)
         
 

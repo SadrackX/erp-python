@@ -5,7 +5,7 @@
     var produtosPedido = pedido && pedido.itens ? pedido.itens : [];
     var cliente = {{ cliente | tojson | safe }} || null;
     var produtos = {{ produtos | tojson | safe }} || [];
-    var valorTotal = 0;
+    var valorTotal;
     let indexEditando = null;  // variável de controle global
 
     function editarPedidoForm() {
@@ -258,7 +258,7 @@
     }
 
     editarPedidoForm();
-    $('#valor_pago').focusout(function () {
+    document.getElementById('valor_pago').addEventListener('input', function () {
         const inputValorPago = $('#valor_pago').val();
         if(inputValorPago > valorTotal){
             $('#valor_pago').val(valorTotal);
@@ -268,7 +268,20 @@
     });
 
     function finalizarPedido() {
-        if (confirm("Tem certeza que deseja FINALIZAR o pedido?")) {
+        var valorPago = document.getElementById('valor_pago').value;
+        if (!valorPago && valorTotal != 0) {
+            alert('Por favor, informe o valor pago.');
+            return;
+        } else if (isNaN(valorPago) || valorPago < 0 && valorTotal === 0) {
+            alert('Por favor, informe um valor pago válido.');
+            return;
+        } else if (valorPago < valorTotal) {
+            alert('O valor pago deve ser maior ou igual ao total do pedido.');
+            return;
+        } else if (valorPago > valorTotal) {
+            alert('O valor pago não pode ser maior que o total do pedido.');
+            return;
+        } else if (confirm("Tem certeza que deseja FINALIZAR o pedido?")) {
             document.getElementById('status').value = 'Finalizado';
             document.getElementById('pedido-form').submit();
         }

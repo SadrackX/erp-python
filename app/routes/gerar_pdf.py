@@ -1,6 +1,7 @@
-import os
+﻿import os
 from flask import Blueprint, redirect, render_template, request, send_file, session, url_for
 import io
+from reportlab.graphics.barcode.qr import QrCode
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
 from reportlab.lib import colors
@@ -13,6 +14,7 @@ from app.managers.clientes import ClienteManager
 from app.managers.empresa import EmpresaManager
 from app.managers.itens import ItensPedidoManager
 from app.managers.pedidos import PedidoManager
+from app.routes.gerar_qrcode import validar_chave_pix, gerar_qrcode_pix_bytes, criar_quadro_pix
 
 gerar_pdf_bp = Blueprint('gerar_pdf', __name__, url_prefix='/gerar_pdf')
 
@@ -29,14 +31,14 @@ def gerar(pedido_id):
 
     # Dados da empresa
     empresa = EmpresaManager().get_all()[0]  # Considerando uma única empresa
-    logo_path = os.path.join('static', empresa.get('logo_path')) if empresa.get('logo_path') else None
+    logo_path = os.path.join('app/static', empresa.get('logo_path')) if empresa.get('logo_path') else None
 
     tipo = request.args.get('tipo', 'orcamento')
     titulo = {
         'orcamento': 'Orçamento',
         'ordem_servico': 'Ordem de Serviço',
         'recibo': 'Recibo'
-    }.get(tipo, 'Documento')
+    }.get(tipo, 'Documento')             
 
     styles = getSampleStyleSheet()
     styleN = styles['Normal']
@@ -90,11 +92,11 @@ def gerar(pedido_id):
 
     # Informações do cliente
     elementos.append(Paragraph(
-        f"<b>Cliente:</b> {cliente['nome']} - "
-        f"CPF/CNPJ: {cliente['cpf_cnpj']}<br/>"
-        f"Endereço: {cliente['endereco']}, {cliente['numero']} - {cliente['bairro']} - "
+        f"<b>Cliente:</b> {cliente['nome']}"
+        f"<br/><b>CPF/CNPJ:</b> {cliente['cpf_cnpj']}<br/>"
+        f"<b>Endereço:</b> {cliente['endereco']}, {cliente['numero']} - {cliente['bairro']} - "
         f"{cliente['cidade']}-{cliente['uf']}<br/>"
-        f"Telefone: {cliente['celular']} | Email: {cliente['email']}",
+        f"<b>Telefone:</b> {cliente['celular']} <b>| Email:</b> {cliente['email']}",
         styleN
     ))
 
@@ -112,12 +114,12 @@ def gerar(pedido_id):
         dados_tabela.append([
             nome_produto,
             str(produto['quantidade']),
-            f"{float(produto['preco_unitario']):.2f}",
-            f"{subtotal:.2f}"
+            f"{ '{:,.2f}'.format(float(produto['preco_unitario'])).replace(',', 'X').replace('.', ',').replace('X', '.')}",
+            f"{ '{:,.2f}'.format(subtotal).replace(',', 'X').replace('.', ',').replace('X', '.') }"
+            
         ])
+    dados_tabela.append(['', '', 'Total:', f"{ '{:,.2f}'.format(total).replace(',', 'X').replace('.', ',').replace('X', '.') }"])
 
-    dados_tabela.append(['', '', 'Total:', f"{total:.2f}"])
-    
     tabela = Table(dados_tabela, colWidths=[300, 40, 80, 80])
     tabela.setStyle(TableStyle([
         ('BACKGROUND', (0, 0), (-1, 0), colors.lightgrey),
@@ -138,6 +140,19 @@ def gerar(pedido_id):
         observacoes = pedido.get('observacoes', '')
         texto_escapado = escape(observacoes).replace('\n', '<br/>')  # mostra tudo como texto
         elementos.append(Paragraph(f"<br/><b>OBS:</b> <br/>{texto_escapado}", styles["Normal"]))
+
+    # Adiciona QR Code Pix se disponível
+    if (valido := validar_chave_pix(empresa['celular'])) and (valido[0] != 'invalida') and titulo.lower() == 'recibo':
+        qr_buffer = gerar_qrcode_pix_bytes(
+            chave_pix=valido[1],
+            valor=total,
+            nome=empresa['nome'][:25],
+            cidade='SOUSA',
+            descricao=f"PED{pedido_id}"
+        )
+        qr_img = Image(qr_buffer, width=5 * 28.35, height=5 * 28.35)
+        elementos.append(Spacer(1, 20))
+        elementos.append(criar_quadro_pix(qr_img, valido[1], total, empresa['nome']))
 
     doc.build(elementos, onFirstPage=adicionar_rodape, onLaterPages=adicionar_rodape)
 
@@ -176,3 +191,8 @@ def adicionar_rodape(canvas, doc):
     # Número da página (opcional)
     canvas.drawRightString(A4[0] - 40, 20, f"Página {doc.page}")
     canvas.restoreState()
+
+def moeda(valor):
+    if valor is None:
+        return "R$ 0,00"
+    return f"R$ {valor:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")

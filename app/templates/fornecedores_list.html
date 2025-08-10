@@ -1,9 +1,9 @@
 ﻿{% extends 'base.html' %}
 {% block conteudo %}
 <div class="" style="display: flex; justify-content: space-between; align-items: center; padding-top: 20px; ">
-<h3>Fornecedores</h3>
-<!-- Botão para abrir o modal de novo fornecedor -->
-<button class="btn btn-success" onclick="abrirModalFornecedor()">Cadastrar Novo Fornecedor</button>
+    <h3>Fornecedores</h3>
+    <!-- Botão para abrir o modal de novo fornecedor -->
+    <button class="btn btn-success" onclick="abrirModalFornecedor()">Cadastrar Novo Fornecedor</button>
 </div>
 <hr>
 <table class="table table-striped" border="1" cellpadding="5" cellspacing="0">
@@ -61,5 +61,5 @@ function abrirModalFornecedor(fornecedor = null) {
     }
     $('#fornecedorModal').modal('show');
 }
-    </script>
+</script>
 {% endblock %}

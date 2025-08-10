@@ -1,0 +1,36 @@
+﻿{# Modal de finalizar pedidos #}
+<div class="modal fade" id="modal-finalizar-pedido" tabindex="-1" role="dialog" aria-labelledby="modalFinalizarPedidoLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalFinalizarPedidoLabel">Finalizar Pedido</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <input type="hidden" id="pedido-id-modal">
+        
+        <div class="form-group">
+          <label for="pedido-total">Total do Pedido</label>
+          <input type="number" step="0.01" min="0" id="pedido-total-modal" class="form-control" disabled>
+        </div>
+        
+        <div class="form-group">
+          <label for="pedido-valor-pago">Valor Pago</label>
+          <input type="number" step="0.01" min="0" id="pedido-valor-pago" class="form-control" required>
+        </div>
+
+        
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-primary" id="confirmar-finalizar-pedido">Finalizar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+

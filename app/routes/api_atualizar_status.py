@@ -1,4 +1,4 @@
-from datetime import datetime
+﻿from datetime import datetime
 from flask import Blueprint, request, jsonify
 from app.managers.clientes import ClienteManager
 from app.managers.pedidos import PedidoManager
@@ -36,8 +36,9 @@ def pedidos_por_status(status):
             pedidos_filtrados.append({
                 "id": p.id,
                 "cliente": cliente.nome if cliente else p.id_cliente,
-                "data": p.data_previsao_entrega.strftime("%d/%m/%Y") if p.status not in ['Orçamento', 'Rascunho'] else p.data.strftime("%d/%m/%Y"),
-                "total": f"R$ {p.total:.2f}",
+                "data": p.data_previsao_entrega.strftime("%d/%m") if p.status not in ['Orçamento', 'Rascunho'] else p.data.strftime("%d/%m") if p.data else "",
+                "total": p.total,                 
+                "valor_pago": p.valor_pago,
                 "data_criacao": p.data if p.data else ""
             })
             pedidos_filtrados.sort(
@@ -59,8 +60,8 @@ def api_proximas_entregas():
         {
             "id": p.id,
             "cliente": clientes.get(p.id_cliente, p.id_cliente),
-            "criado": p.data.strftime('%d/%m/%Y %H:%M') if p.data else '',
-            "entrega": p.data_previsao_entrega.strftime('%d/%m/%Y') if p.data_previsao_entrega else '',
+            "criado": p.data.strftime('%d/%m %H:%M') if p.data else '',
+            "entrega": p.data_previsao_entrega.strftime('%d/%m') if p.data_previsao_entrega else '',
             "status": p.status,
             "status_class": {
                 'Rascunho': 'secondary',
@@ -71,7 +72,7 @@ def api_proximas_entregas():
                 'Atrasado': 'danger',
                 'Pronto': 'success'
             }.get(p.status, 'dark'),
-            "total": f"R$ {p.total:.2f}"
+            "total": p.total
         }
         for p in entregas_proximas
     ])

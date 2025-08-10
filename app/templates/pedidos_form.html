@@ -7,13 +7,13 @@
             <br>
             <h5>
                 {% if pedido %}
-                    {% if pedido.status == 'Orçamento' %}
-                        Editar Orçamento ID: {{ pedido['id'] }}
-                    {% else %}
-                        Editar Pedido ID: {{ pedido['id'] }}
-                    {% endif %}
+                {% if pedido.status == 'Orçamento' %}
+                Editar Orçamento ID: {{ pedido['id'] }}
                 {% else %}
-                    Novo Pedido
+                Editar Pedido ID: {{ pedido['id'] }}
+                {% endif %}
+                {% else %}
+                Novo Pedido
                 {% endif %}
             </h5>
             <hr>
@@ -22,7 +22,7 @@
                 <hr>
                 <div class="form-row">
                     <!-- Produtos do Pedido -->
-                    <button type="button" class="btn btn-primary" id="abrir-modal-produto"  data-toggle="modal" data-target="#modal-produto">Adicionar Produto</button>
+                    <button type="button" class="btn btn-primary" id="abrir-modal-produto" data-toggle="modal" data-target="#modal-produto">Adicionar Produto</button>
                     <table id="tabela-produtos" class="table table-striped" border="1" cellpadding="5" cellspacing="0">
                         <thead>
                             <tr>
@@ -38,62 +38,62 @@
                 </div>
 
                 <!-- Status e valor final -->
-<div class="form-row">
-    <!-- Coluna esquerda: Observações -->
-    <div class="form-group col-md-6">
-        <label for="observacoes">Observações:</label>
-        <textarea class="form-control" id="observacoes" name="observacoes" rows="6" placeholder="Observações do Pedido">{{ pedido.observacoes if pedido else '' }}</textarea>
-        <small id="observacaoHelp" class="form-text text-muted">Observações adicionais sobre o pedido.</small>
-    </div>
+                <div class="form-row">
+                    <!-- Coluna esquerda: Observações -->
+                    <div class="form-group col-md-6">
+                        <label for="observacoes">Observações:</label>
+                        <textarea class="form-control" id="observacoes" name="observacoes" rows="6" placeholder="Observações do Pedido">{{ pedido.observacoes if pedido else '' }}</textarea>
+                        <small id="observacaoHelp" class="form-text text-muted">Observações adicionais sobre o pedido.</small>
+                    </div>
 
-    <!-- Coluna direita: Status, Data, Pagamento, Valor -->
-    <div class="col-md-6">
-        <div class="form-row">
-            <div class="form-group col-md-6">
-                <label for="status">Status:</label>
-                <select id="status" name="status" class="form-control" required>
-                    {% set status_opcoes = ['Orçamento', 'Atrasado', 'Finalizado', 'Cancelado', 'Rascunho', 'Design', 'Produção', 'Pronto'] %}
-                    {% for status in status_opcoes %}
-                        <option value="{{ status }}"
-                            {% if pedido and pedido.status == status %}selected{% endif %}
-                            {% if status in ['Orçamento', 'Atrasado', 'Finalizado', 'Cancelado'] %}hidden{% endif %}>
-                            {{ status }}
-                        </option>
-                    {% endfor %}
-                </select>
-            </div>
-            <div class="form-group col-md-6">
-                <label for="data_previsao_entrega">Data Prevista de Entrega:</label>
-                <input type="date" class="form-control" id="data_previsao_entrega" name="data_previsao_entrega"
-                    value="{{ pedido.data_previsao_entrega if pedido and pedido.data_previsao_entrega else '' }}">
-                <small id="data_previsao_entrega_mensagem" class="text-danger" style="display: none;">Não disponível em Rascunho!</small>
-            </div>
-        </div>
+                    <!-- Coluna direita: Status, Data, Pagamento, Valor -->
+                    <div class="col-md-6">
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label for="status">Status:</label>
+                                <select id="status" name="status" class="form-control" required>
+                                    {% set status_opcoes = ['Orçamento', 'Atrasado', 'Finalizado', 'Cancelado', 'Rascunho', 'Design', 'Produção', 'Pronto'] %}
+                                    {% for status in status_opcoes %}
+                                    <option value="{{ status }}"
+                                            {% if pedido and pedido.status==status %}selected{% endif %}
+                                            {% if status in ['Orçamento', 'Atrasado' , 'Finalizado' , 'Cancelado' ] %}hidden{% endif %}>
+                                        {{ status }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label for="data_previsao_entrega">Data Prevista de Entrega:</label>
+                                <input type="date" class="form-control" id="data_previsao_entrega" name="data_previsao_entrega"
+                                       value="{{ pedido.data_previsao_entrega if pedido and pedido.data_previsao_entrega else '' }}">
+                                <small id="data_previsao_entrega_mensagem" class="text-danger" style="display: none;">Não disponível em Rascunho!</small>
+                            </div>
+                        </div>
 
-        <div class="form-row">
-            <div class="form-group col-md-6">
-                <label for="forma_de_pagamento">Forma de Pagamento:</label>
-                <select id="forma_de_pagamento" name="forma_de_pagamento" class="form-control" required>
-                    <option value="Dinheiro/Pix" {% if pedido and pedido.forma_de_pagamento == 'Dinheiro/Pix' %}selected{% endif %}>Dinheiro/Pix</option>
-                    <option value="Cartão" {% if pedido and pedido.forma_de_pagamento == 'Cartão' %}selected{% endif %}>Cartão</option>
-                    <option value="Outro" {% if pedido and pedido.forma_de_pagamento == 'Outro' %}selected{% endif %}>Outro</option>
-                </select>
-            </div>
-            <div class="form-group col-md-6">
-                <label for="valor_pago">Valor Pago:</label>
-                <input type="number" name="valor_pago" id="valor_pago" class="form-control" step="0.01"
-                    value="{{ pedido.valor_pago if pedido else '0' }}">
-            </div>
-        </div>
-    </div>
-</div>
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label for="forma_de_pagamento">Forma de Pagamento:</label>
+                                <select id="forma_de_pagamento" name="forma_de_pagamento" class="form-control" required>
+                                    <option value="Dinheiro/Pix" {% if pedido and pedido.forma_de_pagamento=='Dinheiro/Pix' %}selected{% endif %}>Dinheiro/Pix</option>
+                                    <option value="Cartão" {% if pedido and pedido.forma_de_pagamento=='Cartão' %}selected{% endif %}>Cartão</option>
+                                    <option value="Outro" {% if pedido and pedido.forma_de_pagamento=='Outro' %}selected{% endif %}>Outro</option>
+                                </select>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label for="valor_pago">Valor Pago:</label>
+                                <input type="number" name="valor_pago" id="valor_pago" class="form-control" step="0.01"
+                                       value="{{ pedido.valor_pago if pedido else '0' }}">
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
 
                 <div class="form-group">
                     <label>Valor Final do Pedido:</label>
                     <span id="valor-final">R$ 0,00</span><br>
                 </div>
-                
+
                 <input type="hidden" name="id_pedido" id="pedido-id" value="{{ pedido['id'] if pedido else '' }}">
                 <input type="hidden" name="produtos_json" id="produtos_json">
                 <input type="hidden" name="id_cliente" id="id_cliente" value="{{ pedido['id_cliente'] if pedido else 'novo' }}">
@@ -102,15 +102,17 @@
                 <hr>
                 <div class="container" style="text-align: right;">
                     {% if pedido and pedido.status not in ['Finalizado', 'Cancelado'] %}
-                        <button id="buttonFinalizar" type="button" class="btn btn-primary" onclick="finalizarPedido()">Finalizar Pedido</button> 
+                    <button id="buttonFinalizar" type="button" class="btn btn-primary" onclick="finalizarPedido()">Finalizar Pedido</button>
+                    {% else %}
+                    <a class="btn btn-outline-dark btn-sm" style="width: 70px; height: 35px;" href="{{ url_for('gerar_pdf.gerar', pedido_id=pedido.id, tipo='recibo') }}" target="_blank"><span style="font-size: 25px;" class="material-icons">local_printshop</span></a>
                     {% endif %}
                     <a href="{{ url_for('pedidos.listar') }}" class="btn btn-secondary">Cancelar</a>
-                    
+
                     <button type="submit" class="btn btn-success">
                         {% if not pedido  or pedido.status in ['Finalizado','Cancelado'] %}
-                            Novo Pedido
+                        Novo Pedido
                         {% else %}
-                            Salva Pedido
+                        Salva Pedido
                         {% endif %}
                     </button>
                 </div>
@@ -126,20 +128,20 @@
     var selectStatus = document.getElementById('status');
     var buttonFinalizar_ = document.getElementById('buttonFinalizar');
 
-    document.addEventListener('DOMContentLoaded', function() {        
+    document.addEventListener('DOMContentLoaded', function () {
         var inputValorPago = document.getElementById('valor_pago');
-        if (selectStatus && ['Orçamento', 'Cancelado','Finalizado'].includes(selectStatus.value)) {
+        if (selectStatus && ['Orçamento', 'Cancelado', 'Finalizado'].includes(selectStatus.value)) {
             selectStatus.value = 'Rascunho';
-            inputValorPago.value = 0.0;     
-            buttonFinalizar_.setAttribute('hidden', true);       
+            inputValorPago.value = 0.0;
+            buttonFinalizar_.setAttribute('hidden', true);
         }
     });
-    selectStatus.addEventListener('change', function(){            
-        if (selectStatus && ['Produção','Design','Atrasado','Pronto'].includes(selectStatus.value)){
+    selectStatus.addEventListener('change', function () {
+        if (selectStatus && ['Produção', 'Design', 'Atrasado', 'Pronto'].includes(selectStatus.value)) {
             buttonFinalizar_.removeAttribute('hidden');
         } else {
             buttonFinalizar_.setAttribute('hidden', true);
-        }        
+        }
     })
 </script>
 {% endblock %}

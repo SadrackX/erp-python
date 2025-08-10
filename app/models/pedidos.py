@@ -50,7 +50,8 @@ class Pedido:
                 if isinstance(self.data_previsao_entrega, datetime)
                 else self.data_previsao_entrega or '',
             'forma_de_pagamento': self.forma_de_pagamento,
-            'valor_pago': float(self.valor_pago)
+            'valor_pago': float(self.valor_pago),
+            'total': self.total
         }
     
     @property

@@ -35,6 +35,7 @@ class PedidoManager(CSVManager):
         pedido.id = self.get_next_id()
         pedido.data = datetime.now()
         novos_dados = pedido.to_dict()
+        novos_dados.pop('total', None)
         atualizar_previsao_entrega(novos_dados)
         self.save(novos_dados)
 
@@ -72,7 +73,10 @@ class PedidoManager(CSVManager):
 
     def cancelar_pedido(self, pedido_id: str) -> bool:
         return self.update(pedido_id, {'status': 'Cancelado','data_previsao_entrega':''})
-    
+
+    def finalizar_pedido(self, pedido_id: str, valor_pago: float) -> bool:
+        return self.update(pedido_id, {'status': 'Finalizado','data_previsao_entrega':datetime.now(), 'valor_pago': valor_pago})
+
     def gerar_pedido(self, pedido_id: str) -> bool:
         return self.update(pedido_id, {'status': 'Rascunho','data_previsao_entrega':''})
 

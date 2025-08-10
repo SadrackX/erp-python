@@ -1,4 +1,4 @@
-from datetime import datetime
+﻿from datetime import datetime
 from flask import Blueprint, flash, json, redirect, render_template, request, session, url_for
 
 from app.services import logger
@@ -290,3 +290,15 @@ def cancelar(pedido_id):
     PedidoManager().cancelar_pedido(pedido_id)
     logger.log(f"Pedido ID: {pedido_id} cancelado!", 'info')
     return redirecionar_pos_formulario('pedidos.listar')
+
+@pedidos_bp.route('/finalizar', methods=['POST'])
+def finalizar():
+    if 'usuario_nome' not in session:
+        return redirect(url_for('auth.login'))
+    if request.method == 'POST':
+        data = request.get_json()
+        valor_pago = data.get('valor_pago', 0)
+        pedido_id = data.get('pedido_id')
+        PedidoManager().finalizar_pedido(pedido_id, valor_pago)
+        logger.log(f"Pedido ID: {pedido_id} finalizado!", 'info')
+        return redirecionar_pos_formulario('dashboard.dashboard')
