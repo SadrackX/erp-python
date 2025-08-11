@@ -54,6 +54,7 @@ def parse_data(data_str: Optional[str]) -> Optional[datetime]:
                 return None
             try:
                 # Tenta como ISO (com ou sem hora)
+                #return datetime.fromisoformat(data_str)
                 return datetime.fromisoformat(data_str)
             except ValueError:
                 # Tenta como formato customizado (ex: YYYY-MM-DD)
@@ -67,7 +68,8 @@ def atualizar_previsao_entrega(novos_dados: dict, status_old: str = None):
     
     # Se finalizado, define data atual
     if status in ['Finalizado']:
-        novos_dados['data_previsao_entrega'] = datetime.now()
+        data = datetime.now()
+        novos_dados['data_previsao_entrega'] = data.strftime("%Y-%m-%d %H:%M")
         return novos_dados
 
     #pedido_old = pedido_manager.buscar_por_id(pedido_id).status
@@ -82,7 +84,7 @@ def atualizar_previsao_entrega(novos_dados: dict, status_old: str = None):
 
     # Se forneceu data e está em um status que usa data de entrega
     if novos_dados['data_previsao_entrega'] and status in ['Design', 'Produção','Atrasado','Pronto']:
-        novos_dados['data_previsao_entrega'] = parse_data(novos_dados['data_previsao_entrega'])      
+        novos_dados['data_previsao_entrega'] = novos_dados['data_previsao_entrega']    
 
     # Se está em um status que exige data, mas sem data informada
     elif status in ['Design', 'Produção','Pronto']:      
@@ -104,5 +106,5 @@ def calcular_previsao_entrega(novos_dados, dias_uteis: int = 5):
         if data.weekday() < 5:
             dias_adicionados += 1
 
-    novos_dados['data_previsao_entrega'] = data.strftime("%Y-%m-%d")
+    novos_dados['data_previsao_entrega'] = data.strftime("%Y-%m-%d %H:%M")
     return novos_dados

@@ -1,7 +1,7 @@
 ﻿{% extends 'base.html' %}
 {% block conteudo %}
 <br />
-
+<div class="noselect">
 <div class="d-flex justify-content-between align-items-center py-3">
     <h3 class="mb-4">Dashboard de Pedidos</h3>
     <div>
@@ -71,7 +71,8 @@
                     <th>Criado</th>
                     <th>Entrega</th>
                     <th>Valor Total</th>
-                    <th>Valor Pago</th>
+                    <th>Restante</th>
+                    <th></th>
                 </tr>
             </thead>
             <tbody>
@@ -82,13 +83,22 @@
                 | list
                 %}
                 {% for pedido in entregas_finalizadas[:10] if pedido.status == 'Finalizado' %}
-                <tr style="cursor: pointer;{{ 'background-color: salmon' if pedido.valor_pago < pedido.total}}">
+                <tr class="{{ 'table-danger' if pedido.valor_pago < pedido.total}}" style="cursor: pointer;">
                     <td onclick="window.location='{{ url_for('pedidos.editar', pedido_id=pedido.id) }}'" class="text-truncate" style="max-width: 400px;">{{ clientes[pedido.id_cliente] if clientes[pedido.id_cliente] else pedido.id_cliente }}</td>
                     <td onclick="window.location='{{ url_for('pedidos.editar', pedido_id=pedido.id) }}'">{{ pedido.data.strftime('%d/%m %H:%M') if pedido.data else '' }}</td>
                     <td onclick="window.location='{{ url_for('pedidos.editar', pedido_id=pedido.id) }}'">{{ pedido.data_previsao_entrega.strftime('%d/%m %H:%M') if pedido.data_previsao_entrega else '' }}</td>
                     <td onclick="window.location='{{ url_for('pedidos.editar', pedido_id=pedido.id) }}'">R$ {{ "{:,.2f}".format(pedido.total).replace(",", "X").replace(".", ",").replace("X", ".") }}</td>
-                    <td onclick="window.location='{{ url_for('pedidos.editar', pedido_id=pedido.id) }}'">R$ {{ "{:,.2f}".format(pedido.valor_pago).replace(",", "X").replace(".", ",").replace("X", ".") }}</td>
-                    <td><a class="btn btn-outline-dark btn-sm" style="width: 70px; height: 35px;" href="{{ url_for('gerar_pdf.gerar', pedido_id=pedido.id, tipo='recibo') }}" target="_blank"><span style="font-size: 25px;" class="material-icons">local_printshop</span></a></td>
+                    {% if pedido.valor_pago != pedido.total %}
+                        <td style="color: darkred;" onclick="window.location='{{ url_for('pedidos.editar', pedido_id=pedido.id) }}'"><b>R$ {{ "{:,.2f}".format(pedido.total-pedido.valor_pago).replace(",", "X").replace(".", ",").replace("X", ".") }}</b></td>
+                    {% else %}
+                    <td></td>
+                    {% endif %}
+                    <td style="width: 200px;">
+                        <a class="btn btn-outline-dark btn-sm" style="width: 70px; height: 35px;" href="{{ url_for('gerar_pdf.gerar', pedido_id=pedido.id, tipo='recibo') }}" target="_blank"><span style="font-size: 25px;" class="material-icons">local_printshop</span></a>
+                        {% if pedido.valor_pago != pedido.total %}
+                            <a class="btn btn-primary btn-sm" style="width: 70px; height: 35px; color: azure;" onclick="abrirModalFinalizarPedido({{pedido.to_dict() | safe}})" target="_blank">Finalizar</a>
+                        {% endif %}
+                    </td>
                 </tr>
                 {% else %}
                 <tr>
@@ -99,7 +109,7 @@
         </table>
     </div>
 </div>
-
 {% include 'partials/modal_finalizar_pedido.html' %}
 {% include 'partials/scriptDashboard.html' %}
+</div>
 {% endblock %}

@@ -3,6 +3,9 @@
         background-color: #f8f9fa;
         opacity: 0.6;
     }
+    .noselect {
+        user-select: none;
+    }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 <script>
@@ -137,19 +140,7 @@
         var pedidoTotal = parseFloat(document.getElementById('pedido-total-modal').value);
         var valorPago = parseFloat(document.getElementById('pedido-valor-pago').value);
 
-        if (!valorPago && pedidoTotal != 0) {
-            alert('Por favor, informe o valor pago.');
-            return;
-        } else if (isNaN(valorPago) || valorPago < 0 && pedidoTotal === 0) {
-            alert('Por favor, informe um valor pago válido.');
-            return;
-        } else if (valorPago < pedidoTotal) {
-            alert('O valor pago deve ser maior ou igual ao total do pedido.');
-            return;
-        } else if (valorPago > pedidoTotal) {
-            alert('O valor pago não pode ser maior que o total do pedido.');
-            return;
-        }
+        
 
         fetch(`/pedidos/finalizar`, {
             method: 'POST',

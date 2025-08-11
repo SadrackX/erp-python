@@ -75,7 +75,11 @@ class PedidoManager(CSVManager):
         return self.update(pedido_id, {'status': 'Cancelado','data_previsao_entrega':''})
 
     def finalizar_pedido(self, pedido_id: str, valor_pago: float) -> bool:
-        return self.update(pedido_id, {'status': 'Finalizado','data_previsao_entrega':datetime.now(), 'valor_pago': valor_pago})
+        data_new = datetime.now().strftime("%Y-%m-%d %H:%M")
+        pedido = self.buscar_por_id(pedido_id).to_dict()
+        if pedido['status'] == 'Finalizado':
+            data_new = pedido['data_previsao_entrega']
+        return self.update(pedido_id, {'status': 'Finalizado','data_previsao_entrega':data_new, 'valor_pago': valor_pago})
 
     def gerar_pedido(self, pedido_id: str) -> bool:
         return self.update(pedido_id, {'status': 'Rascunho','data_previsao_entrega':''})

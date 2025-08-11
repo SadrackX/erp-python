@@ -46,7 +46,7 @@ class Pedido:
             'status': self.status,
             'observacoes': self.observacoes or '',
             'data_previsao_entrega':
-                self.data_previsao_entrega.strftime("%Y-%m-%d")
+                self.data_previsao_entrega.strftime("%Y-%m-%d %H:%M")
                 if isinstance(self.data_previsao_entrega, datetime)
                 else self.data_previsao_entrega or '',
             'forma_de_pagamento': self.forma_de_pagamento,
