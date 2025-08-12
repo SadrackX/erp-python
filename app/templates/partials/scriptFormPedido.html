@@ -270,11 +270,9 @@
 
         $('#busca-produto').val(p.nome);
         $('#preco-produto').val(p.preco_unitario);
-        $('#quantidade-produto').val(p.quantidade);
-        $('#largura-produto').val('');
-        $('#altura-produto').val('');
-        document.getElementById('medida-produto').selectedIndex = 1;
-        document.getElementById('calculo').checked = false;
+        $('#quantidade-produto').val(p.quantidade);        
+
+        separarProdutoEMedidas(p.nome,p.preco_unitario);
         
         $('#modal-produto').modal('show');
     }
@@ -289,6 +287,79 @@
         }
     });
 
+    function separarProdutoEMedidas(nomeProduto, preco_unitario) {
+        const inputText = nomeProduto.trim();
+        
+        // 1. Verifica se tem colchetes e extrai o conteúdo
+        const regexMedidas = /\[([^\]]+)\]/;
+        const matchMedidas = inputText.match(regexMedidas);
+        
+        // Se NÃO estiver no formato [MEDIDAS], sai sem alterar nada
+        if (!matchMedidas) {
+            console.log("Produto sem medidas no formato [LARGURA X ALTURA UNIDADE]. Nenhum campo alterado.");
+            return false; // Retorna false para indicar que não houve alteração
+        }
+
+        const conteudoColchetes = matchMedidas[1].trim();
+        
+        // 2. Tenta separar LARGURA X ALTURA UNIDADE
+        const partes = conteudoColchetes.split(/\s*[xX]\s*/); // Suporta "X", "x" ou "×" com espaços opcionais
+        
+        // Se não tiver duas medidas (LARGURA e ALTURA), sai sem alterar
+        if (partes.length !== 2) {
+            console.log("Formato de medidas inválido. Nenhum campo alterado.");
+            return false;
+        }
+
+        // 3. Extrai medidas e unidade
+        const medida1 = partes[0].trim();
+        const medida2Partes = partes[1].trim().split(/\s+/);
+        const unidade = medida2Partes.pop().toUpperCase(); // Garante unidade em maiúsculas (MM, CM, M)
+        const medida2 = medida2Partes.join(' ');
+
+        // 4. Verifica se medidas são números válidos
+        if (isNaN(medida1) || isNaN(medida2)) {
+            console.log("Medidas inválidas (não são números). Nenhum campo alterado.");
+            return false;
+        }
+
+        // 5. Verifica se a unidade é suportada (MM, CM, M)
+        const unidadesSuportadas = ["MM", "CM", "M"];
+        if (!unidadesSuportadas.includes(unidade)) {
+            console.log(`Unidade "${unidade}" não suportada. Nenhum campo alterado.`);
+            return false;
+        }
+
+        // 6. Só aqui, se tudo estiver válido, atualiza os campos!
+        $('#busca-produto').val(inputText.split('[')[0].trim()); // Nome do produto sem as medidas
+        $('#largura-produto').val(medida1);
+        $('#altura-produto').val(medida2);
+        
+        // Define a unidade no <select> (assumindo que as opções estão na ordem MM, CM, M)
+        const indexUnidade = unidadesSuportadas.indexOf(unidade);
+        document.getElementById('medida-produto').selectedIndex = indexUnidade;
+        
+        // Calcula preço por área (ajuste conforme sua lógica)
+        let areaEmMetrosQuadrados;
+        switch(unidade) {
+            case 'MM':
+                areaEmMetrosQuadrados = (medida1 * medida2) / 1000000; // mm² → m²
+                break;
+            case 'CM':
+                areaEmMetrosQuadrados = (medida1 * medida2) / 10000; // cm² → m²
+                break;
+            case 'M':
+                areaEmMetrosQuadrados = medida1 * medida2; // já em m²
+                break;
+        }
+        
+        const precoCalculado = preco_unitario / areaEmMetrosQuadrados;
+        $('#preco-produto').val(precoCalculado.toFixed(2)); // Formata com 4 decimais
+        
+        document.getElementById('calculo').checked = true;
+        return true; // Indica que os campos foram alterados
+    }
+        
     function finalizarPedido() {
         var valorPago = document.getElementById('valor_pago').value;
         if (!valorPago && valorTotal != 0) {
@@ -314,42 +385,6 @@
         if (confirm("Tem certeza que deseja gerar o orçamento como Rascunho?")) {
             document.getElementById('status').value = 'Rascunho';
             document.getElementById('orcamento-form').submit();
-        }
-    }
-
-    function separarMedidas() {
-        const inputText = document.getElementById('inputText').value;
-        const resultadoDiv = document.getElementById('resultado');
-
-        // Regex para encontrar o padrão [ número X número UNIDADE ]
-        const regex = /\[([^\]]+)\]/; // Captura tudo entre colchetes
-        const match = inputText.match(regex);
-
-        if (match) {
-            const conteudoColchetes = match[1].trim();
-
-            // Separar as medidas e unidade
-            const partes = conteudoColchetes.split(/\s+X\s+/i); // Divide pelo "X" (case insensitive)
-
-            if (partes.length === 2) {
-                // A última parte contém a unidade (pega a última palavra)
-                const partesUnidade = partes[1].split(/\s+/);
-                const unidade = partesUnidade.pop(); // Remove a última parte (unidade)
-                const medida2 = partesUnidade.join(' '); // Junta o restante (segunda medida)
-
-                const medida1 = partes[0].trim();
-
-                resultadoDiv.innerHTML = `
-                        <p><strong>Texto original:</strong> ${inputText}</p>
-                        <p><strong>Medida 1:</strong> ${medida1}</p>
-                        <p><strong>Medida 2:</strong> ${medida2}</p>
-                        <p><strong>Unidade:</strong> ${unidade}</p>
-                    `;
-            } else {
-                resultadoDiv.innerHTML = "<p>Formato de medidas não reconhecido.</p>";
-            }
-        } else {
-            resultadoDiv.innerHTML = "<p>Nenhum valor entre colchetes encontrado.</p>";
         }
     }
     
