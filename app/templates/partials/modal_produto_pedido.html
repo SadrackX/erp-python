@@ -28,7 +28,7 @@
           </div>
 
           <div class="form-group col-md-4">
-            <label for="preco-produto">Preço Unitário</label>
+            <label id="label-valor" for="preco-produto">Preço Unitário</label>
             <input type="number" class="form-control" id="preco-produto" step="0.01" autocomplete="off" required>
           </div>
 
@@ -45,9 +45,9 @@
           <div class="form-group col-md-2">
             <label for="medida-produto">Medida</label>
             <select id="medida-produto" class="form-control">
-              <option>MM²</option>
-              <option selected>CM²</option>
-              <option>M²</option>
+              <option>MM</option>
+              <option>CM</option>
+              <option>M</option>
             </select>
           </div>
 
@@ -67,17 +67,25 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-  const larguraInput = document.getElementById('largura-produto');
-  const alturaInput = document.getElementById('altura-produto');
-  const calculoCheckEl = document.getElementById('calculo');
+    const larguraInput = document.getElementById('largura-produto');
+    const alturaInput = document.getElementById('altura-produto');
+    const calculoCheckEl = document.getElementById('calculo');
+
+   
+   
 
   // segurança: só prossegue se os elementos existirem
   if (!larguraInput || !alturaInput || !calculoCheckEl) return;
 
   function calculoCheck() {
     const desativar = calculoCheckEl.checked;
-    larguraInput.disabled = desativar;
-    alturaInput.disabled = desativar;
+    larguraInput.disabled = !desativar;
+      alturaInput.disabled = !desativar;
+      if (desativar) {
+          document.getElementById('label-valor').innerHTML = 'Preço Metragem';
+      } else {
+          document.getElementById('label-valor').innerHTML = 'Preço Unitário'
+      }
   }
 
   // ouve mudança do checkbox
@@ -92,4 +100,5 @@ document.addEventListener('DOMContentLoaded', function () {
     calculoCheck();
   });
 });
+   
 </script>

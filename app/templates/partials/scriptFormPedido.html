@@ -151,6 +151,10 @@
             $('#preco-produto').val('');
             $('#quantidade-produto').val(1);
             $('#sugestoes-produtos').hide();
+            $('#largura-produto').val('');
+            $('#altura-produto').val('');
+            document.getElementById('medida-produto').selectedIndex = 1;
+            document.getElementById('calculo').checked = false;
         }); 
 
         $('#busca-produto').on('input', function () {
@@ -183,6 +187,20 @@
             var nome = $('#busca-produto').val();
             var preco = parseFloat($('#preco-produto').val());
             var qtd = parseInt($('#quantidade-produto').val());
+
+            if (document.getElementById('calculo').checked) {
+                var largura = parseFloat($('#largura-produto').val());
+                var altura = parseFloat($('#altura-produto').val());
+                var medida = $('#medida-produto').val();
+                nome += " [ " + largura + " X " + altura + " " + medida + " ]";
+                if (document.getElementById('medida-produto').value === 'MM') {
+                    preco *= largura * altura * 0.000001;
+                } else if (document.getElementById('medida-produto').value === 'CM')
+                    preco *= largura * altura * 0.0001;
+                else if (document.getElementById('medida-produto').value === 'M') {
+                    preco *= largura * altura;
+                }
+            }
 
             if (!nome || isNaN(preco) || isNaN(qtd) || qtd < 1) {
                 alert('Preencha todos os campos corretamente!');
@@ -253,6 +271,10 @@
         $('#busca-produto').val(p.nome);
         $('#preco-produto').val(p.preco_unitario);
         $('#quantidade-produto').val(p.quantidade);
+        $('#largura-produto').val('');
+        $('#altura-produto').val('');
+        document.getElementById('medida-produto').selectedIndex = 1;
+        document.getElementById('calculo').checked = false;
         
         $('#modal-produto').modal('show');
     }
@@ -292,6 +314,42 @@
         if (confirm("Tem certeza que deseja gerar o orçamento como Rascunho?")) {
             document.getElementById('status').value = 'Rascunho';
             document.getElementById('orcamento-form').submit();
+        }
+    }
+
+    function separarMedidas() {
+        const inputText = document.getElementById('inputText').value;
+        const resultadoDiv = document.getElementById('resultado');
+
+        // Regex para encontrar o padrão [ número X número UNIDADE ]
+        const regex = /\[([^\]]+)\]/; // Captura tudo entre colchetes
+        const match = inputText.match(regex);
+
+        if (match) {
+            const conteudoColchetes = match[1].trim();
+
+            // Separar as medidas e unidade
+            const partes = conteudoColchetes.split(/\s+X\s+/i); // Divide pelo "X" (case insensitive)
+
+            if (partes.length === 2) {
+                // A última parte contém a unidade (pega a última palavra)
+                const partesUnidade = partes[1].split(/\s+/);
+                const unidade = partesUnidade.pop(); // Remove a última parte (unidade)
+                const medida2 = partesUnidade.join(' '); // Junta o restante (segunda medida)
+
+                const medida1 = partes[0].trim();
+
+                resultadoDiv.innerHTML = `
+                        <p><strong>Texto original:</strong> ${inputText}</p>
+                        <p><strong>Medida 1:</strong> ${medida1}</p>
+                        <p><strong>Medida 2:</strong> ${medida2}</p>
+                        <p><strong>Unidade:</strong> ${unidade}</p>
+                    `;
+            } else {
+                resultadoDiv.innerHTML = "<p>Formato de medidas não reconhecido.</p>";
+            }
+        } else {
+            resultadoDiv.innerHTML = "<p>Nenhum valor entre colchetes encontrado.</p>";
         }
     }
     
