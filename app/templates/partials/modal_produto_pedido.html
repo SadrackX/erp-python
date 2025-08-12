@@ -9,18 +9,52 @@
         </button>
       </div>
       <div class="modal-body">
-        <div class="form-group">
-          <label for="busca-produto">Nome do Produto</label>
-          <input type="text" class="form-control" id="busca-produto" autocomplete="off" placeholder="Digite ou selecione um produto" autocomplete="off" required>
-          <div id="sugestoes-produtos" class="autocomplete-box" style="display:none; position:absolute; z-index:10;"></div>
-        </div>
-        <div class="form-group">
-          <label for="preco-produto">Preço Unitário</label>
-          <input type="number" class="form-control" id="preco-produto" step="0.01" autocomplete="off" required>
-        </div>
-        <div class="form-group">
-          <label for="quantidade-produto">Quantidade</label>
-          <input type="number" class="form-control" id="quantidade-produto" autocomplete="off" value="1" min="1">
+        <div class="form-row">
+          <div class="form-group col-md-12">
+            <label for="busca-produto">Nome do Produto</label>
+            <input type="text" class="form-control" id="busca-produto" autocomplete="off" placeholder="Digite ou selecione um produto" required>
+            <div id="sugestoes-produtos" class="autocomplete-box" style="display:none; position:absolute; z-index:10;"></div>
+          </div>
+
+          <div class="form-group input-group">
+            <div class="input-group-prepend">
+              <div class="input-group-text">
+                <input type="checkbox" id="calculo">
+              </div>
+            </div>
+            <div class="form-control">
+              <p class="mb-0">Função de cálculo p/ metragem para produtos do pedido</p>
+            </div>
+          </div>
+
+          <div class="form-group col-md-4">
+            <label for="preco-produto">Preço Unitário</label>
+            <input type="number" class="form-control" id="preco-produto" step="0.01" autocomplete="off" required>
+          </div>
+
+          <div class="form-group col-md-3">
+            <label for="largura-produto">Largura</label>
+            <input type="number" class="form-control" id="largura-produto" step="0.01" value="0" autocomplete="off" >
+          </div>
+
+          <div class="form-group col-md-3">
+            <label for="altura-produto">Altura</label>
+            <input type="number" class="form-control" id="altura-produto" step="0.01" value="0" autocomplete="off" >
+          </div>
+
+          <div class="form-group col-md-2">
+            <label for="medida-produto">Medida</label>
+            <select id="medida-produto" class="form-control">
+              <option>MM²</option>
+              <option selected>CM²</option>
+              <option>M²</option>
+            </select>
+          </div>
+
+          <div class="form-group col-md-12">
+            <label for="quantidade-produto">Quantidade</label>
+            <input type="number" class="form-control" id="quantidade-produto" autocomplete="off" value="1" min="1">
+          </div>
         </div>
       </div>
       <div class="modal-footer">
@@ -30,3 +64,32 @@
     </div>
   </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const larguraInput = document.getElementById('largura-produto');
+  const alturaInput = document.getElementById('altura-produto');
+  const calculoCheckEl = document.getElementById('calculo');
+
+  // segurança: só prossegue se os elementos existirem
+  if (!larguraInput || !alturaInput || !calculoCheckEl) return;
+
+  function calculoCheck() {
+    const desativar = calculoCheckEl.checked;
+    larguraInput.disabled = desativar;
+    alturaInput.disabled = desativar;
+  }
+
+  // ouve mudança do checkbox
+  calculoCheckEl.addEventListener('change', calculoCheck);
+
+  // define estado inicial (por exemplo se checkbox vier marcado por server-render)
+  calculoCheck();
+
+  // opcional: quando o modal abrir, garanta que o estado esteja sincronizado
+  // (útil se modal for reusado e inputs alterados em outro momento)
+  $('#modal-produto').on('show.bs.modal', function () {
+    calculoCheck();
+  });
+});
+</script>
