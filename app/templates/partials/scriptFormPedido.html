@@ -19,23 +19,6 @@
             $('#data_previsao_entrega').val(pedido.data_previsao_entrega.split('T')[0]);
         }
 
-        // Se cliente estiver embutido no pedido
-        /* if (pedido.cliente) {
-            $('#nome').val(pedido.cliente.nome);
-            $('#cpf_cnpj').val(pedido.cliente.cpf_cnpj);
-            $('#email').val(pedido.cliente.email);
-            $('#celular').val(pedido.cliente.celular);
-            $('#endereco').val(pedido.cliente.endereco);
-            $('#bairro').val(pedido.cliente.bairro);
-            $('#cidade').val(pedido.cliente.cidade);
-            $('#cep').val(pedido.cliente.cep);
-            $('#uf').val(pedido.cliente.uf);
-            $('#tipo').val(pedido.cliente.tipo);
-        } */
-
-        // Atualiza tabela de produtos
-
-        //atualizarTabelaProdutos();
         produtosPedido = produtos;
     }
 
@@ -206,13 +189,7 @@
                 alert('Preencha todos os campos corretamente!');
                 return;
             }
-
-            /* produtosPedido.push({
-                nome: nome,
-                preco_unitario: preco,
-                quantidade: qtd
-            }); */
-
+          
             const novoProduto = {
                 nome: nome,
                 preco_unitario: preco,
@@ -241,10 +218,9 @@
             totalPedido += total;
             html += '<tr>';
             html += '<td>'+p.nome+'</td>';
-            html += '<td>R$ '+p.preco_unitario.toFixed(2)+'</td>';
+            html += '<td>' + new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(p.preco_unitario).replace('R$', 'R$') + '</td>';
             html += '<td>'+p.quantidade+'</td>';
-            html += '<td>R$ '+total.toFixed(2)+'</td>';
-            //html += '<td><button class="btn-outline-danger btn-sm" onclick="removerProduto('+idx+')">Remover</button></td>';
+            html += '<td>' + new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(total).replace('R$', 'R$') + '</td>';
             html += '<td>';
             html += '<button type="button" class="btn btn-sm btn-outline-primary mr-1" data-toggle="modal" data-target="#modal-produto" onclick="editarProduto('+idx+')"><span class="material-icons">edit</span></button>';
             html += '<button type="button" class="btn btn-sm btn-outline-danger" onclick="removerProduto('+idx+')"><span class="material-icons">delete</span></button>';
@@ -252,9 +228,9 @@
             html += '</tr>';
             
         });
-        valorTotal = totalPedido;
+        valorTotal = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(totalPedido).replace('R$', 'R$');
         $('#tabela-produtos tbody').html(html);
-        $('#valor-final').text('R$ '+totalPedido.toFixed(2));
+        $('#valor-final').text(valorTotal);
         $('#produtos_json').val(JSON.stringify(produtosPedido));
     }
 

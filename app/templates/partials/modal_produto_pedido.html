@@ -81,6 +81,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const desativar = calculoCheckEl.checked;
     larguraInput.disabled = !desativar;
       alturaInput.disabled = !desativar;
+      document.getElementById('medida-produto').disabled = !desativar;
       if (desativar) {
           document.getElementById('label-valor').innerHTML = 'Preço Metragem';
       } else {
