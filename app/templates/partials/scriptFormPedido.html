@@ -7,6 +7,7 @@
     var produtos = {{ produtos | tojson | safe }} || [];
     var valorTotal;
     let indexEditando = null;  // variável de controle global
+    var totalPedido = 0;
 
     function editarPedidoForm() {
         if (!pedido) return;
@@ -16,7 +17,7 @@
         $('#id_cliente').val(pedido.id_cliente);
 
         if (pedido.data_previsao_entrega) {
-            $('#data_previsao_entrega').val(pedido.data_previsao_entrega.split('T')[0]);
+            $('#data_previsao_entrega').val(pedido.data_previsao_entrega.split(" ")[0]);
         }
 
         produtosPedido = produtos;
@@ -213,7 +214,7 @@
     // TABELA DE PRODUTOS
     function atualizarTabelaProdutos() {
         var html = '';
-        var totalPedido = 0;
+        
         produtosPedido.forEach(function(p, idx) {
             var total = p.preco_unitario * p.quantidade;
             totalPedido += total;
@@ -257,8 +258,8 @@
     editarPedidoForm();
     document.getElementById('valor_pago').addEventListener('input', function () {
         const inputValorPago = $('#valor_pago').val();
-        if(inputValorPago > valorTotal){
-            $('#valor_pago').val(valorTotal);
+        if(inputValorPago > totalPedido){
+            $('#valor_pago').val(totalPedido);
         } else if (inputValorPago < 0){
                 $('#valor_pago').val(0);
         }

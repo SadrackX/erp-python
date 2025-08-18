@@ -166,7 +166,10 @@ def novo():
                     preco_unitario=p['preco_unitario']
                 ))
         cliente_id = request.form['id_cliente']
-        raw_valor = request.form.get('valor_pago', '').strip()
+        raw_valor = request.form.get('valor_pago', '0.0').strip()
+        if raw_valor =='':
+            raw_valor=0
+        
         form = request.form.to_dict()
         novo_cliente = Cliente.from_dict(form)
         if cliente_id == 'novo':            
@@ -238,13 +241,16 @@ def editar(pedido_id):
 
     if request.method == 'POST':
         data_str = request.form.get('data_previsao_entrega')
+        raw_valor = request.form.get('valor_pago', '0.0').strip()
+        if raw_valor =='':
+            raw_valor=0
         novos_dados = {
             'status': request.form['status'],
             'observacoes': request.form.get('observacoes'),
             'id_cliente': request.form.get('id_cliente'),
             'data_previsao_entrega': data_str,
             'forma_de_pagamento': request.form.get('forma_de_pagamento'),
-            'valor_pago': request.form.get('valor_pago',0)
+            'valor_pago': raw_valor
         }
         PedidoManager().atualizar_itens_pedido(pedido_id, produtos_att)
         PedidoManager().atualizar_pedido(pedido_id, novos_dados)
