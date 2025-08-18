@@ -8,7 +8,7 @@ pillow
 schedule
 qrcode
 qrcode[pil]
-
+python-dateutil
 # No PowerShell, na pasta do projeto:
 #git init
 #git add .

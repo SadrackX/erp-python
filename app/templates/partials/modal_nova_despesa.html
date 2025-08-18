@@ -1,0 +1,105 @@
+<!-- Modal Nova Despesa -->
+<div class="modal fade" id="novaDespesaModal" tabindex="-1">
+  <div class="modal-dialog">
+    <form class="modal-content" method="POST" action="{{ url_for('despesas.novo') }}">
+      <div class="modal-header">
+        <h5 class="modal-title">Nova Despesa</h5>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+      </div>
+      <div class="modal-body form-row">
+        <div class="form-group col-md-12">
+          <label>Descrição</label>
+          <textarea type="text" class="form-control" name="descricao" required></textarea>
+        </div>
+        <div class="form-group col-md-6">
+          <label>Tipo</label>
+          <select name="tipo" class="form-control" id="tipoDespesa">
+            <option value="unico">Pagamento Único</option>
+            <option value="parcelado">Parcelado</option>
+            <option value="recorrente">Recorrente</option>
+          </select>
+        </div>
+        <div class="form-group col-md-6">
+          <label>Data Vencimento</label>
+          <input type="date" class="form-control" name="data_vencimento" >
+        </div>
+        <div class="form-group col-md-6">
+          <label>Dia de Pagamento</label>
+          <input type="number" class="form-control" name="dia_pagamento" min="1" max="31" id="diaPagamentoDespesa">
+        </div>
+        <div class="form-group col-md-4">
+          <label>Valor</label>
+          <input type="number" class="form-control" name="valor" step="0.01" required>
+        </div>
+        <div class="form-group col-md-4">
+          <label>Recorrência</label>
+          <select name="recorrencia" class="form-control" id="recorrenciaDespesa">
+            <option value="">Nenhuma</option>
+            <option value="semanal">Semanal</option>
+            <option value="mensal">Mensal</option>
+            <option value="trimestral">Trimestral</option>
+            <option value="semestral">Semestral</option>
+            <option value="anual">Anual</option>
+          </select>
+        </div>
+        <div class="form-group col-md-4">
+          <label>Parcelas</label>
+          <input type="number" class="form-control" name="parcelas" min="1" value="1" id="parcelasDespesa">
+        </div>
+        <div class="form-group col-md-6">
+          <label>Valor Fixo</label>
+          <select name="valor_fixo" class="form-control">
+            <option value="sim">Sim</option>
+            <option value="nao">Não</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-primary">Salvar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+     atualizarCampos();
+  });
+    const tipoDespesa = document.getElementById('tipoDespesa');
+    const recorrenciaDespesa = document.getElementById('recorrenciaDespesa');
+    const parcelasDespesa = document.getElementById('parcelasDespesa');
+    const diaPagamentoDespesa = document.getElementById('diaPagamentoDespesa');
+    const dataVencimento = document.getElementById('data_vencimento');
+
+    function atualizarCampos() {
+      const tipo = tipoDespesa.value;
+      const recorrencia = recorrenciaDespesa.value;
+
+      if (tipo === 'unico') {
+        recorrenciaDespesa.value = '';
+        recorrenciaDespesa.disabled = true;
+        parcelasDespesa.value = '1';
+        parcelasDespesa.disabled = true;
+        document.getElementById('data_vencimento').setAttribute('hidden',false);
+      } else if (tipo === 'parcelado') {
+        recorrenciaDespesa.value = '';
+        recorrenciaDespesa.disabled = true;
+        parcelasDespesa.disabled = false;
+        document.getElementById('data_vencimento').setAttribute('hidden',true);
+      } else if (tipo === 'recorrente') {
+        recorrenciaDespesa.disabled = false;
+        parcelasDespesa.disabled = false;
+        document.getElementById('data_vencimento').setAttribute('hidden',true);
+      }
+
+      if (recorrencia === 'semanal') {
+        diaPagamentoDespesa.setAttribute('min','1');
+        diaPagamentoDespesa.setAttribute('max','7');
+      } else {
+        diaPagamentoDespesa.setAttribute('min','1');
+        diaPagamentoDespesa.setAttribute('max','31');
+      }
+    }
+  document.getElementById('tipoDespesa').addEventListener('change',function(){atualizarCampos()});
+  recorrenciaDespesa.addEventListener('change', atualizarCampos);
+</script>

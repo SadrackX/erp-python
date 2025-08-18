@@ -1,14 +1,18 @@
 ﻿import sys
 from pathlib import Path
+sys.path.append(str(Path(__file__).parent.parent))
+from core.database import CSVManager
 
+from app.managers.despesas import DespesasManager
+from app.managers.despesasRecorrente import DespesasRecorrenteManager
 from app.managers.empresa import EmpresaManager
 from app.managers.fornecedores import FornecedorManager
 from app.managers.itens import ItensPedidoManager
 from app.managers.pedidos import PedidoManager
-sys.path.append(str(Path(__file__).parent.parent))
 from app.managers.clientes import ClienteManager
 from app.managers.produtos import ProdutoManager
-from core.database import CSVManager
+
+
 
 
 def inicializar_todos_arquivos():
@@ -23,7 +27,9 @@ def inicializar_todos_arquivos():
         PedidoManager(),
         ItensPedidoManager(),
         ProdutoManager(),
-        EmpresaManager()
+        EmpresaManager(),
+        DespesasManager(),
+        DespesasRecorrenteManager()
     ]
     print("Arquivos CSV inicializados com sucesso!")
     # Exibe os cabeçalhos de cada arquivo criado

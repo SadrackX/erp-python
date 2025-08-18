@@ -2,11 +2,14 @@ import os
 from flask import Flask, redirect, url_for
 
 from app.managers.empresa import EmpresaManager
+from app.scripts import inicializar_db
 
 def create_app():
     app = Flask(
     __name__,
     template_folder='templates')
+
+    inicializar_db.inicializar_todos_arquivos()
 
     app.config['SECRET_KEY'] = 'erp_secret_key'
     #app.secret_key = 'erp_secret_key'
@@ -33,7 +36,9 @@ def create_app():
     from .routes.orcamentos import orcamentos_bp
     from .routes.backups import backup_bp
     from .routes.api_atualizar_status import api_bp
+    from .routes.despesas import despesas_bp
 
+    app.register_blueprint(despesas_bp)
     app.register_blueprint(auth_bp)
     app.register_blueprint(pedidos_bp)
     app.register_blueprint(clientes_bp)

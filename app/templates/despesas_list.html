@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% block conteudo %}
+<div class="d-flex justify-content-between align-items-center py-5">
+  <h2>Despesas</h2>
+  <button class="btn btn-primary mb-3" data-toggle="modal" data-target="#novaDespesaModal">Nova Despesa</button>
+</div>
+<div class="">
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Descrição</th>
+        <th>Valor</th>
+        <th>Vencimento</th>
+        <th>Parcela</th>
+        <th>Recorrência</th>    
+        <th>Status</th>
+        <th>Ações</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for despesa in despesas %}
+      <tr>
+        <td>{{ despesa.id }}</td>
+        <td>{{ despesa.descricao }}</td>
+        <td>R$ {{ "{:,.2f}".format(despesa.valor).replace(",", "X").replace(".", ",").replace("X", ".") }}</td>
+        <td>{{ despesa.data_vencimento.strftime("%d/%m/%Y") }}</td>
+        <td>
+        {% if despesa.total_parcelas and despesa.total_parcelas > 1 %}
+            {{ despesa.parcela_atual }}/{{ despesa.total_parcelas }}
+        {% else %}
+            Única
+        {% endif %}
+        </td>
+        <td>{{ despesa.recorrencia or '-' }}</td>
+        <td class="
+        {% if despesa.status == 'Pago' %}text-success
+        {% elif despesa.status == 'Atrasado' %}text-danger
+        {% else %}text-warning
+        {% endif %}">
+        {{ despesa.status }}
+        </td>
+        <td>
+          <a href="{{ url_for('despesas.editar', id=despesa.id) }}" class="btn btn-sm btn-warning">Editar</a>
+          <a href="{{ url_for('despesas.excluir', id=despesa.id) }}" class="btn btn-sm btn-danger">Excluir</a>
+          <a href="{{ url_for('despesas.pagar', id=despesa.id) }}" class="btn btn-sm btn-success">Pagar</a>
+        </td>
+      </tr>
+      {% else %}
+      <tr><td colspan="8" class="text-center text-muted">Nenhuma despesa cadastrada.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% include 'partials/modal_nova_despesa.html' %}
+
+{% endblock %}
