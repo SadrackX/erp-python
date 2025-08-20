@@ -9,49 +9,39 @@
       <div class="modal-body form-row">
         <div class="form-group col-md-12">
           <label>Descrição</label>
-          <textarea type="text" class="form-control" name="descricao" required></textarea>
+          <textarea type="text" class="form-control" id="descricao" name="descricao" required></textarea>
         </div>
-        <div class="form-group col-md-6">
+        <div class="form-group col-md-5">
           <label>Tipo</label>
           <select name="tipo" class="form-control" id="tipoDespesa">
             <option value="unico">Pagamento Único</option>
-            <option value="parcelado">Parcelado</option>
             <option value="recorrente">Recorrente</option>
           </select>
         </div>
-        <div class="form-group col-md-6">
+        <div class="form-group col-md-4" id="data_v">
           <label>Data Vencimento</label>
-          <input type="date" class="form-control" name="data_vencimento" >
+          <input type="date" class="form-control" id="data_vencimento" name="data_vencimento" >
         </div>
-        <div class="form-group col-md-6">
+        <div class="form-group col-md-4" id="dia_v">
           <label>Dia de Pagamento</label>
-          <input type="number" class="form-control" name="dia_pagamento" min="1" max="31" id="diaPagamentoDespesa">
+          <input type="number" class="form-control" name="diaPagamento" id="diaPagamento">
         </div>
-        <div class="form-group col-md-4">
-          <label>Valor</label>
-          <input type="number" class="form-control" name="valor" step="0.01" required>
-        </div>
-        <div class="form-group col-md-4">
-          <label>Recorrência</label>
-          <select name="recorrencia" class="form-control" id="recorrenciaDespesa">
-            <option value="">Nenhuma</option>
-            <option value="semanal">Semanal</option>
-            <option value="mensal">Mensal</option>
-            <option value="trimestral">Trimestral</option>
-            <option value="semestral">Semestral</option>
-            <option value="anual">Anual</option>
-          </select>
-        </div>
-        <div class="form-group col-md-4">
+        <div class="form-group col-md-3">
           <label>Parcelas</label>
-          <input type="number" class="form-control" name="parcelas" min="1" value="1" id="parcelasDespesa">
+          <input type="number" class="form-control" name="parcelas" min="1" value="1" id="parcelas">
         </div>
-        <div class="form-group col-md-6">
-          <label>Valor Fixo</label>
-          <select name="valor_fixo" class="form-control">
-            <option value="sim">Sim</option>
-            <option value="nao">Não</option>
-          </select>
+        
+      
+
+        <div class="form-group input-group">
+          <div class="input-group-prepend">
+            <div class="input-group-text">
+              <input type="checkbox" name="valor_fixo" id="valor_fixo">
+            </div>
+          </div>
+          
+            <input type="number" class="form-control" placeholder="Valor no Pagamento" id="valor" name="valor" step="0.01" required>
+          
         </div>
       </div>
       <div class="modal-footer">
@@ -62,44 +52,57 @@
 </div>
 
 <script>
-  document.addEventListener('DOMContentLoaded', function() {
-     atualizarCampos();
+  const tipoDespesa = document.getElementById('tipoDespesa');
+  const parcelasDespesa = document.getElementById('parcelas');
+  const diaPagamento = document.getElementById('diaPagamento');
+  const dataVencimento = document.getElementById('data_vencimento');
+  var dataV = document.getElementById('data_v');
+  var diaV = document.getElementById('dia_v');
+  const vFixo = document.getElementById('valor_fixo');
+  var valor = document.getElementById('valor');
+
+  $('#novaDespesaModal').on('show.bs.modal', function () {
+    document.getElementById('descricao').value='';
+    tipoDespesa.value = 'unico';
+    dataVencimento.value = null;
+    diaPagamento.value='';
+    parcelasDespesa.value=0;
+    vFixo.checked = false;
+    valor.value = '';
+    atualizarCampos();
   });
-    const tipoDespesa = document.getElementById('tipoDespesa');
-    const recorrenciaDespesa = document.getElementById('recorrenciaDespesa');
-    const parcelasDespesa = document.getElementById('parcelasDespesa');
-    const diaPagamentoDespesa = document.getElementById('diaPagamentoDespesa');
-    const dataVencimento = document.getElementById('data_vencimento');
 
-    function atualizarCampos() {
-      const tipo = tipoDespesa.value;
-      const recorrencia = recorrenciaDespesa.value;
+  function atualizarCampos() {
+    const tipo = tipoDespesa.value;
 
-      if (tipo === 'unico') {
-        recorrenciaDespesa.value = '';
-        recorrenciaDespesa.disabled = true;
-        parcelasDespesa.value = '1';
-        parcelasDespesa.disabled = true;
-        document.getElementById('data_vencimento').setAttribute('hidden',false);
-      } else if (tipo === 'parcelado') {
-        recorrenciaDespesa.value = '';
-        recorrenciaDespesa.disabled = true;
-        parcelasDespesa.disabled = false;
-        document.getElementById('data_vencimento').setAttribute('hidden',true);
-      } else if (tipo === 'recorrente') {
-        recorrenciaDespesa.disabled = false;
-        parcelasDespesa.disabled = false;
-        document.getElementById('data_vencimento').setAttribute('hidden',true);
-      }
-
-      if (recorrencia === 'semanal') {
-        diaPagamentoDespesa.setAttribute('min','1');
-        diaPagamentoDespesa.setAttribute('max','7');
-      } else {
-        diaPagamentoDespesa.setAttribute('min','1');
-        diaPagamentoDespesa.setAttribute('max','31');
-      }
+    if (tipo === 'unico') {
+      parcelasDespesa.value = '1';
+      parcelasDespesa.disabled = true;
+      dataV.style.display = 'block';
+      diaV.style.display = 'none';      
+    } else if (tipo === 'recorrente') {
+      parcelasDespesa.disabled = false;
+      dataV.style.display = 'none';
+      diaV.style.display = 'block';
     }
+
+    const desativar = vFixo.checked;
+
+    if(desativar){
+      valor.value='';
+      valor.disabled = desativar;
+    } else{
+      valor.disabled = desativar;
+    }
+
+  }
+  document.getElementById('diaPagamento').addEventListener('input',function(){
+    if (diaPagamento.value>31){
+      diaPagamento.value=31;
+    }else if(diaPagamento.value<1){
+      diaPagamento.value='';
+    }
+  });
   document.getElementById('tipoDespesa').addEventListener('change',function(){atualizarCampos()});
-  recorrenciaDespesa.addEventListener('change', atualizarCampos);
+  document.getElementById('valor_fixo').addEventListener('change',function(){atualizarCampos()});
 </script>
