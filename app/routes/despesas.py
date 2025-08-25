@@ -1,10 +1,12 @@
 from flask import Blueprint, render_template, request, redirect, session, url_for, flash
 from datetime import datetime
+from app.managers.despesasRecorrente import DespesasRecorrenteManager
 from app.services import despesas as service
 from app.managers.despesas import DespesasManager
 
 despesas_bp = Blueprint("despesas", __name__, url_prefix="/despesas")
 manager = DespesasManager()
+manager_rec = DespesasRecorrenteManager()
 
 @despesas_bp.route("/")
 def index():
@@ -19,18 +21,26 @@ def novo():
         return redirect(url_for('auth.login'))
     try:
         descricao = request.form["descricao"]
-        valor = float(request.form["valor"])
-        data_vencimento = datetime.strptime(request.form["data_vencimento"], "%Y-%m-%d")
+        valor = float(request.form["valor"])        
         tipo = request.form.get("tipo", "unico")
+        data = (datetime.strptime(request.form["data_vencimento"], "%Y-%m-%d") if tipo == 'unico' else request.form['dia_vencimento'])
         parcelas = int(request.form.get("parcelas") or 1)
 
-        despesas_criadas = manager.cadastrar(
-            descricao=descricao,
-            valor=valor,
-            data_vencimento=data_vencimento,
-            tipo=tipo,
-            parcelas=parcelas
-        )
+        if tipo == 'unico':
+            despesas_criadas = manager.cadastrar(
+                descricao=descricao,
+                valor=valor,
+                data_vencimento=data
+            )
+        else:
+            despesas_criadas = manager_rec.cadastrar(
+                descricao=descricao,
+                valor=valor,
+                dia_vencimento=data,
+                parcelas=parcelas
+            )
+            
+
 
         flash(f"{len(despesas_criadas)} despesa(s) criada(s) com sucesso!", "success")
     except Exception as e:
