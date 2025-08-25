@@ -4,7 +4,7 @@ from app.managers.backup import BackupManager
 backup_bp = Blueprint('backups', __name__, url_prefix='/backups')
 manager = BackupManager(limite_backups=5)
 
-@backup_bp.route('/listar')
+@backup_bp.route('/')
 def listar():
     if 'usuario_nome' not in session:
         return redirect(url_for('auth.login'))

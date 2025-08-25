@@ -17,7 +17,7 @@ class DespesasRecorrenteManager(CSVManager):
             'descricao',
             'valor',
             'dia_vencimento',        
-            'recorrencia'
+            'parcelas'
         ]
     
     def get_next_id(self) -> str:

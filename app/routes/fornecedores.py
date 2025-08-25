@@ -6,7 +6,7 @@ from app.models.fornecedores import Fornecedor
 
 fornecedores_bp = Blueprint('fornecedores', __name__, url_prefix='/fornecedores')
 
-@fornecedores_bp.route('/listar')
+@fornecedores_bp.route('/')
 def listar():
     if 'usuario_nome' not in session:
         return redirect(url_for('auth.login'))

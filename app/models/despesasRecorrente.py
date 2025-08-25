@@ -9,7 +9,7 @@ class DespesasRecorrente:
     descricao: str = ''
     valor: float = 0.0
     dia_vencimento: int = 0
-    recorrencia: Optional[str] = None
+    parcelas: Optional[int] = None
 
     @classmethod
     def from_dict(cls, data: dict):
@@ -20,7 +20,7 @@ class DespesasRecorrente:
                 descricao=data.get('descricao', ''),
                 valor=float(data.get('valor', 0.0)),
                 dia_vencimento=int(data.get('dia_vencimento')),
-                recorrencia=data.get('recorrencia')
+                parcelas=int(data.get('parcelas'),0)
             )
         except Exception as e:
             print(f"Erro ao criar despesa recorrente: {e}")
@@ -33,5 +33,5 @@ class DespesasRecorrente:
             'descricao': self.descricao,
             'valor': self.valor,
             'dia_vencimento': self.dia_vencimento,
-            'recorrencia': self.recorrencia
+            'parcelas': self.parcelas
         }

@@ -7,7 +7,7 @@ from app.models.produtos import Produto
 
 produtos_bp = Blueprint('produtos', __name__, url_prefix='/produtos')
 
-@produtos_bp.route('/listar')
+@produtos_bp.route('/')
 def listar():
     if 'usuario_nome' not in session:
         return redirect(url_for('auth.login'))

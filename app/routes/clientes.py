@@ -6,7 +6,7 @@ from app.models.clientes import Cliente
 
 clientes_bp = Blueprint('clientes', __name__, url_prefix='/clientes')
 
-@clientes_bp.route('/listar')
+@clientes_bp.route('/')
 def listar():
     if 'usuario_nome' not in session:
         return redirect(url_for('auth.login'))

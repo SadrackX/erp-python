@@ -6,7 +6,7 @@ from app.services.logviewer import LogViewer
 
 logs_bp = Blueprint('logs', __name__, url_prefix='/logs')
 
-@logs_bp.route('/listar')
+@logs_bp.route('/')
 def listar():
     if 'usuario_nome' not in session:
         return redirect(url_for('auth.login'))

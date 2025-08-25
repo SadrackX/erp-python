@@ -13,7 +13,7 @@ from app.models.pedidos import Pedido
 
 orcamentos_bp = Blueprint('orcamentos', __name__, url_prefix='/orcamentos')
 
-@orcamentos_bp.route('/listar')
+@orcamentos_bp.route('/')
 def listar():
     if 'usuario_nome' not in session:
         return redirect(url_for('auth.login'))

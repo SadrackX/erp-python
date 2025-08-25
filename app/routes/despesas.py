@@ -23,15 +23,13 @@ def novo():
         data_vencimento = datetime.strptime(request.form["data_vencimento"], "%Y-%m-%d")
         tipo = request.form.get("tipo", "unico")
         parcelas = int(request.form.get("parcelas") or 1)
-        recorrencia = request.form.get("recorrencia")
 
-        despesas_criadas = service.criar_despesa(
+        despesas_criadas = manager.cadastrar(
             descricao=descricao,
             valor=valor,
             data_vencimento=data_vencimento,
             tipo=tipo,
-            parcelas=parcelas,
-            recorrencia=recorrencia
+            parcelas=parcelas
         )
 
         flash(f"{len(despesas_criadas)} despesa(s) criada(s) com sucesso!", "success")

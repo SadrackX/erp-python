@@ -13,7 +13,7 @@ from ..services.pedidos import verificar_e_atualizar_status_pedidos, total_este_
 
 pedidos_bp = Blueprint('pedidos', __name__, url_prefix='/pedidos')
 
-@pedidos_bp.route('/listar')
+@pedidos_bp.route('/')
 def listar():
     if 'usuario_nome' not in session:
         return redirect(url_for('auth.login'))

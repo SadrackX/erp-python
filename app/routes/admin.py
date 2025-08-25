@@ -13,7 +13,7 @@ ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 
 admin_bp = Blueprint('admin', __name__, url_prefix='/admin')
 
-@admin_bp.route('/empresa', methods=['GET', 'POST'])
+@admin_bp.route('/', methods=['GET', 'POST'])
 def empresa():
     if 'usuario_nome' not in session:
         return redirect(url_for('auth.login'))

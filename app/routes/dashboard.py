@@ -6,7 +6,7 @@ from app.models.dashboard import Dashboard
 
 dashboard_bp = Blueprint('dashboard', __name__, url_prefix='/dashboard')
 
-@dashboard_bp.route('/dashboard')
+@dashboard_bp.route('/')
 def dashboard():
     if 'usuario_nome' not in session:
         return redirect(url_for('auth.login'))
