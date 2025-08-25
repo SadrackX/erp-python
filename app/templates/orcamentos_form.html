@@ -5,7 +5,7 @@
         <div class="col-md-12">
             <br>
             <br>
-            <h5>Novo Orçamento</h5>
+            <h5>{{ 'Editar Orçamento ID: '+pedido.id if pedido else 'Novo Orçamento' }}</h5>
             <hr>
             <form id="orcamento-form" method="post" action="{{ url_for('orcamentos.editar', pedido_id=pedido['id']) if pedido else url_for('orcamentos.novo') }}" autocomplete="off">
 
