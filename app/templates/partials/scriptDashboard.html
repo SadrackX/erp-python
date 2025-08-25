@@ -75,7 +75,7 @@
                 
 
                 const baseFinalizarUrl = "{{ __PEDIDO__ | safe}}";
-                const baseEditarUrl = "{{ url_for('pedidos.editar', pedido_id='__ID__') }}";
+                const baseEditarUrl = status != 'Orçamento' ? "{{ url_for('pedidos.editar', pedido_id='__ID__') }}" : "{{ url_for('orcamentos.editar', pedido_id='__ID__') }}";
 
                 pedidos.forEach(p => {
                     const row = document.createElement("tr");
